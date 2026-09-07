@@ -46,7 +46,10 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF", "ANN", "S"]
 # N818 exige sufixo `Error` em excecao. O dominio deste projeto e' escrito em
 # portugues por decisao — `ErroDominio` ja' carrega o prefixo equivalente, e
 # `DominioError` seria pior que a regra que ele satisfaz.
-ignore = ["ANN401", "N818"]
+# RUF001-003: o travessão (–) em "61–90 dias" é a pontuação correta para
+# intervalo, e o texto aqui é visível ao usuário, em português. Trocar por
+# hífen para agradar um lint pioraria a tipografia.
+ignore = ["ANN401", "N818", "RUF001", "RUF002", "RUF003"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "ANN"]

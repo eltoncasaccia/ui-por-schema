@@ -2,9 +2,14 @@ import { Indicador } from '../ui/Indicador'
 import type { Tom } from '../ui/estados'
 import type { View } from './tipos'
 
+export interface Faixa { rotulo: string; valor: number; ordem: number }
 export interface VM {
   metrica: string; rotulo: string; valor: number
   unidade_medida: 'lotes' | 'centavos'
+  escopo: string
+  detalhe: string | null
+  faixas: Faixa[]
+  tipo_faixa: 'urgencia' | 'unidade' | 'nenhum'
 }
 
 /** A métrica carrega o tom: quarentena é informativa, bloqueio é grave. */
@@ -25,7 +30,10 @@ export const view: View<VM> = ({ vm }) => (
   <Indicador
     rotulo={vm.rotulo}
     valor={formatar(vm.valor, vm.unidade_medida)}
-    nota={vm.unidade_medida === 'lotes' ? (vm.valor === 1 ? 'lote' : 'lotes') : undefined}
+    escopo={vm.escopo}
+    detalhe={vm.detalhe ?? undefined}
+    faixas={vm.faixas}
+    tipoFaixa={vm.tipo_faixa}
     tom={TOM[vm.metrica] ?? 'neutro'}
   />
 )

@@ -9,6 +9,10 @@ export function PainelAssistente({ eu, aoFechar }: { eu: Eu; aoFechar: () => voi
   const { conversa, composicoes, pensando } = useSessao()
   const [rascunho, setRascunho] = useState('')
   const cat = useQuery({ queryKey: [eu.id, 'catalogo'], queryFn: api.catalogo })
+  // Sugestões saem do catálogo DESTE ator — que já é filtrado por permissão —
+  // e os exemplos são escritos sem nome de unidade nem valor restrito. Sugerir
+  // o que a pessoa não pode pedir é oferecer uma porta fechada, e ainda conta
+  // que a porta existe.
   const sugestoes = (cat.data ?? []).flatMap((c) => c.examples).slice(0, 5)
 
   async function perguntar(texto: string) {
@@ -17,9 +21,10 @@ export function PainelAssistente({ eu, aoFechar }: { eu: Eu; aoFechar: () => voi
     try {
       const c = await api.compor(texto)
       if (c.blocos.length === 0) {
-        // Composição vazia é RESPOSTA, não erro: o modelo olhou o catálogo
-        // deste ator e não achou nada que sirva.
-        sessao.nota('Nada no seu catálogo responde a isso.')
+        // Composição vazia é RESPOSTA, não erro. E a mensagem não diz que o
+        // sistema TEM o dado e não pode mostrar — diz que não sabe responder.
+        // Contar que existe já é contar demais (ADR-0014).
+        sessao.nota('Não consigo responder isso por aqui.')
         return
       }
       // NÃO vai para o workspace. A composição fica na conversa até a pessoa

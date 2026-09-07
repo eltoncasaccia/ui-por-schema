@@ -1,20 +1,35 @@
+import { BarraFaixas, type Faixa } from './BarraFaixas'
 import type { Tom } from './estados'
 
 /**
- * Um número, um rótulo, um estado.
+ * Um número COM contexto.
  *
- * O rótulo usa `overflow-wrap: anywhere` e o valor usa `clamp()` — foi o que
- * quebrava quando o mesmo componente era renderizado na coluna estreita do
- * assistente e na coluna larga do workspace.
+ * Um número sozinho é uma métrica sem contexto: "3" não diz de onde, não diz se
+ * é muito, e não diz o que fazer. Este componente responde a pergunta seguinte
+ * antes de ela ser feita — o escopo, a decomposição, e o que exige ação.
  */
 export function Indicador({
-  rotulo, valor, nota, tom = 'neutro',
-}: { rotulo: string; valor: string; nota?: string | undefined; tom?: Tom }) {
+  rotulo, valor, escopo, detalhe, faixas, tipoFaixa = 'nenhum', tom = 'neutro',
+}: {
+  rotulo: string
+  valor: string
+  escopo?: string | undefined
+  detalhe?: string | undefined
+  faixas?: Faixa[] | undefined
+  tipoFaixa?: 'urgencia' | 'unidade' | 'nenhum'
+  tom?: Tom
+}) {
   return (
-    <div className={`indicador tom-${tom}`}>
+    <section className={`indicador tom-${tom}`}>
       <div className="indicador-rotulo">{rotulo}</div>
       <div className="indicador-valor">{valor}</div>
-      {nota && <div className="indicador-nota">{nota}</div>}
-    </div>
+      {escopo && <div className="indicador-nota">em {escopo}</div>}
+      {faixas && faixas.length > 0 && tipoFaixa !== 'nenhum' && (
+        <BarraFaixas faixas={faixas} tipo={tipoFaixa} />
+      )}
+      {detalhe && (
+        <p className="indicador-detalhe">{detalhe}</p>
+      )}
+    </section>
   )
 }

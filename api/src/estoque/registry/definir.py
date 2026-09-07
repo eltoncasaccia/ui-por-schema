@@ -21,6 +21,18 @@ Tamanho = Literal["linha", "meia", "inteira", "alta"]
 
 
 @dataclass(frozen=True, slots=True)
+class Pagina:
+    """Paginacao — preocupacao de TRANSPORTE, nunca do catalogo.
+
+    Nao e' param de componente de proposito: o modelo compoe a tela, nao decide
+    quantas linhas cabem nem por onde continuar. Isso pertence a quem rola.
+    """
+
+    limite: int = 40
+    cursor: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class LoadContext:
     """Contexto autorizado de carga. Nunca opcional, nunca reconstruido pelo `load`.
 
@@ -32,6 +44,7 @@ class LoadContext:
     unidades_permitidas: frozenset[UnidadeId]
     repos: Repositorios
     dados: ContextoDados
+    pagina: Pagina = field(default_factory=Pagina)
 
 
 @dataclass(frozen=True, slots=True)

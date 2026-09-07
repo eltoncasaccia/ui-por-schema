@@ -1,3 +1,4 @@
+import { BarraFaixas, type Faixa } from '../ui/BarraFaixas'
 import { Tabela, type Coluna } from '../ui/Tabela'
 import { SITUACAO, classeTexto, type Situacao } from '../ui/estados'
 import type { View } from './tipos'
@@ -6,7 +7,10 @@ export interface Linha {
   lote_id: string; produto: string; numero: string; unidade: string
   validade: string; dias_restantes: number; saldo: number; situacao: Situacao
 }
-export interface VM { janela_dias: number; total: number; linhas: Linha[] }
+export interface VM {
+  janela_dias: number; total: number; linhas: Linha[]
+  resumo: Faixa[]; cursor: string | null; tem_mais: boolean
+}
 
 const UNIDADE: Record<string, string> = {
   'cd-matriz': 'CD Matriz',
@@ -40,14 +44,30 @@ const COLUNAS: Coluna<Linha>[] = [
   },
 ]
 
+/**
+ * A fila abre com o resumo, não com a primeira linha.
+ *
+ * "12 lotes" não diz se é grave. A distribuição por urgência responde isso
+ * antes de a pessoa ler linha por linha — e cobre a fila INTEIRA, não a página
+ * carregada: um resumo que muda ao rolar não é resumo.
+ */
 export const view: View<VM> = ({ vm }) => (
   <div className="cartao">
     <div className="cartao-cabeca">
       <span className="titulo-painel">Fila de vencimento</span>
-      <span className="mono fraco" style={{ fontSize: 11 }}>
-        {vm.total} lote{vm.total === 1 ? '' : 's'} · janela {vm.janela_dias}d
-      </span>
+      <span className="mono fraco" style={{ fontSize: 11 }}>janela {vm.janela_dias} dias</span>
     </div>
+    {vm.total > 0 && (
+      <div className="cartao-corpo" style={{ paddingBottom: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 22, fontWeight: 600 }}>{vm.total}</span>
+          <span className="suave" style={{ fontSize: 13 }}>
+            lote{vm.total === 1 ? '' : 's'} com saldo vencendo nesta janela
+          </span>
+        </div>
+        <BarraFaixas faixas={vm.resumo} tipo="urgencia" />
+      </div>
+    )}
     <Tabela
       colunas={COLUNAS}
       linhas={vm.linhas}

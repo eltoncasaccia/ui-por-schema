@@ -215,7 +215,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .lateral, .assistente-dock {
   background: var(--s1); display: flex; flex-direction: column; min-height: 0; min-width: 0;
 }
-.painel { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+/* `flex: 1` é o que empurra o rodapé do ator para baixo. Sem ele o painel só
+   ocupa o conteúdo e o usuário logado sobe para junto do menu. */
+.painel { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
 .painel-cabeca {
   padding: 13px 14px 11px; border-bottom: 1px solid var(--linha-fraca); flex: none;
 }
@@ -448,3 +450,43 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (min-width: 640px) { .so-largo { display: inline; } }
 .so-estreito { display: inline-flex; }
 @media (min-width: 900px) { .so-estreito { display: none; } }
+
+/* ─── rampa sequencial de urgência ───────────────────────────────
+   Uma matiz, clara → escura. Urgência é magnitude, não identidade:
+   rampa separa por luminosidade, que todo daltonismo preserva.
+   Duas matizes (âmbar/laranja) deram ΔE 0.4 para deuteranopia no
+   tema claro — indistinguíveis. Foi medido, não estimado.          */
+:root {
+  --u0: #dda06a;  --u1: #b8590d;  --u2: #7a3408;  --u3: #c62828;
+}
+:root[data-tema="escuro"] { --u0: #a8621f; --u1: #d9822b; --u2: #fdba74; --u3: #ef4444; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) { --u0: #a8621f; --u1: #d9822b; --u2: #fdba74; --u3: #ef4444; }
+}
+
+.faixas { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+.faixas-barra {
+  display: flex; gap: 2px;            /* 2px de superfície entre segmentos */
+  height: 7px; border-radius: 4px; overflow: hidden;
+}
+.seg { display: block; border-radius: 2px; min-width: 3px; }
+.seg-u0 { background: var(--u0); } .seg-u1 { background: var(--u1); }
+.seg-u2 { background: var(--u2); } .seg-u3 { background: var(--u3); }
+.seg-neutro { background: var(--acento); opacity: .8; }
+.faixas-legenda {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11px;
+}
+.faixas-legenda li { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.ponto { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+.faixas-rotulo { color: var(--dim); }
+.faixas-valor { color: var(--texto); font-variant-numeric: tabular-nums; font-weight: 500; }
+.indicador-detalhe {
+  margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: var(--dim);
+  border-top: 1px solid var(--linha-fraca); padding-top: 8px;
+}
+
+.sentinela {
+  min-height: 36px; display: grid; place-items: center;
+  font-size: 12px; color: var(--fraco);
+}

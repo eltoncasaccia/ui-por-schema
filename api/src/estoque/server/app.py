@@ -42,7 +42,7 @@ from estoque.data.porta import ContextoDados, Repositorios
 from estoque.data.repositorios import RepoLoteSQL, RepoMovimentoSQL, RepoProdutoSQL
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
-from estoque.registry.definir import LoadContext, permissoes_base
+from estoque.registry.definir import LoadContext, Pagina, permissoes_base
 from estoque.registry.registry import buscar, catalogo_de, valores_proibidos
 from estoque.schema.validar import revalidar_ou_falhar, validar_schema
 from estoque.schema.viewkey import novo_view_id, view_key
@@ -519,8 +519,15 @@ async def caixa(sessao: str | None = Cookie(default=None)) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------- dados
+class PaginaPedido(BaseModel):
+    limite: int = Field(default=40, ge=1, le=200)
+    cursor: str | None = None
+
+
 class PedidoDados(BaseModel):
     params: dict[str, Any] = {}
+    # FORA de `params`: paginacao e' transporte, e o modelo nunca a escolhe.
+    pagina: PaginaPedido = PaginaPedido()
 
 
 @app.post("/api/componentes/{componente_id}/dados")
@@ -553,6 +560,7 @@ async def dados(
             unidades_permitidas=ator.unidades,
             repos=_repos(c),
             dados=ctx_dados,
+            pagina=Pagina(limite=corpo.pagina.limite, cursor=corpo.pagina.cursor),
         )
         carga = await comp.load(params, ctx)
         # ADR-0020: `select` roda AQUI. So' o viewmodel atravessa a rede.

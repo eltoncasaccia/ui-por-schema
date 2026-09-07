@@ -92,9 +92,11 @@ export const api = {
     // O trace vem em `meta`: é instrumentação da execução, não dado da view.
     return { ...corpo.dados, trace: corpo.meta['trace'] as TraceApi }
   },
-  dados: <T,>(id: string, params: Record<string, unknown>) =>
+  dados: <T,>(id: string, params: Record<string, unknown>, cursor?: string | null) =>
     chamar<T>(`/api/componentes/${id}/dados`, {
       method: 'POST',
-      body: JSON.stringify({ params }),
+      // `pagina` vai FORA de `params`: paginação é transporte, e o modelo
+      // nunca escolhe quantas linhas cabem nem por onde continuar.
+      body: JSON.stringify({ params, pagina: { limite: 40, cursor: cursor ?? null } }),
     }),
 }

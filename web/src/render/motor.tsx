@@ -11,30 +11,45 @@
  * 3. `sem_acesso` é decisão DAQUI. O modelo nunca soube que existe, e a
  *    mensagem não revela o que seria mostrado (ADR-0014).
  */
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { ErroApi, api, type Bloco } from '../api'
 import { VIEWS } from '../views/indice'
+import { useScrollInfinito } from '../ui/useScrollInfinito'
 
 function Esqueleto() {
   return <div className="indicador tom-neutro" aria-busy="true"><div className="indicador-rotulo">carregando…</div></div>
 }
 
-function SemAcesso() {
-  return (
-    <div className="cartao cartao-corpo">
-      <p className="vazio">Sem acesso.</p>
-    </div>
-  )
+/**
+ * Bloco negado por ESCOPO DE REGISTRO não renderiza nada.
+ *
+ * "Sem acesso" num quadro vazio conta o que a regra manda esconder: que existe
+ * algo ali. É o ADR-0014 aplicado à interface — no servidor a resposta já é
+ * indistinguível de inexistente; se a tela desenhar uma lacuna rotulada, o
+ * cuidado do servidor foi desperdiçado.
+ *
+ * Negativa de ESCOPO DECLARADO (uma unidade) é outro caso e continua explícita:
+ * a unidade existe e a pessoa sabe que existe.
+ */
+function paginado(d: unknown): d is { linhas: unknown[]; cursor: string | null; tem_mais: boolean } {
+  return typeof d === 'object' && d !== null && 'tem_mais' in d && 'linhas' in d
 }
 
 function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
-  const q = useQuery({
+  const q = useInfiniteQuery({
     // A identidade do ator entra na chave, obrigatoriamente: sem isso o cache
     // serviria dado de uma pessoa para outra (ADR-0008).
     queryKey: [atorId, bloco.tipo, bloco.params],
-    queryFn: () => api.dados<unknown>(bloco.tipo, bloco.params),
+    queryFn: ({ pageParam }) => api.dados<unknown>(bloco.tipo, bloco.params, pageParam),
+    initialPageParam: null as string | null,
+    getNextPageParam: (ultima) => (paginado(ultima) && ultima.tem_mais ? ultima.cursor : null),
     retry: false,
   })
+
+  const sentinela = useScrollInfinito(
+    () => { if (q.hasNextPage && !q.isFetchingNextPage) void q.fetchNextPage() },
+    Boolean(q.hasNextPage),
+  )
 
   const View = VIEWS[bloco.tipo]
   if (!View) {
@@ -45,10 +60,33 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
   if (q.isPending) return <Esqueleto />
   if (q.error) {
     const e = q.error
-    const negado = e instanceof ErroApi && (e.codigo === 'nao_autorizado' || e.codigo === 'nao_encontrado')
-    return negado ? <SemAcesso /> : <div className="cartao cartao-corpo"><p className="vazio">Não foi possível carregar.</p></div>
+    // Registro fora de escopo: NÃO renderiza nada. Ver a nota acima.
+    if (e instanceof ErroApi && e.codigo === 'nao_encontrado') return null
+    if (e instanceof ErroApi && e.codigo === 'nao_autorizado') {
+      return <div className="cartao cartao-corpo"><p className="vazio">{e.message}</p></div>
+    }
+    return <div className="cartao cartao-corpo"><p className="vazio">Não foi possível carregar.</p></div>
   }
-  return <View vm={q.data} />
+
+  // Contrato de paginação: um viewmodel que pagina expõe `linhas`, `cursor` e
+  // `tem_mais`. O motor concatena `linhas` e entrega UM viewmodel à view — ela
+  // não sabe que houve mais de uma requisição.
+  const paginas = q.data.pages
+  const primeira = paginas[0]
+  const vm = paginado(primeira)
+    ? { ...primeira, linhas: paginas.flatMap((p) => (paginado(p) ? p.linhas : [])) }
+    : primeira
+
+  return (
+    <>
+      <View vm={vm} />
+      {q.hasNextPage && (
+        <div ref={sentinela} className="sentinela" aria-hidden="true">
+          {q.isFetchingNextPage ? 'carregando mais…' : ''}
+        </div>
+      )}
+    </>
+  )
 }
 
 /** Agrupa indicadores adjacentes numa grade só. */

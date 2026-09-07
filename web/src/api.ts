@@ -48,7 +48,13 @@ export interface EntradaCatalogo {
   params: Record<string, ParamInfo>
 }
 export interface Bloco { tipo: string; params: Record<string, unknown>; tamanho: string }
-export interface Composicao { schema: unknown; blocos: Bloco[] }
+export interface TraceApi {
+  origem: string; modelo: string; modo: string; schema_valido: boolean
+  aceitos: string[]; rejeitados: [string, string][]
+  tokens_entrada: number; ms_ate_primeiro_token: number; erro: string | null
+  provedor_efetivo?: string
+}
+export interface Composicao { schema: unknown; blocos: Bloco[]; trace: TraceApi }
 
 export const api = {
   personas: () => chamar<Persona[]>('/api/auth/demo'),
@@ -57,11 +63,18 @@ export const api = {
   sair: () => chamar<unknown>('/api/auth/sair', { method: 'POST' }),
   eu: () => chamar<Eu>('/api/auth/eu'),
   catalogo: () => chamar<EntradaCatalogo[]>('/api/catalogo'),
-  compor: (pergunta: string) =>
-    chamar<Composicao>('/api/assistente/compor', {
+  compor: async (pergunta: string): Promise<Composicao> => {
+    const r = await fetch('/api/assistente/compor', {
       method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tokenCsrf() },
       body: JSON.stringify({ pergunta }),
-    }),
+    })
+    const corpo = (await r.json()) as Resposta<{ schema: unknown; blocos: Bloco[] }>
+    if (!corpo.ok) throw new ErroApi(corpo.erro.codigo, corpo.erro.mensagem)
+    // O trace vem em `meta`: é instrumentação da execução, não dado da view.
+    return { ...corpo.dados, trace: corpo.meta['trace'] as TraceApi }
+  },
   dados: <T,>(id: string, params: Record<string, unknown>) =>
     chamar<T>(`/api/componentes/${id}/dados`, {
       method: 'POST',

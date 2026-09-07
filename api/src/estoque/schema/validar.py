@@ -91,8 +91,14 @@ def _validar_bloco(bloco: Bloco, ator: Ator, permitidos: frozenset[str]) -> str 
             # Ex.: Cleide pedindo metrica `valor_em_estoque` sem `custo.ler`.
             return f"valor nao permitido para {campo}"
 
+    # `null` significa "nao informado". O modo estrito do provedor exige que
+    # TODA propriedade esteja em `required` (ADR-0024), entao param opcional vai
+    # ao modelo como anulavel — e ele devolve `null` quando nao quer usar.
+    # Sem esta limpeza, `janela: null` batia em `literal_error` e derrubava uma
+    # composicao correta.
+    informados = {k: v for k, v in bloco.params.items() if v is not None}
     try:
-        comp.params.model_validate(bloco.params)
+        comp.params.model_validate(informados)
     except ValidationError as e:
         return _resumir(e)
 

@@ -160,6 +160,11 @@ async def entrar(corpo: Entrada, resposta: Response) -> dict[str, Any]:
 
         sid = await ses.criar(c, str(r["id"]))
         await aud.registrar(c, ator_id=str(r["id"]), acao="entrar", origem="tela")
+        # BUG achado em uso: esta resposta devolvia apenas {id, nome, papel}, e o
+        # cliente a usava como o ator completo. `unidades` chegava `undefined` e
+        # a tela quebrava em branco ate' o refresh, quando `/auth/eu` devolvia o
+        # objeto inteiro. Duas formas do mesmo conceito e' um bug esperando.
+        ator = await ses.ator_da_sessao(c, sid)
 
     csrf = ses.novo_token_csrf()
     resposta.set_cookie(ses.COOKIE, sid, httponly=True, samesite="lax", path="/")
@@ -167,7 +172,9 @@ async def entrar(corpo: Entrada, resposta: Response) -> dict[str, Any]:
     # voltar como header. Um site de terceiro consegue disparar a requisicao,
     # mas nao consegue LER o cookie para montar o header.
     resposta.set_cookie(ses.COOKIE_CSRF, csrf, httponly=False, samesite="lax", path="/")
-    return _ok({"id": r["id"], "nome": r["nome"], "papel": r["papel"]})
+    if ator is None:  # pragma: no cover — sessao recem-criada
+        raise ErroDominio("nao_autenticado", "Falha ao abrir sessao.")
+    return _ok(_eu(ator))
 
 
 @app.post("/api/auth/sair")
@@ -180,19 +187,26 @@ async def sair(resposta: Response, sessao: str | None = Cookie(default=None)) ->
     return _ok({"encerrada": True})
 
 
+def _eu(ator: Ator) -> dict[str, Any]:
+    """Forma UNICA do ator para o cliente. Login e /auth/eu devolvem isto, os dois.
+
+    Regressao do bug da tela branca: havia duas formas do mesmo conceito, e o
+    cliente tratava as duas como iguais.
+    """
+    return {
+        "id": ator.id,
+        "nome": ator.nome,
+        "papel": ator.papel,
+        "unidades": sorted(ator.unidades),
+        "permissoes": sorted(ator.permissoes),
+    }
+
+
 @app.get("/api/auth/eu")
 async def eu(sessao: str | None = Cookie(default=None)) -> dict[str, Any]:
     async with _engine.connect() as c:
         ator = await _ator(c, sessao)
-    return _ok(
-        {
-            "id": ator.id,
-            "nome": ator.nome,
-            "papel": ator.papel,
-            "unidades": sorted(ator.unidades),
-            "permissoes": sorted(ator.permissoes),
-        }
-    )
+    return _ok(_eu(ator))
 
 
 @app.get("/api/auth/demo")

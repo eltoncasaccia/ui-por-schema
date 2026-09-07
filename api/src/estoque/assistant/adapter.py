@@ -48,36 +48,85 @@ class AdaptadorModelo(Protocol):
 def json_schema_do_catalogo(catalogo: list[dict[str, Any]]) -> dict[str, Any]:
     """Constroi o schema de saida restrito para ESTE ator.
 
-    O `tipo` vira um enum com os ids do catalogo dele. O modelo fica literalmente
-    incapaz de nomear um componente que a pessoa nao pode usar.
+    Uniao discriminada por `tipo`: cada componente traz os SEUS params, com os
+    valores de enum que o ator nao pode ja' removidos. O modelo fica incapaz de
+    nomear um componente fora do catalogo dele E de escolher um valor proibido.
+
+    ACHADO EM USO (ADR-0024 previu, e aconteceu): a primeira versao declarava
+    apenas `params: {"type": "object"}`. O modelo OBEDECE O SCHEMA e ignora a
+    prosa do prompt — entao emitia `params: {}` e todo componente com param
+    obrigatorio era rejeitado. O catalogo e' serializado duas vezes, como texto
+    e como JSON Schema, e as duas divergiram.
 
     Isto NAO substitui a validacao no servidor (ADR-0004): o cliente ainda pode
     forjar um schema e enviar direto ao endpoint, onde decodificacao restrita
-    nao existe. E' uma terceira camada, nao uma troca de camada.
+    nao existe.
     """
-    ids = [c["id"] for c in catalogo]
+    ramos: list[dict[str, Any]] = []
+    for c in catalogo:
+        ramos.append(
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["tipo", "params"],
+                "properties": {
+                    "tipo": {"const": c["id"]},
+                    "params": _schema_de_params(c["params"]),
+                },
+            }
+        )
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["versao", "blocos"],
+        "required": ["versao", "titulo", "blocos"],
         "properties": {
             "versao": {"type": "integer", "const": 1},
-            "titulo": {"type": "string"},
+            "titulo": {"type": ["string", "null"]},
             "blocos": {
                 "type": "array",
                 "maxItems": 12,
-                "items": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "required": ["tipo", "params"],
-                    "properties": {
-                        "tipo": {"type": "string", "enum": ids},
-                        "params": {"type": "object"},
-                    },
-                },
+                "items": {"anyOf": ramos} if ramos else {"type": "object"},
             },
         },
     }
+
+
+def _schema_de_params(descricao: dict[str, Any]) -> dict[str, Any]:
+    """Traduz a descricao de params do catalogo para JSON Schema estrito.
+
+    Modo estrito exige que TODA propriedade esteja em `required`. Param
+    opcional vira anulavel — `["string","null"]` — em vez de ausente, senao o
+    provedor recusa o schema inteiro.
+    """
+    props: dict[str, Any] = {}
+    for nome, info in descricao.items():
+        valores = info.get("valores")
+        obrigatorio = bool(info.get("obrigatorio"))
+        if valores:
+            props[nome] = (
+                {"enum": list(valores)}
+                if obrigatorio
+                else {"anyOf": [{"enum": list(valores)}, {"type": "null"}]}
+            )
+        else:
+            tipo = _tipo_json(str(info.get("tipo", "str")))
+            props[nome] = {"type": tipo if obrigatorio else [tipo, "null"]}
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": sorted(props),
+        "properties": props,
+    }
+
+
+def _tipo_json(tipo_python: str) -> str:
+    if "int" in tipo_python:
+        return "integer"
+    if "float" in tipo_python:
+        return "number"
+    if "bool" in tipo_python:
+        return "boolean"
+    return "string"
 
 
 class ErroDeModelo(RuntimeError):

@@ -10,7 +10,8 @@ Isso e' HIGIENE, nao garantia. A garantia e' a autorizacao em cada `load` e cada
 """
 
 from collections.abc import Iterator, Mapping
-from typing import Any, get_args
+from types import UnionType
+from typing import Any, Literal, Union, get_args, get_origin
 
 from estoque.domain.identidade import Ator, Permissao
 from estoque.registry.definir import ComponentDef, RequiresPorValor, permissoes_base
@@ -46,11 +47,31 @@ def _tem_todas(ator: Ator, permissoes: tuple[Permissao, ...]) -> bool:
 
 
 def _valores_de_enum(modelo: type[Any], campo: str) -> tuple[str, ...]:
-    """Extrai os literais de um campo Literal[...] de um modelo Pydantic."""
+    """Extrai os literais de um campo, desembrulhando `X | None`.
+
+    `get_args` sobre `UnidadeId | None` devolve `(Literal[...], NoneType)`, nao
+    os valores. Sem descer um nivel, o enum vazava a representacao do tipo para
+    dentro do JSON Schema que vai ao modelo — e um enum invalido faz o provedor
+    recusar a requisicao inteira.
+    """
     info = modelo.model_fields.get(campo)
     if info is None or info.annotation is None:
         return ()
-    return tuple(str(v) for v in get_args(info.annotation))
+    return _literais(info.annotation)
+
+
+def _literais(anotacao: Any) -> tuple[str, ...]:
+    origem = get_origin(anotacao)
+    if origem is Literal:
+        return tuple(str(v) for v in get_args(anotacao))
+    if origem in (Union, UnionType):
+        saida: list[str] = []
+        for parte in get_args(anotacao):
+            if parte is type(None):
+                continue
+            saida.extend(_literais(parte))
+        return tuple(saida)
+    return ()
 
 
 class EntradaCatalogo(dict[str, Any]):

@@ -1,0 +1,64 @@
+name: estoque-bertoni
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - dados:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    # Sem `ports:` de propósito — o banco não é serviço público.
+    # ADR-0018: só a API fala com ele. Para inspecionar, use o adminer.
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SESSAO_SECRET: ${SESSAO_SECRET}
+      MODO_DEMO: ${MODO_DEMO}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      MODELO_ASSISTENTE: ${MODELO_ASSISTENTE}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./api/src
+          target: /app/src
+
+  web:
+    build: ./web
+    environment:
+      VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    develop:
+      watch:
+        - action: sync
+          path: ./web/src
+          target: /app/src
+
+  adminer:
+    image: adminer:5
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: [debug]     # só sobe com --profile debug
+
+volumes:
+  dados:

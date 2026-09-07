@@ -1,0 +1,45 @@
+[importlinter]
+root_package = estoque
+include_external_packages = True
+
+# --- ADR-0007: camadas ---
+[importlinter:contract:1]
+name = domain nao depende de nada
+type = forbidden
+source_modules = estoque.domain
+forbidden_modules =
+    estoque.data
+    estoque.server
+    estoque.registry
+    estoque.assistant
+    estoque.commands
+    estoque.auth
+    sqlalchemy
+    fastapi
+
+# `registry` pode depender de `data.porta` (so' Protocol), nunca da implementacao
+# nem do servidor. E' o que permite testar componente sem banco.
+[importlinter:contract:2]
+name = registry nao importa server nem sqlalchemy
+type = forbidden
+source_modules = estoque.registry
+forbidden_modules =
+    estoque.server
+    sqlalchemy
+
+# --- ADR-0002: a tese do projeto ---
+# O pipeline do assistente NAO alcanca os comandos de escrita.
+# Vale para import transitivo tambem — e por isso e' `forbidden`, nao `layers`.
+[importlinter:contract:3]
+name = assistente nunca alcanca comandos de escrita
+type = forbidden
+source_modules = estoque.assistant
+forbidden_modules = estoque.commands
+allow_indirect_imports = False
+
+# --- ADR-0012: injecao de prompt via dado ---
+[importlinter:contract:4]
+name = prompt nao importa dados
+type = forbidden
+source_modules = estoque.assistant.prompt
+forbidden_modules = estoque.data

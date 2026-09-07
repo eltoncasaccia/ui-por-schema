@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-const css = readFileSync(join(__dirname, '..', 'estilo.css'), 'utf8')
+const css = readFileSync(join(import.meta.dirname, '..', 'estilo.css'), 'utf8')
 
 function regra(seletor: string): string {
   const i = css.indexOf(seletor + ' {')

@@ -55,4 +55,4 @@ def nao_encontrado(detalhe_interno: object | None = None) -> ErroDominio:
 def nao_autorizado(o_que: str) -> ErroDominio:
     """Negativa de escopo DECLARADO — uma unidade, um recurso que o ator ja sabe
     que existe. Retornar vazio aqui ensinaria um fato falso (ADR-0014)."""
-    return ErroDominio("nao_autorizado", f"Sem acesso a {o_que}.")
+    return ErroDominio("nao_autorizado", f"Sem acesso {o_que}.")

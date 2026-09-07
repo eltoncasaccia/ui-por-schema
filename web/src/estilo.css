@@ -1,0 +1,43 @@
+:root {
+  --bg: #fbfaf8; --superficie: #fff; --borda: #e6e2db;
+  --texto: #1f1d1a; --suave: #6b665d; --acento: #7a5c2e; --acento-fraco: #f3ede2;
+  --alerta: #a8621b; --perigo: #9b2c2c; --ok: #2f6b4f;
+  --raio: 10px; --sombra: 0 1px 2px rgba(0,0,0,.05), 0 4px 14px rgba(0,0,0,.04);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--texto);
+  font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1, h2, h3 { line-height: 1.2; margin: 0; font-weight: 620; letter-spacing: -.01em; }
+a { color: var(--acento); }
+button {
+  font: inherit; cursor: pointer; border-radius: 8px;
+  border: 1px solid var(--borda); background: var(--superficie); padding: .5rem .9rem;
+}
+button:hover { border-color: #cfc8bd; }
+button.primario { background: var(--texto); color: #fff; border-color: var(--texto); }
+button.primario:disabled { opacity: .45; cursor: not-allowed; }
+input, select {
+  font: inherit; padding: .6rem .75rem; border: 1px solid var(--borda);
+  border-radius: 8px; background: var(--superficie); width: 100%;
+}
+.cartao {
+  background: var(--superficie); border: 1px solid var(--borda);
+  border-radius: var(--raio); box-shadow: var(--sombra);
+}
+.suave { color: var(--suave); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82em; }
+.pilula {
+  display: inline-block; padding: .12rem .5rem; border-radius: 999px;
+  background: var(--acento-fraco); color: var(--acento); font-size: .78rem; font-weight: 600;
+}
+.pilula.perigo { background: #fbeaea; color: var(--perigo); }
+.pilula.alerta { background: #fdf0e2; color: var(--alerta); }
+.pilula.ok     { background: #e9f3ee; color: var(--ok); }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(--borda); }
+th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--suave); }
+tbody tr:last-child td { border-bottom: 0; }
+.rolagem { overflow-x: auto; }

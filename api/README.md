@@ -24,3 +24,11 @@ uv run lint-imports        # contratos de arquitetura (ADR-0002, 0007, 0012)
 
 `uv run lint-imports` falha o build se essas fronteiras forem cruzadas — e
 `tests/arquitetura/` prova que ele falha, introduzindo as violações de propósito.
+
+## Rodando
+
+```bash
+docker compose up          # na raiz: db + api + web, com migração e seed automáticos
+```
+
+Migração e seed rodam no boot da API e são idempotentes — ver `entrypoint.sh`.

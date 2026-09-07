@@ -50,6 +50,10 @@ ignore = ["ANN401", "N818"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "ANN"]
+# Tabelas de fixture sao largas por natureza: quebrar cada linha em quatro
+# esconderia o caso de teste que ela representa. S311: `random` semeado gera
+# dados de demonstracao, nao segredo.
+"src/estoque/data/seed/*" = ["E501", "S311"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

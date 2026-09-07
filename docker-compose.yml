@@ -27,6 +27,7 @@ services:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       MODELO_ASSISTENTE: ${MODELO_ASSISTENTE:-anthropic/claude-haiku-4.5}
       MODO_DECODIFICACAO: ${MODO_DECODIFICACAO:-restrito}
+      SEED_NO_BOOT: ${SEED_NO_BOOT:-true}
     ports:
       - "8000:8000"
     depends_on:
@@ -41,7 +42,9 @@ services:
   web:
     build: ./web
     environment:
-      VITE_API_URL: http://localhost:8000
+      # Nome do serviço na rede do compose — dentro do container,
+      # `localhost` seria o próprio web.
+      VITE_API_URL: http://api:8000
     ports:
       - "5173:5173"
     depends_on:

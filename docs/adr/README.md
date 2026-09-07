@@ -32,6 +32,8 @@ antigo recebe `Status: Substituído por ADR-XXXX`. O histórico é o valor.
 | [0020](./0020-select-no-servidor.md) | `select` roda no servidor; só o viewmodel cruza a rede | Fundacional | Aceito |
 | [0021](./0021-viewkey-e-viewid.md) | `viewKey` interna, `viewId` público e revogável | Ciclo 1 | Aceito |
 | [0022](./0022-status-registrado-e-efetivo.md) | Status registrado vs. status efetivo | Fundacional | Aceito |
+| [0023](./0023-provedor-de-modelo.md) | OpenRouter como provedor, atrás do adaptador | Ciclo 1 | Aceito |
+| [0024](./0024-decodificacao-restrita.md) | Decodificação restrita, e o que ela faz com a métrica | Ciclo 1 | Aceito |
 
 ## Origem das decisões
 

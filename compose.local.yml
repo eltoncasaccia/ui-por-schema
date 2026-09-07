@@ -1,0 +1,9 @@
+# Override EXPLICITO para desenvolvimento: publica o Postgres no host para que
+# os testes rodem fora do container.
+#
+# Nao e' aplicado por padrao — exige `-f compose.local.yml`. A configuracao
+# padrao mantem o banco sem porta publicada (ADR-0018, T-035 AC-4).
+services:
+  db:
+    ports:
+      - "15432:5432"

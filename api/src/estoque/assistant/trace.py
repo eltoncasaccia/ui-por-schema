@@ -8,7 +8,8 @@ avaliacao existe (risco R-5 do PRD).
 from dataclasses import dataclass, field
 from typing import Literal
 
-Origem = Literal["claude", "mock"]
+Origem = Literal["openrouter", "anthropic", "mock"]
+Modo = Literal["restrito", "livre"]
 
 
 @dataclass(slots=True)
@@ -18,6 +19,8 @@ class Trace:
     origem: Origem
     modelo: str
     pergunta: str
+    modo: Modo = "restrito"
+    provedor_efetivo: str = ""
     tokens_entrada: int = 0
     tokens_saida: int = 0
     ms_ate_primeiro_token: int = 0
@@ -36,6 +39,8 @@ class Trace:
         return {
             "origem": self.origem,
             "modelo": self.modelo,
+            "modo": self.modo,
+            "provedor_efetivo": self.provedor_efetivo,
             "schema_valido": self.schema_valido,
             "aceitos": self.aceitos,
             "rejeitados": self.rejeitados,

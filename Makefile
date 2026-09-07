@@ -19,6 +19,9 @@ reset:  ## derruba e APAGA os dados
 logs:  ## acompanha os logs
 	docker compose logs -f
 
+db-local:  ## publica o Postgres em localhost:15432 (só dev, exige -f explícito)
+	docker compose -f docker-compose.yml -f compose.local.yml up -d db
+
 migrate:  ## aplica as migrações
 	docker compose run --rm api alembic upgrade head
 
@@ -49,4 +52,4 @@ eval:  ## suíte de avaliação do assistente
 
 check: lint typecheck test arch  ## tudo que o CI roda
 
-.PHONY: help up down reset logs migrate seed types test typecheck lint arch eval check
+.PHONY: help up down reset logs db-local migrate seed types test typecheck lint arch eval check

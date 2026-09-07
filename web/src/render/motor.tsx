@@ -1,32 +1,29 @@
 /**
- * Motor de render: schema validado → React. ADR-0007, ADR-0015 (layout).
+ * Motor de render: schema validado → React.
  *
- * Duas regras que este módulo aplica e o modelo não controla:
+ * Três regras que este módulo aplica e o modelo não controla:
  *
- * 1. LAYOUT OBEDECE AO COMPONENTE, não ao modelo. Cada componente declara seu
- *    `tamanho` no servidor; o motor arranja. O schema não tem campo de layout —
- *    na v1, deixar o modelo decidir espremia tabela em tile de 200px.
- *
- * 2. `sem_acesso` é decisão DAQUI, não composição. O modelo nunca soube que ele
- *    existe, e a mensagem não revela o que seria mostrado (ADR-0014).
+ * 1. LAYOUT OBEDECE AO COMPONENTE. Cada um declara seu `tamanho` no servidor;
+ *    o motor arranja. O schema não tem campo de layout — na v1, deixar o modelo
+ *    decidir espremia tabela em tile de 200px.
+ * 2. Indicadores adjacentes viram UMA grade — senão cada um vira um cartão
+ *    solto e o panorama perde a leitura de conjunto.
+ * 3. `sem_acesso` é decisão DAQUI. O modelo nunca soube que existe, e a
+ *    mensagem não revela o que seria mostrado (ADR-0014).
  */
 import { useQuery } from '@tanstack/react-query'
 import { ErroApi, api, type Bloco } from '../api'
 import { VIEWS } from '../views/indice'
 
-const LARGURA: Record<string, string> = {
-  linha: 'span 3',
-  meia: 'span 6',
-  inteira: 'span 12',
-  alta: 'span 12',
+function Esqueleto() {
+  return <div className="indicador tom-neutro" aria-busy="true"><div className="indicador-rotulo">carregando…</div></div>
 }
 
-function Moldura({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+function SemAcesso() {
   return (
-    <section className="cartao" style={{ padding: '1rem 1.1rem' }}>
-      <h3 style={{ fontSize: '.9rem', marginBottom: '.6rem', color: 'var(--suave)' }}>{titulo}</h3>
-      {children}
-    </section>
+    <div className="cartao cartao-corpo">
+      <p className="vazio">Sem acesso.</p>
+    </div>
   )
 }
 
@@ -43,29 +40,43 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
   if (!View) {
     // Bijeção quebrada: id registrado na API sem view no cliente. Em CI isso
     // falha o build; em runtime, falha visível — nunca silenciosa.
-    return <Moldura titulo={bloco.tipo}><p className="suave">Sem view registrada para este componente.</p></Moldura>
+    return <div className="cartao cartao-corpo"><p className="vazio">Sem view para <code className="mono">{bloco.tipo}</code>.</p></div>
   }
-  if (q.isPending) return <Moldura titulo={bloco.tipo}><p className="suave">carregando…</p></Moldura>
+  if (q.isPending) return <Esqueleto />
   if (q.error) {
     const e = q.error
     const negado = e instanceof ErroApi && (e.codigo === 'nao_autorizado' || e.codigo === 'nao_encontrado')
-    return (
-      <Moldura titulo={bloco.tipo}>
-        <p className="suave">{negado ? 'Sem acesso.' : 'Não foi possível carregar.'}</p>
-      </Moldura>
-    )
+    return negado ? <SemAcesso /> : <div className="cartao cartao-corpo"><p className="vazio">Não foi possível carregar.</p></div>
   }
-  return <Moldura titulo={bloco.tipo}><View vm={q.data} /></Moldura>
+  return <View vm={q.data} />
+}
+
+/** Agrupa indicadores adjacentes numa grade só. */
+function agrupar(blocos: Bloco[]): { tipo: 'grade' | 'solo'; itens: Bloco[] }[] {
+  const grupos: { tipo: 'grade' | 'solo'; itens: Bloco[] }[] = []
+  for (const b of blocos) {
+    const ehLinha = b.tamanho === 'linha'
+    const ultimo = grupos.at(-1)
+    if (ehLinha && ultimo?.tipo === 'grade') ultimo.itens.push(b)
+    else grupos.push({ tipo: ehLinha ? 'grade' : 'solo', itens: [b] })
+  }
+  return grupos
 }
 
 export function Composicao({ blocos, atorId }: { blocos: Bloco[]; atorId: string }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '1rem' }}>
-      {blocos.map((b, i) => (
-        <div key={`${b.tipo}-${i}`} style={{ gridColumn: LARGURA[b.tamanho] ?? 'span 12' }}>
-          <BlocoRender bloco={b} atorId={atorId} />
-        </div>
-      ))}
-    </div>
+    <>
+      {agrupar(blocos).map((g, i) =>
+        g.tipo === 'grade' ? (
+          <div key={i} className="grade-indicadores">
+            {g.itens.map((b, j) => <BlocoRender key={`${b.tipo}-${j}`} bloco={b} atorId={atorId} />)}
+          </div>
+        ) : (
+          <BlocoRender key={i} bloco={g.itens[0]!} atorId={atorId} />
+        ),
+      )}
+    </>
   )
 }
+
+export { agrupar }

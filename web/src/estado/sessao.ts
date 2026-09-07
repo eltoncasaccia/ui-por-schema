@@ -68,13 +68,22 @@ export const sessao = {
   nota(texto: string) {
     definir({ conversa: [...estado.conversa, { papel: 'nota', texto }], pensando: false })
   },
-  compos(c: Composicao, trace?: Trace, pergunta = '') {
+  /** Abre no workspace. Usado pela navegação e pelas views fixadas. */
+  compos(c: Composicao) {
+    definir({ composicoes: { ...estado.composicoes, [c.id]: c }, noWorkspace: c.id, pensando: false })
+  },
+
+  /**
+   * Resposta do assistente: entra na CONVERSA e NÃO no workspace.
+   *
+   * Renderizar nos dois lugares foi um erro de comportamento reportado em uso:
+   * o assistente passava por cima do que a pessoa estava olhando. Ele propõe;
+   * quem decide o que ocupa o workspace é ela.
+   */
+  responde(c: Composicao, trace?: Trace, pergunta = '') {
     definir({
       composicoes: { ...estado.composicoes, [c.id]: c },
-      conversa: c.origem === 'assistente'
-        ? [...estado.conversa, { papel: 'assistente', composicaoId: c.id }]
-        : estado.conversa,
-      noWorkspace: c.id,
+      conversa: [...estado.conversa, { papel: 'assistente', composicaoId: c.id }],
       pensando: false,
       traces: trace ? [{ pergunta, trace, em: Date.now() }, ...estado.traces].slice(0, 20) : estado.traces,
     })

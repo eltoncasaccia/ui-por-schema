@@ -1,87 +1,158 @@
 import { useEffect, useState } from 'react'
-import { api, type Bloco, type EntradaCatalogo, type Eu } from './api'
+import { api, type Bloco, type Eu } from './api'
 import { sessao, useSessao, viewKeyLocal } from './estado/sessao'
-import { BarraAtividades, type PainelId } from './shell/BarraAtividades'
+import { Compartilhar } from './shell/Compartilhar'
 import { Login } from './shell/Login'
 import { PainelAssistente } from './shell/PainelAssistente'
-import { PainelCatalogo } from './shell/PainelCatalogo'
 import { PainelDebug } from './shell/PainelDebug'
 import { PainelFixadas } from './shell/PainelFixadas'
+import { MENU, PainelNavegacao, type ItemNav } from './shell/PainelNavegacao'
 import { Workspace } from './shell/Workspace'
+import { Icone } from './ui/icones'
+import { useDivisor } from './ui/useDivisor'
+import { useTema } from './ui/useTema'
+
+type PainelId = 'navegacao' | 'fixadas'
 
 /**
- * O shell da aplicação — estrutura fixa, conteúdo adaptável.
+ * O shell — estrutura fixa, conteúdo adaptável.
  *
- * Repare no pouco que existe aqui: cada painel lê o que lhe interessa. E repare
- * que o assistente é UMA superfície, ao lado do workspace — não o app inteiro
- * (§11.2 e §11.5 da arquitetura).
+ * O assistente é UMA superfície, ao lado do workspace — não o app inteiro
+ * (§11.2 e §11.5 da arquitetura). Por isso a navegação convencional continua
+ * existindo, e por isso uma composição do assistente só entra no workspace
+ * quando a pessoa manda.
  */
 export function App() {
   const [eu, setEu] = useState<Eu | null>(null)
   const [carregando, setCarregando] = useState(true)
-  const [painel, setPainel] = useState<PainelId>('navegacao')
-  const [lateral, setLateral] = useState(true)
+  const [painel, setPainel] = useState<PainelId | null>('navegacao')
   const [assistente, setAssistente] = useState(true)
   const [debug, setDebug] = useState(false)
-  useSessao()
+  const [compartilhando, setCompartilhando] = useState(false)
+  const [itemAtual, setItemAtual] = useState<string | null>(null)
+  const [tema, setTema] = useTema()
+  const { composicoes, noWorkspace } = useSessao()
+
+  const lateral = useDivisor(272, 200, 460, 'esquerda')
+  const dock = useDivisor(380, 300, 620, 'direita')
 
   useEffect(() => {
     api.eu().then(setEu).catch(() => setEu(null)).finally(() => setCarregando(false))
   }, [])
 
-  if (carregando) return <p className="muted" style={{ padding: 32 }}>carregando…</p>
+  if (carregando) return <p className="vazio" style={{ padding: 32 }}>carregando…</p>
   if (!eu) return <Login aoEntrar={setEu} />
 
-  /** Abrir pelo catálogo produz o MESMO tipo de composição que o assistente. */
-  function abrirDoCatalogo(c: EntradaCatalogo) {
-    const blocos: Bloco[] = [{ tipo: c.id, params: {}, tamanho: 'inteira' }]
-    sessao.compos({
-      id: crypto.randomUUID(), titulo: c.label, origem: 'sistema',
-      blocos, schema: { versao: 1, blocos: blocos.map((b) => ({ tipo: b.tipo, params: b.params })) },
-      viewKey: viewKeyLocal(blocos),
-    })
-  }
+  const atual = noWorkspace ? composicoes[noWorkspace] : undefined
+  const estreito = typeof window !== 'undefined' && window.innerWidth < 900
 
-  function abrirFixada(titulo: string, blocos: Bloco[]) {
+  function abrir(titulo: string, blocos: Bloco[], item: string | null = null) {
+    setItemAtual(item)
     sessao.compos({
       id: crypto.randomUUID(), titulo, origem: 'sistema', blocos,
-      schema: { versao: 1, blocos }, viewKey: viewKeyLocal(blocos),
+      schema: { versao: 1, blocos: blocos.map((b) => ({ tipo: b.tipo, params: b.params })) },
+      viewKey: viewKeyLocal(blocos),
     })
+    if (estreito) setPainel(null)
   }
 
-  function sair() {
-    void api.sair(); sessao.reset(); setEu(null)
+  function abrirDoMenu(i: ItemNav) {
+    abrir(i.rotulo, [{ tipo: i.componente, params: i.params ?? {}, tamanho: i.componente === 'estoque_indicador' ? 'linha' : 'inteira' }], i.id)
   }
+
+  async function abrirRecebida(viewId: string, de: string) {
+    // O schema é revalidado contra o catálogo DE QUEM ABRE, no servidor.
+    const v = await api.abrirView(viewId)
+    abrir(`De ${de}`, v.blocos)
+  }
+
+  function alternarPainel(p: PainelId) {
+    setPainel((atualP) => (atualP === p ? null : p))
+  }
+
+  const iniciais = eu.nome.split(' ').map((n) => n[0]).slice(0, 2).join('')
 
   return (
-    <div className={`shell ${lateral ? 'has-side' : ''} ${assistente ? 'has-assistant' : ''} ${debug ? 'has-debug' : ''}`}>
-      <BarraAtividades
-        painel={painel} lateralAberta={lateral} assistenteAberto={assistente} debugAberto={debug}
-        aoPainel={(p) => { if (p === painel && lateral) setLateral(false); else { setPainel(p); setLateral(true) } }}
-        aoAssistente={() => setAssistente((v) => !v)}
-        aoDebug={() => setDebug((v) => !v)}
-      />
+    <div className="shell">
+      <nav className="barra" aria-label="Barra de atividades">
+        <button className={`barra-item ${painel === 'navegacao' ? 'is-ativo' : ''}`}
+          onClick={() => alternarPainel('navegacao')} aria-label="Navegação" aria-pressed={painel === 'navegacao'}>
+          <Icone.Menu />
+        </button>
+        <button className={`barra-item ${painel === 'fixadas' ? 'is-ativo' : ''}`}
+          onClick={() => alternarPainel('fixadas')} aria-label="Fixadas e recebidas" aria-pressed={painel === 'fixadas'}>
+          <Icone.Estrela />
+        </button>
+        <button className={`barra-item ${assistente ? 'is-ativo' : ''}`}
+          onClick={() => setAssistente((v) => !v)} aria-label="Assistente" aria-pressed={assistente}>
+          <Icone.Faisca />
+        </button>
+        <button className={`barra-item ${debug ? 'is-ativo' : ''}`}
+          onClick={() => setDebug((v) => !v)} aria-label="Execution Trace" aria-pressed={debug}>
+          <Icone.Trace />
+        </button>
 
-      {lateral && (
-        <div className="side-panel">
-          {painel === 'navegacao' && <PainelCatalogo eu={eu} aoAbrir={abrirDoCatalogo} />}
-          {painel === 'fixadas' && <PainelFixadas aoAbrir={abrirFixada} />}
-          <div style={{ borderTop: '1px solid var(--line)', padding: 12 }}>
-            <div className="ator-info">
-              <strong>{eu.nome}</strong>
-              <span className="badge badge-neutral">{eu.papel}</span>
-            </div>
-            <div className="muted code" style={{ fontSize: 11, margin: '4px 0 8px' }}>
-              {eu.unidades.join(' · ')}
-            </div>
-            <button className="ghost-button" onClick={sair}>sair</button>
-          </div>
-        </div>
-      )}
+        <button className="barra-item barra-fim"
+          onClick={() => setTema(tema === 'escuro' ? 'claro' : 'escuro')}
+          aria-label={tema === 'escuro' ? 'Usar tema claro' : 'Usar tema escuro'}>
+          {tema === 'escuro' ? <Icone.Sol /> : <Icone.Lua />}
+        </button>
+        {/* sair mora aqui, no fim da coluna de ícones */}
+        <button className="barra-item" onClick={() => { void api.sair(); sessao.reset(); setEu(null) }} aria-label="Sair">
+          <Icone.Sair />
+        </button>
+      </nav>
 
-      <Workspace eu={eu} />
-      {assistente && <div className="assistant-dock"><PainelAssistente eu={eu} /></div>}
+      <div className="shell-corpo">
+        {painel && estreito && <button className="veu" onClick={() => setPainel(null)} aria-label="Fechar painel" />}
+        {painel && (
+          <aside className="lateral" style={estreito ? undefined : { width: lateral.largura, flex: 'none' }}>
+            {painel === 'navegacao'
+              ? <PainelNavegacao atual={itemAtual} aoAbrir={abrirDoMenu} />
+              : <PainelFixadas aoAbrir={(t, b) => abrir(t, b)} aoAbrirRecebida={(v, d) => void abrirRecebida(v, d)} />}
+            {/* usuário logado, fixo no rodapé */}
+            <div className="rodape-ator">
+              <div className="avatar" aria-hidden="true">{iniciais}</div>
+              <div style={{ minWidth: 0 }}>
+                <div className="ator-nome">{eu.nome}</div>
+                <div className="ator-sub">
+                  {eu.papel ?? 'sem papel'} · {eu.unidades.length} unidade{eu.unidades.length === 1 ? '' : 's'}
+                </div>
+              </div>
+            </div>
+          </aside>
+        )}
+        {painel && !estreito && (
+          <div className="divisor" role="separator" tabIndex={0} aria-label="Redimensionar navegação"
+            aria-orientation="vertical" onPointerDown={lateral.aoDescer} onKeyDown={lateral.aoTeclado} />
+        )}
+
+        <Workspace eu={eu} aoCompartilhar={() => setCompartilhando(true)} />
+
+        {assistente && !estreito && (
+          <div className="divisor" role="separator" tabIndex={0} aria-label="Redimensionar assistente"
+            aria-orientation="vertical" onPointerDown={dock.aoDescer} onKeyDown={dock.aoTeclado} />
+        )}
+        {assistente && (
+          <>
+            {estreito && <button className="veu" onClick={() => setAssistente(false)} aria-label="Fechar assistente" />}
+            <aside className="assistente-dock" style={estreito ? undefined : { width: dock.largura, flex: 'none' }}>
+              <PainelAssistente eu={eu} aoFechar={() => setAssistente(false)} />
+            </aside>
+          </>
+        )}
+      </div>
+
       {debug && <PainelDebug eu={eu} aoFechar={() => setDebug(false)} />}
+
+      {compartilhando && atual && (
+        <Compartilhar
+          titulo={atual.titulo} blocos={atual.blocos} schema={atual.schema}
+          aoFechar={() => setCompartilhando(false)}
+        />
+      )}
     </div>
   )
 }
+
+export { MENU }

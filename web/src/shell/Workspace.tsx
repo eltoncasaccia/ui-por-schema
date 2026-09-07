@@ -1,20 +1,21 @@
 import type { Eu } from '../api'
 import { Composicao as Render } from '../render/motor'
 import { sessao, useSessao } from '../estado/sessao'
+import { Icone } from '../ui/icones'
 
-export function Workspace({ eu }: { eu: Eu }) {
+export function Workspace({ eu, aoCompartilhar }: { eu: Eu; aoCompartilhar: () => void }) {
   const { composicoes, noWorkspace, fixadas } = useSessao()
   const c = noWorkspace ? composicoes[noWorkspace] : undefined
 
   if (!c) {
     return (
       <main className="workspace">
-        <div className="workspace-empty">
-          <h1>Workspace</h1>
-          <p className="muted">
-            Abra um componente pelo catálogo, ou pergunte ao assistente. Os dois
-            caminhos produzem o mesmo tipo de schema e passam pelo mesmo pipeline —
-            é o ganho de registrar o componente uma vez só.
+        <div className="workspace-vazio">
+          <h1 style={{ fontSize: 19, marginBottom: 8 }}>Workspace</h1>
+          <p className="vazio">
+            Abra uma tela pela navegação, ou pergunte ao assistente e envie a
+            resposta para cá. Os dois caminhos produzem o mesmo tipo de schema e
+            passam pelo mesmo pipeline.
           </p>
         </div>
       </main>
@@ -25,24 +26,28 @@ export function Workspace({ eu }: { eu: Eu }) {
 
   return (
     <main className="workspace">
-      <header className="workspace-head">
-        <div>
-          <h1>{c.titulo}</h1>
-          <p className="workspace-sub">
-            <span className={`source-tag ${c.origem === 'assistente' ? 'source-assistant' : ''}`}>
+      <header className="workspace-cabeca">
+        <div style={{ minWidth: 0 }}>
+          <h1 className="workspace-titulo" style={{ overflowWrap: 'anywhere' }}>{c.titulo}</h1>
+          <div className="workspace-sub">
+            <span className={`marca-origem ${c.origem === 'assistente' ? 'marca-assistente' : ''}`}>
               {c.origem === 'assistente' ? 'schema do assistente' : 'schema do sistema'}
             </span>
-            <span className="muted">{c.blocos.length} componente(s)</span>
-            <span className="muted code">{c.viewKey}</span>
-          </p>
+            <span className="suave">{c.blocos.length} componente{c.blocos.length === 1 ? '' : 's'}</span>
+            <span className="mono fraco" style={{ fontSize: 11 }}>{c.viewKey}</span>
+          </div>
         </div>
-        <button
-          className={`pin-button ${fixada ? 'is-pinned' : ''}`}
-          onClick={() => sessao.fixar(c)}
-          title={fixada ? 'Desafixar' : 'Fixar view'}
-        >★</button>
+        <div className="workspace-acoes">
+          <button className={`btn ${fixada ? 'is-ativo' : ''}`} onClick={() => sessao.fixar(c)}
+            aria-pressed={fixada} aria-label={fixada ? 'Desafixar view' : 'Fixar view'}>
+            <Icone.Estrela tamanho={15} /> <span className="so-largo">Fixar</span>
+          </button>
+          <button className="btn" onClick={aoCompartilhar} aria-label="Compartilhar view">
+            <Icone.Compartilhar tamanho={15} /> <span className="so-largo">Compartilhar</span>
+          </button>
+        </div>
       </header>
-      <div className="workspace-body">
+      <div className="workspace-corpo">
         <Render blocos={c.blocos} atorId={eu.id} />
       </div>
     </main>

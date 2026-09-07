@@ -56,7 +56,24 @@ export interface TraceApi {
 }
 export interface Composicao { schema: unknown; blocos: Bloco[]; trace: TraceApi }
 
+export interface Destinatario { id: string; nome: string; papel: string }
+export interface Recebida {
+  id: number; view_id: string; mensagem: string | null; de: string; criado_em: string
+}
+export interface ViewAberta { view_id: string; schema: unknown; blocos: Bloco[] }
+
 export const api = {
+  criarView: (titulo: string, schema: unknown) =>
+    chamar<{ view_id: string; view_key: string }>('/api/views', {
+      method: 'POST', body: JSON.stringify({ titulo, schema }),
+    }),
+  abrirView: (viewId: string) => chamar<ViewAberta>(`/api/views/${viewId}`),
+  destinatarios: () => chamar<Destinatario[]>('/api/destinatarios'),
+  compartilhar: (view_id: string, para: string, mensagem?: string) =>
+    chamar<unknown>('/api/compartilhamentos', {
+      method: 'POST', body: JSON.stringify({ view_id, para, mensagem: mensagem ?? null }),
+    }),
+  recebidas: () => chamar<Recebida[]>('/api/compartilhamentos'),
   personas: () => chamar<Persona[]>('/api/auth/demo'),
   entrar: (email: string, senha: string) =>
     chamar<Eu>('/api/auth/entrar', { method: 'POST', body: JSON.stringify({ email, senha }) }),

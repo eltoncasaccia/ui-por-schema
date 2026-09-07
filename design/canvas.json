@@ -1,0 +1,62 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Shell · escuro"
+    },
+    {
+      "file": "Claro.dc.html",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Shell · claro"
+    },
+    {
+      "file": "Mobile.dc.html",
+      "x": 3120,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Telefone"
+    },
+    {
+      "file": "Sistema.dc.html",
+      "x": 0,
+      "y": 1060,
+      "w": 1100,
+      "h": 1560,
+      "title": "Tokens e componentes"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "nota-menu",
+      "x": 0,
+      "y": -140,
+      "w": 420,
+      "text": "Menu convencional por tarefa do domínio — Lotes, Vencimento, Quarentena.\nO catálogo cru do registry sai daqui e vai para a aba do Execution Trace, que é onde ele serve de evidência."
+    },
+    {
+      "id": "nota-assist",
+      "x": 1560,
+      "y": -140,
+      "w": 420,
+      "text": "O assistente compõe DENTRO da conversa. Nada entra no workspace sem 'enviar ao workspace'.\nDivisores arrastáveis nas duas bordas do workspace."
+    },
+    {
+      "id": "nota-mobile",
+      "x": 3120,
+      "y": -140,
+      "w": 390,
+      "text": "No telefone a tabela vira cartões: nenhuma coluna some e nada rola de lado.\nAlvos de toque de 44px."
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

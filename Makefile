@@ -33,7 +33,7 @@ types:  ## gera os tipos do cliente a partir do OpenAPI
 
 test:  ## testes dos dois lados
 	cd api && uv run pytest -q
-	cd web && npm test -- --run
+	cd web && npx vitest run
 
 typecheck:  ## mypy --strict + tsc
 	cd api && uv run mypy --strict src

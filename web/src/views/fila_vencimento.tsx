@@ -1,58 +1,64 @@
+import { Tabela, type Coluna } from '../ui/Tabela'
+import { SITUACAO, classeTexto, type Situacao } from '../ui/estados'
 import type { View } from './tipos'
 
 export interface Linha {
-  lote_id: string
-  produto: string
-  numero: string
-  unidade: string
-  validade: string
-  dias_restantes: number
-  saldo: number
-  situacao: 'ok' | 'alerta_90' | 'bloqueio_30' | 'vencido'
+  lote_id: string; produto: string; numero: string; unidade: string
+  validade: string; dias_restantes: number; saldo: number; situacao: Situacao
 }
 export interface VM { janela_dias: number; total: number; linhas: Linha[] }
 
-const ROTULO: Record<Linha['situacao'], string> = {
-  ok: 'Ok',
-  alerta_90: 'Alerta 90d',
-  bloqueio_30: 'Bloqueio 30d',
-  vencido: 'Vencido',
-}
-const CLASSE: Record<Linha['situacao'], string> = {
-  ok: 'ok', alerta_90: 'alerta', bloqueio_30: 'alerta', vencido: 'perigo',
+const UNIDADE: Record<string, string> = {
+  'cd-matriz': 'CD Matriz',
+  'cd-refrigerado': 'CD Refrigerado',
+  'filial-uberlandia': 'Uberlândia',
 }
 
+export function dataBr(iso: string): string {
+  const [a, m, d] = iso.split('-')
+  return d && m && a ? `${d}/${m}/${a}` : iso
+}
+
+const COLUNAS: Coluna<Linha>[] = [
+  { chave: 'produto', rotulo: 'Produto', render: (l) => l.produto },
+  { chave: 'numero', rotulo: 'Lote', render: (l) => <span className="mono fraco">{l.numero}</span> },
+  { chave: 'unidade', rotulo: 'Unidade', campo: true, render: (l) => UNIDADE[l.unidade] ?? l.unidade },
+  { chave: 'validade', rotulo: 'Validade', campo: true, render: (l) => <span className="mono">{dataBr(l.validade)}</span> },
+  {
+    chave: 'dias', rotulo: 'Dias', num: true, campo: true,
+    // O minus tipográfico, não o hífen: alinha com os dígitos tabulares.
+    render: (l) => (
+      <span className={classeTexto(SITUACAO[l.situacao].tom)}>
+        {l.dias_restantes < 0 ? `−${Math.abs(l.dias_restantes)}` : l.dias_restantes}
+      </span>
+    ),
+  },
+  { chave: 'saldo', rotulo: 'Saldo', num: true, campo: true, render: (l) => l.saldo.toLocaleString('pt-BR') },
+  {
+    chave: 'situacao', rotulo: 'Situação',
+    render: (l) => <span className={`etiqueta etiqueta-${SITUACAO[l.situacao].tom}`}>{SITUACAO[l.situacao].rotulo}</span>,
+  },
+]
+
 export const view: View<VM> = ({ vm }) => (
-  <div>
-    <p className="suave" style={{ margin: '0 0 .75rem' }}>
-      {vm.total} lote{vm.total === 1 ? '' : 's'} vencendo em até {vm.janela_dias} dias
-    </p>
-    {vm.total === 0 ? (
-      <p className="suave">Nada vencendo nesta janela.</p>
-    ) : (
-      <div className="rolagem">
-        <table>
-          <thead>
-            <tr>
-              <th>Produto</th><th>Lote</th><th>Unidade</th>
-              <th>Validade</th><th>Dias</th><th>Saldo</th><th>Situação</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vm.linhas.map((l) => (
-              <tr key={l.lote_id}>
-                <td>{l.produto}</td>
-                <td className="mono">{l.numero}</td>
-                <td className="suave">{l.unidade}</td>
-                <td className="mono">{l.validade}</td>
-                <td className="mono">{l.dias_restantes}</td>
-                <td className="mono">{l.saldo}</td>
-                <td><span className={`pilula ${CLASSE[l.situacao]}`}>{ROTULO[l.situacao]}</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
+  <div className="cartao">
+    <div className="cartao-cabeca">
+      <span className="titulo-painel">Fila de vencimento</span>
+      <span className="mono fraco" style={{ fontSize: 11 }}>
+        {vm.total} lote{vm.total === 1 ? '' : 's'} · janela {vm.janela_dias}d
+      </span>
+    </div>
+    <Tabela
+      colunas={COLUNAS}
+      linhas={vm.linhas}
+      chave={(l) => l.lote_id}
+      titulo={(l) => (
+        <>
+          <div style={{ fontWeight: 500, overflowWrap: 'anywhere' }}>{l.produto}</div>
+          <div className="mono fraco" style={{ fontSize: 11, marginTop: 2 }}>lote {l.numero}</div>
+        </>
+      )}
+      etiqueta={(l) => ({ texto: SITUACAO[l.situacao].rotulo, tom: SITUACAO[l.situacao].tom })}
+    />
   </div>
 )

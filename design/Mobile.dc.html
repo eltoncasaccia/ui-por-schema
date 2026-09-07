@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", -apple-system, sans-serif; }
+    a { color: #6ea8fe; } a:hover { opacity: .8; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #0e1014; color: #e6e9ef; display: flex; flex-direction: column; font-size: 14px; overflow: hidden;">
+
+  <header style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #242932; flex: none;">
+    <button style="width: 40px; height: 40px; display: grid; place-items: center; background: none; border: 1px solid #242932; border-radius: 9px; color: #98a1b0;"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h14M3 10h14M3 14h14"/></svg></button>
+    <div style="flex: 1; min-width: 0;">
+      <div style="font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Fila de vencimento</div>
+      <div style="font-size: 11px; color: #6b7484;">Cleide Ramos · Conferente</div>
+    </div>
+    <button style="width: 40px; height: 40px; display: grid; place-items: center; background: #223252; border: 1px solid #33507d; border-radius: 9px; color: #6ea8fe;"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5l1.7 4.9 4.8 1.7-4.8 1.7L10 15.7l-1.7-4.9L3.5 9.1l4.8-1.7z"/></svg></button>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px;">
+    <!-- indicadores empilham num toque: auto-fit com minmax cabe 1 por linha em 390px -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+      <div style="background: #15181e; border: 1px solid #242932; border-left: 2px solid #7dd3fc; border-radius: 10px; padding: 13px 15px; display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+        <div style="font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6b7484; overflow-wrap: anywhere;">Em quarentena</div>
+        <div style="font: 600 26px/1.1 'IBM Plex Sans'; font-variant-numeric: tabular-nums;">3</div>
+        <div style="font-size: 11px; color: #6b7484;">lotes</div>
+      </div>
+      <div style="background: #15181e; border: 1px solid #242932; border-left: 2px solid #fbbf24; border-radius: 10px; padding: 13px 15px; display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+        <div style="font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6b7484; overflow-wrap: anywhere;">Vencendo 90d</div>
+        <div style="font: 600 26px/1.1 'IBM Plex Sans'; font-variant-numeric: tabular-nums;">12</div>
+        <div style="font-size: 11px; color: #6b7484;">lotes</div>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #6b7484; margin-top: 4px;">Lotes · janela 90 dias</div>
+
+    <!-- no telefone a tabela vira cartões: nenhuma coluna some, nada rola de lado -->
+    <div style="background: #15181e; border: 1px solid #242932; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+          <div style="min-width: 0;">
+            <div style="font-size: 14px; font-weight: 500; overflow-wrap: anywhere;">Amoxicilina 500mg</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7484; margin-top: 2px;">lote AV1</div>
+          </div>
+          <span style="flex: none; padding: 2px 9px; border-radius: 20px; font-size: 11px; color: #f87171; border: 1px solid #5a2626; white-space: nowrap;">Vencido</span>
+        </div>
+        <div style="display: flex; gap: 20px;">
+          <div><div style="font-size: 11px; color: #6b7484;">Dias</div><div style="font-variant-numeric: tabular-nums; font-size: 15px; color: #f87171;">−10</div></div>
+          <div><div style="font-size: 11px; color: #6b7484;">Saldo</div><div style="font-variant-numeric: tabular-nums; font-size: 15px;">649</div></div>
+        </div>
+      </div>
+    <div style="background: #15181e; border: 1px solid #242932; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+          <div style="min-width: 0;">
+            <div style="font-size: 14px; font-weight: 500; overflow-wrap: anywhere;">Dipirona 500mg</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7484; margin-top: 2px;">lote D15</div>
+          </div>
+          <span style="flex: none; padding: 2px 9px; border-radius: 20px; font-size: 11px; color: #fb923c; border: 1px solid #5c3416; white-space: nowrap;">Bloqueio 30d</span>
+        </div>
+        <div style="display: flex; gap: 20px;">
+          <div><div style="font-size: 11px; color: #6b7484;">Dias</div><div style="font-variant-numeric: tabular-nums; font-size: 15px; color: #fb923c;">15</div></div>
+          <div><div style="font-size: 11px; color: #6b7484;">Saldo</div><div style="font-variant-numeric: tabular-nums; font-size: 15px;">318</div></div>
+        </div>
+      </div>
+    <div style="background: #15181e; border: 1px solid #242932; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+          <div style="min-width: 0;">
+            <div style="font-size: 14px; font-weight: 500; overflow-wrap: anywhere;">Omeprazol 20mg</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7484; margin-top: 2px;">lote O89</div>
+          </div>
+          <span style="flex: none; padding: 2px 9px; border-radius: 20px; font-size: 11px; color: #fbbf24; border: 1px solid #4a3c15; white-space: nowrap;">Alerta 90d</span>
+        </div>
+        <div style="display: flex; gap: 20px;">
+          <div><div style="font-size: 11px; color: #6b7484;">Dias</div><div style="font-variant-numeric: tabular-nums; font-size: 15px; color: #fbbf24;">89</div></div>
+          <div><div style="font-size: 11px; color: #6b7484;">Saldo</div><div style="font-variant-numeric: tabular-nums; font-size: 15px;">540</div></div>
+        </div>
+      </div>
+  </div>
+
+  <nav style="flex: none; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid #242932; background: #12151a; padding: 6px 4px 10px;">
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 8px 0; color: #6ea8fe; min-height: 44px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5l6.5 3.5v8L10 17.5 3.5 14V6z"/><path d="M3.5 6L10 9.5 16.5 6M10 9.5v8"/></svg><span style="font-size: 10px;">Lotes</span></button>
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 8px 0; color: #6b7484; min-height: 44px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M10 5.8V10l2.8 1.7"/></svg><span style="font-size: 10px;">Vencimento</span></button>
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 8px 0; color: #6b7484; min-height: 44px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6l2.3 4.7 5.2.8-3.8 3.6.9 5.1L10 14.4l-4.6 2.4.9-5.1L2.5 8.1l5.2-.8z"/></svg><span style="font-size: 10px;">Fixadas</span></button>
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 8px 0; color: #6b7484; min-height: 44px;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14v2a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1h6a1 1 0 011 1v2"/><path d="M9 10h8m0 0l-2.5-2.5M17 10l-2.5 2.5"/></svg><span style="font-size: 10px;">Sair</span></button>
+  </nav>
+
+</div>
+</x-dc>
+</body>
+</html>

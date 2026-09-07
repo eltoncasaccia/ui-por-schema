@@ -22,14 +22,14 @@ export function PainelDebug({ eu, aoFechar }: { eu: Eu; aoFechar: () => void }) 
   const [aba, setAba] = useState<Aba>('trace')
   return (
     <aside className="debug">
-      <div className="debug-tabs">
+      <div className="debug-abas">
         {ABAS.map((a) => (
-          <button key={a.id} className={`debug-tab ${aba === a.id ? 'is-active' : ''}`}
+          <button key={a.id} className={`debug-aba ${aba === a.id ? 'is-ativa' : ''}`}
             onClick={() => setAba(a.id)}>{a.rotulo}</button>
         ))}
-        <button className="debug-close" onClick={aoFechar} title="Fechar">✕</button>
+        <button className="btn btn-icone" style={{ marginLeft: 'auto' }} onClick={aoFechar} title="Fechar">✕</button>
       </div>
-      <div className="debug-body">
+      <div className="debug-corpo">
         {aba === 'trace' && <AbaTrace />}
         {aba === 'schema' && <AbaSchema />}
         {aba === 'catalogo' && <AbaCatalogo eu={eu} />}
@@ -42,22 +42,22 @@ export function PainelDebug({ eu, aoFechar }: { eu: Eu; aoFechar: () => void }) 
 function AbaTrace() {
   const { traces } = useSessao()
   if (traces.length === 0)
-    return <p className="muted">Nenhuma execução ainda. Pergunte algo ao assistente.</p>
+    return <p className="vazio">Nenhuma execução ainda. Pergunte algo ao assistente.</p>
 
   return (
-    <div className="trace-list">
+    <div className="">
       {traces.map((t, i) => (
-        <div key={i} className="trace-run">
-          <div className="trace-run-head">
-            <span className="trace-input">{t.pergunta}</span>
-            <span className="trace-times">
-              <span className={`badge ${t.trace.schema_valido ? 'badge-good' : 'badge-bad'}`}>
+        <div key={i} className="trace-item">
+          <div className="trace-cabeca">
+            <span className="trace-pergunta">{t.pergunta}</span>
+            <span style={{ display: 'flex', gap: 10, alignItems: 'center', flex: 'none' }}>
+              <span className={`etiqueta ${t.trace.schema_valido ? 'etiqueta-bom' : 'etiqueta-ruim'}`}>
                 {t.trace.schema_valido ? 'schema válido' : 'schema rejeitado'}
               </span>
-              <span className="trace-duration">{t.trace.ms_ate_primeiro_token} ms</span>
+              <span className="mono fraco" style={{ fontSize: 11 }}>{t.trace.ms_ate_primeiro_token} ms</span>
             </span>
           </div>
-          <div className="trace-steps">
+          <div className="trace-passos">
             <Passo rotulo="origem" valor={`${t.trace.origem} · ${t.trace.modelo}`} />
             <Passo rotulo="modo" valor={t.trace.modo} />
             <Passo rotulo="tokens de entrada" valor={String(t.trace.tokens_entrada)} />
@@ -71,7 +71,7 @@ function AbaTrace() {
           </div>
         </div>
       ))}
-      <p className="debug-note">
+      <p className="debug-nota">
         Componente não registrado é rejeitado e <strong>aparece aqui</strong>. Um
         filtro que falta apenas alarga a resposta, em silêncio — não há erro para
         observar. Foi o achado mais perigoso da v1.
@@ -82,24 +82,24 @@ function AbaTrace() {
 
 function Passo({ rotulo, valor, bom, ruim }: { rotulo: string; valor: string; bom?: boolean; ruim?: boolean }) {
   return (
-    <div className="trace-step">
-      <span className="trace-stage">{rotulo}</span>
-      <span className={ruim ? 'cell-bad' : bom ? 'cell-good' : ''}>{valor}</span>
-    </div>
+    <>
+      <span>{rotulo}</span>
+      <span className={ruim ? 'texto-ruim' : bom ? 'texto-bom' : ''}>{valor}</span>
+    </>
   )
 }
 
 function AbaSchema() {
   const { composicoes, noWorkspace } = useSessao()
   const c = noWorkspace ? composicoes[noWorkspace] : undefined
-  if (!c) return <p className="muted">Nada no workspace.</p>
+  if (!c) return <p className="vazio">Nada no workspace.</p>
   return (
     <>
-      <p className="debug-note">
+      <p className="debug-nota">
         Tudo que o modelo produziu. Não existe campo para markup, estilo, valor
         literal ou expressão — o schema <strong>não tem onde carregar código</strong>.
       </p>
-      <pre className="code">{JSON.stringify(c.schema ?? c.blocos, null, 2)}</pre>
+      <pre className="codigo">{JSON.stringify(c.schema ?? c.blocos, null, 2)}</pre>
     </>
   )
 }
@@ -108,30 +108,30 @@ function AbaCatalogo({ eu }: { eu: Eu }) {
   const q = useQuery({ queryKey: [eu.id, 'catalogo'], queryFn: api.catalogo })
   return (
     <>
-      <p className="debug-note">
+      <p className="debug-nota">
         Literalmente o que vai no prompt, para <strong>{eu.nome}</strong>. Gerado no
         servidor e filtrado pelas permissões dele — o modelo não consegue propor o
         que não está aqui.
       </p>
-      <pre className="code">{JSON.stringify(q.data ?? [], null, 2)}</pre>
+      <pre className="codigo">{JSON.stringify(q.data ?? [], null, 2)}</pre>
     </>
   )
 }
 
 function AbaAtor({ eu }: { eu: Eu }) {
   return (
-    <div className="state-grid">
-      <div className="state-block">
-        <h4 className="panel-heading">Ator</h4>
-        <pre className="code">{JSON.stringify({ id: eu.id, nome: eu.nome, papel: eu.papel }, null, 2)}</pre>
+    <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+      <div >
+        <h4 className="rotulo">Ator</h4>
+        <pre className="codigo">{JSON.stringify({ id: eu.id, nome: eu.nome, papel: eu.papel }, null, 2)}</pre>
       </div>
-      <div className="state-block">
-        <h4 className="panel-heading">Unidades — RN-A01</h4>
-        <pre className="code">{JSON.stringify(eu.unidades, null, 2)}</pre>
+      <div >
+        <h4 className="rotulo">Unidades — RN-A01</h4>
+        <pre className="codigo">{JSON.stringify(eu.unidades, null, 2)}</pre>
       </div>
-      <div className="state-block">
-        <h4 className="panel-heading">Permissões</h4>
-        <pre className="code">{JSON.stringify(eu.permissoes, null, 2)}</pre>
+      <div >
+        <h4 className="rotulo">Permissões</h4>
+        <pre className="codigo">{JSON.stringify(eu.permissoes, null, 2)}</pre>
       </div>
     </div>
   )

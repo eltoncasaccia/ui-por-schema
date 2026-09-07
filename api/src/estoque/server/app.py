@@ -12,6 +12,7 @@ reautoriza por registro mesmo que a composicao ja' tenha sido validada.
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from typing import Any
 
 import sqlalchemy as sa
@@ -20,7 +21,7 @@ from argon2.exceptions import VerifyMismatchError
 from fastapi import Cookie, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
 import estoque.registry.indice  # noqa: F401  — registra os componentes
@@ -43,7 +44,8 @@ from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
 from estoque.registry.definir import LoadContext, permissoes_base
 from estoque.registry.registry import buscar, catalogo_de, valores_proibidos
-from estoque.schema.validar import validar_schema
+from estoque.schema.validar import revalidar_ou_falhar, validar_schema
+from estoque.schema.viewkey import novo_view_id, view_key
 from estoque.server import sessao as ses
 from estoque.server.config import Config
 
@@ -314,6 +316,206 @@ async def compor(corpo: Pergunta, sessao: str | None = Cookie(default=None)) -> 
 def _tamanho(tipo: str) -> str:
     c = buscar(tipo)
     return c.tamanho if c else "inteira"
+
+
+# ---------------------------------------------------------------- views
+class NovaView(BaseModel):
+    # `schema` colide com um metodo do BaseModel; o nome no JSON continua sendo
+    # `schema`, que e' o que o contrato publico diz.
+    model_config = ConfigDict(populate_by_name=True)
+
+    titulo: str
+    esquema: dict[str, Any] = Field(alias="schema")
+
+
+@app.post("/api/views")
+async def criar_view(
+    corpo: NovaView, sessao: str | None = Cookie(default=None)
+) -> dict[str, Any]:
+    """Persiste um schema e devolve seu endereco publico.
+
+    Dois identificadores, com papeis distintos (ADR-0021):
+      view_key  hash do schema, INTERNO — "esta tela e' a mesma de antes?"
+      view_id   opaco, PUBLICO, revogavel — o endereco em /v/:viewId
+    """
+    async with _engine.begin() as c:
+        ator = await _ator(c, sessao)
+        schema = revalidar_ou_falhar(corpo.esquema, ator)
+        vid, vkey = novo_view_id(), view_key(schema)
+        await c.execute(
+            sa.insert(m.view_registro).values(
+                view_id=vid,
+                view_key=vkey,
+                schema=schema.model_dump(),
+                criado_por=ator.id,
+                criado_em=datetime.now(UTC),
+            )
+        )
+        await aud.registrar(
+            c,
+            ator_id=ator.id,
+            acao="criar_view",
+            origem="tela",
+            entidade="view",
+            entidade_id=vid,
+            valor_novo={"view_key": vkey},
+        )
+    return _ok({"view_id": vid, "view_key": vkey})
+
+
+@app.get("/api/views/{view_id}")
+async def abrir_view(view_id: str, sessao: str | None = Cookie(default=None)) -> dict[str, Any]:
+    """A regra que nao pode quebrar: o schema e' revalidado contra o catalogo
+    DO REQUISITANTE, e os dados carregam sob a autenticacao DELE.
+
+    Quem abre uma view compartilhada e nao pode ver o lote ve "sem acesso" — nao
+    os dados de quem compartilhou.
+    """
+    async with _engine.begin() as c:
+        ator = await _ator(c, sessao)
+        r = (
+            (
+                await c.execute(
+                    sa.select(m.view_registro).where(m.view_registro.c.view_id == view_id)
+                )
+            )
+            .mappings()
+            .first()
+        )
+        # Revogado responde como inexistente — ADR-0014.
+        if r is None or r["revogado_em"] is not None:
+            raise ErroDominio("nao_encontrado", "Registro nao encontrado.")
+        schema = revalidar_ou_falhar(r["schema"], ator)
+        await aud.registrar(
+            c,
+            ator_id=ator.id,
+            acao="abrir_view",
+            origem="tela",
+            entidade="view",
+            entidade_id=view_id,
+        )
+    return _ok(
+        {
+            "view_id": view_id,
+            "schema": schema.model_dump(),
+            "blocos": [
+                {"tipo": b.tipo, "params": b.params, "tamanho": _tamanho(b.tipo)}
+                for b in schema.blocos
+            ],
+        }
+    )
+
+
+@app.get("/api/destinatarios")
+async def destinatarios(sessao: str | None = Cookie(default=None)) -> dict[str, Any]:
+    """Lista filtrada de quem pode receber. Nao e' um catalogo de usuarios:
+    e' a lista de quem ESTE ator pode contatar."""
+    async with _engine.connect() as c:
+        ator = await _ator(c, sessao)
+        rs = (
+            (
+                await c.execute(
+                    sa.select(m.usuario.c.id, m.usuario.c.nome, m.usuario.c.papel)
+                    .where(
+                        m.usuario.c.id != ator.id,
+                        m.usuario.c.ativo.is_(True),
+                        m.usuario.c.papel.is_not(None),
+                    )
+                    .order_by(m.usuario.c.nome)
+                )
+            )
+            .mappings()
+            .all()
+        )
+    return _ok([dict(r) for r in rs])
+
+
+class Compartilhar(BaseModel):
+    view_id: str
+    para: str
+    mensagem: str | None = None
+
+
+@app.post("/api/compartilhamentos")
+async def compartilhar(
+    corpo: Compartilhar, sessao: str | None = Cookie(default=None)
+) -> dict[str, Any]:
+    """Entrega pelo SISTEMA, nao por link.
+
+    Ganhos sobre link solto: auditoria de quem compartilhou o que, revogacao, e
+    nenhum segredo em transito — link e' encaminhado, colado em grupo, fica em
+    historico.
+    """
+    async with _engine.begin() as c:
+        ator = await _ator(c, sessao)
+        if corpo.para == ator.id:
+            raise ErroDominio("invalido", "Escolha outra pessoa.")
+        existe = (
+            await c.execute(
+                sa.select(m.view_registro.c.view_id).where(
+                    m.view_registro.c.view_id == corpo.view_id,
+                    m.view_registro.c.revogado_em.is_(None),
+                )
+            )
+        ).first()
+        if existe is None:
+            raise ErroDominio("nao_encontrado", "Registro nao encontrado.")
+        await c.execute(
+            sa.insert(m.view_compartilhamento).values(
+                view_id=corpo.view_id,
+                de_usuario_id=ator.id,
+                para_usuario_id=corpo.para,
+                mensagem=corpo.mensagem,
+                criado_em=datetime.now(UTC),
+            )
+        )
+        await aud.registrar(
+            c,
+            ator_id=ator.id,
+            acao="compartilhar",
+            origem="tela",
+            entidade="view",
+            entidade_id=corpo.view_id,
+            valor_novo={"para": corpo.para},
+        )
+    return _ok({"enviado": True})
+
+
+@app.get("/api/compartilhamentos")
+async def caixa(sessao: str | None = Cookie(default=None)) -> dict[str, Any]:
+    async with _engine.connect() as c:
+        ator = await _ator(c, sessao)
+        rs = (
+            (
+                await c.execute(
+                    sa.select(
+                        m.view_compartilhamento.c.id,
+                        m.view_compartilhamento.c.view_id,
+                        m.view_compartilhamento.c.mensagem,
+                        m.view_compartilhamento.c.criado_em,
+                        m.usuario.c.nome.label("de_nome"),
+                    )
+                    .join(m.usuario, m.usuario.c.id == m.view_compartilhamento.c.de_usuario_id)
+                    .where(m.view_compartilhamento.c.para_usuario_id == ator.id)
+                    .order_by(m.view_compartilhamento.c.criado_em.desc())
+                    .limit(50)
+                )
+            )
+            .mappings()
+            .all()
+        )
+    return _ok(
+        [
+            {
+                "id": r["id"],
+                "view_id": r["view_id"],
+                "mensagem": r["mensagem"],
+                "de": r["de_nome"],
+                "criado_em": r["criado_em"].isoformat(),
+            }
+            for r in rs
+        ]
+    )
 
 
 # ---------------------------------------------------------------- dados

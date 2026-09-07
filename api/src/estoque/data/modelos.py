@@ -151,3 +151,15 @@ saldo_lote = sa.Table(
     sa.Column("lote_id", sa.Text, primary_key=True),
     sa.Column("saldo", sa.Integer, nullable=False),
 )
+
+view_compartilhamento = sa.Table(
+    "view_compartilhamento",
+    metadata,
+    sa.Column("id", sa.BigInteger, primary_key=True),
+    sa.Column("view_id", sa.Text, nullable=False),
+    sa.Column("de_usuario_id", sa.Text, nullable=False),
+    sa.Column("para_usuario_id", sa.Text, nullable=False),
+    sa.Column("mensagem", sa.Text),
+    sa.Column("criado_em", sa.DateTime(timezone=True), nullable=False),
+    sa.Column("lido_em", sa.DateTime(timezone=True)),
+)

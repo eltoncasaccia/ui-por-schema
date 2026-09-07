@@ -26,12 +26,12 @@ export function Login({ aoEntrar }: { aoEntrar: (eu: Eu) => void }) {
 
   return (
     <main className="login">
-      <h1>Estoque Bertoni</h1>
-      <p className="muted">
+      <h1 style={{ fontSize: 22, marginBottom: 6 }}>Estoque Bertoni</h1>
+      <p className="vazio">
         Uma IA compõe a interface escolhendo entre componentes registrados — sem
         gerar código, sem tocar nos dados, sem autorizar escrita.
       </p>
-      <p className="muted" style={{ marginTop: 12 }}>
+      <p className="vazio" style={{ marginTop: 12 }}>
         Entre como duas pessoas diferentes e compare o catálogo. Não é a tela que
         muda: é o <strong>vocabulário que o modelo recebe</strong>.
       </p>
@@ -42,24 +42,24 @@ export function Login({ aoEntrar }: { aoEntrar: (eu: Eu) => void }) {
             disabled={ocupado !== ''}>
             <span>
               <strong>{p.nome}</strong>
-              <span className="login-papel"> · {PAPEL[p.papel] ?? p.papel}</span>
+              <span className="fraco"> · {PAPEL[p.papel] ?? p.papel}</span>
             </span>
-            <span className="muted code">{ocupado === p.email ? '…' : '→'}</span>
+            <span className="fraco mono">{ocupado === p.email ? '…' : '→'}</span>
           </button>
         ))}
         {personas.length === 0 && (
-          <p className="muted" style={{ padding: 16 }}>
-            Nenhuma persona. A API subiu? <code className="code">docker compose logs api</code>
+          <p className="vazio" style={{ padding: 16 }}>
+            Nenhuma persona. A API subiu? <code className="mono">docker compose logs api</code>
           </p>
         )}
       </div>
 
-      {erro && <p className="msg-error" style={{ marginTop: 12 }}>{erro}</p>}
+      {erro && <p className="msg-erro" style={{ marginTop: 12 }}>{erro}</p>}
 
       <p className="aviso">
         A Bertoni Distribuidora Farmacêutica é <strong>fictícia</strong> e todos os
         dados são gerados. O atalho de personas só existe com
-        <code className="code"> MODO_DEMO=true</code> — fora dele a rota nem é registrada.
+        <code className="mono"> MODO_DEMO=true</code> — fora dele a rota nem é registrada.
       </p>
     </main>
   )

@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**22 concluídas · 4 parciais · 13 não iniciadas** · 7 de 23 componentes.
+**22 concluídas · 4 parciais · 16 não iniciadas** · 7 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -106,6 +106,9 @@ está pronto.
 |---|---|---|---|
 | T-040 | CSRF e rate limit | ✅ | A-02, A-03 — **fechados** |
 | T-041 | CI no GitHub Actions | ⬜ | A-07 |
+| T-042 | Contract test fake ↔ repositório real | ⬜ | A-11 |
+| T-043 | Instrumentação ao vivo do LangFuse | ⬜ | A-10 |
+| T-044 | `relatorio_movimentacao` | ⬜ | ADR-0029 |
 
 ---
 

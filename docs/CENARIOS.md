@@ -253,6 +253,78 @@ quê importa tanto quanto ver quem escreveu.
 
 ---
 
+## 10. Relatório parametrizado
+
+> **Ainda não executável.** Depende da [T-044](./tasks/T-044-relatorio-movimentacao.md).
+> Este roteiro foi escrito **antes** da implementação, de propósito: perguntas
+> escritas depois de ver a resposta do modelo medem o quanto ela agrada, não o
+> quanto ela acerta ([ADR-0029](./adr/0029-relatorio-como-componente.md)).
+
+Um componente, cinco eixos, três métricas — e o que se testa é se o modelo
+**preenche parâmetro** em vez de inventar componente.
+
+### 10.1 — o mesmo componente, eixos diferentes
+
+| Persona | Pergunta | Esperado |
+|---|---|---|
+| Ivo | *movimentação por unidade nos últimos 90 dias* | `relatorio_movimentacao` · `agrupar_por: unidade` `periodo: 90` |
+| Ivo | *quanto saiu por produto no último trimestre* | `agrupar_por: produto` `tipo: saida` `periodo: 90` |
+| Sandra | *descartes por motivo no último ano* | `agrupar_por: motivo` `tipo: descarte` `periodo: 365` |
+| Ivo | *movimentação mês a mês* | `agrupar_por: mes` |
+
+Nenhuma dessas perguntas cria componente. Todas preenchem o mesmo.
+
+### 10.2 — a métrica que some do vocabulário
+
+| Persona | *"valor movimentado por unidade no trimestre"* |
+|---|---|
+| **Ivo** (sem `custo.ler`) | compõe o relatório **em quantidade**, ou não compõe |
+| **Rafael** (com `custo.ler`) | `metrica: valor` |
+
+Ivo **não recebe negativa**: o valor `valor` não existe no enum dele, e o modelo
+não consegue propor. É o mesmo mecanismo de `estoque_indicador` (achado A-05) —
+não se esconde o componente, remove-se o **valor**.
+
+⚠️ **O que observar:** se Ivo receber o relatório em quantidade sem que a tela
+diga que a métrica é quantidade, isso é o risco R-5 acontecendo. O recorte
+aplicado tem de estar escrito na tela.
+
+### 10.3 — o eixo que não existe
+
+| Pergunta | Esperado |
+|---|---|
+| *movimentação por fornecedor* | **não compõe**, ou compõe com outro eixo |
+
+Este é o cenário mais importante do roteiro, e o mais desconfortável. Se o
+modelo devolver `agrupar_por: produto` para uma pergunta sobre fornecedor, ele
+respondeu **parecido e errado** — e ninguém percebe.
+
+**Registre como achado toda pergunta real cujo eixo não está no enum.** É a
+auditoria de enums da [T-032](./tasks/T-032-suite-de-avaliacao.md), agora
+valendo também para os eixos de relatório.
+
+### 10.4 — escopo, no eixo
+
+| Persona | Pergunta | Esperado |
+|---|---|---|
+| Odair | *movimentação por unidade* | **só Uberlândia** aparece no eixo |
+
+Agrupar por unidade não pode revelar a existência das unidades que Odair não
+alcança. O eixo é construído a partir do que a porta devolveu, nunca da lista
+de unidades do sistema.
+
+### 10.5 — o relatório vira endereço
+
+1. Ivo monta *descartes por motivo, 365 dias* e favorita.
+2. O favorito é uma `viewId` ([ADR-0021](./adr/0021-viewkey-e-viewid.md)).
+3. Ivo compartilha o link com Odair.
+4. **Odair abre e vê os descartes de Uberlândia** — não os de Ivo.
+
+O relatório salvo carrega sob a permissão de **quem abre**. É o que permite
+compartilhar relatório sem compartilhar dado.
+
+---
+
 ## O que ainda NÃO dá para testar
 
 Escrita. Nenhum componente tem `commands`: não há registrar recebimento,
@@ -262,10 +334,13 @@ liberar quarentena, dar saída, estornar nem descartar. É a onda W4 inteira
 E **excluir** majoritariamente não vai existir nem depois — movimento e
 auditoria são imutáveis por regra, produto se inativa, usuário se desativa.
 
+Relatório parametrizado (seção 10) — a T-044 ainda não foi implementada. O
+roteiro está escrito e o resultado, em branco.
+
 ---
 
 *Executado em 2026-09-08 · 120 testes de API, 46 de componente*
 
-**Não verificado neste roteiro:** o caminho do LangFuse. O código existe e o
-observador é nulo sem chave, mas a chamada real nunca executou
-([ADR-0026](./adr/0026-observabilidade.md)).
+**Verificado em 2026-09-08:** o caminho do LangFuse executou contra a instância
+hospedada, e o trace foi conferido buscando-o de volta pela API. Três defeitos
+apareceram e foram corrigidos ([ADR-0026](./adr/0026-observabilidade.md)).

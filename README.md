@@ -100,6 +100,37 @@ LLM_BASE_URL=http://host.docker.internal:11434/v1/chat/completions
 MODELO_ASSISTENTE=qwen2.5:14b
 ```
 
+#### Modelos gratuitos no OpenRouter
+
+Basta o sufixo `:free` — nenhuma mudança de código. Dos 18 gratuitos do
+catálogo, **7 suportam `structured_outputs`**, que é o que o modo `restrito`
+exige; nos demais o adapter cai para `ferramenta` ou `livre`, e o
+`modo_efetivo` do trace registra a queda.
+
+Medição de 2026-09-08, três perguntas de conferente com catálogo de 7
+componentes, modo `restrito`:
+
+| Modelo | Acertos | Latência |
+|---|---|---|
+| `nvidia/nemotron-3-super-120b-a12b:free` | **3 / 3** | 6,7 – 12 s |
+| `nex-agi/nex-n2.5-mini:free` | 2 / 3 · 1 × HTTP 429 | 1,4 – 1,5 s |
+| `google/gemma-4-31b-it:free` | 0 / 3 — **HTTP 429** | — |
+| `anthropic/claude-haiku-4.5` (pago) | 3 / 3 | 5,7 s · US$ 0,0043 |
+
+O `nemotron` acertou inclusive o caso negativo: perguntado o custo do estoque
+por uma conferente, devolveu **composição vazia** — porque a métrica de custo
+não existe no catálogo dela.
+
+> **O 429 é o limite do tier gratuito, não indisponibilidade.** Modelo gratuito
+> serve para desenvolver e demonstrar; para uso contínuo, o custo medido do
+> modelo pago é de ~US$ 2,50 por usuário/mês a 20 perguntas por dia. Modelo
+> local se justifica por governança de dado e independência — **não** por
+> economia.
+
+Vale lembrar por que a escolha é confortável: o modelo recebe a **pergunta e o
+catálogo**, nunca os dados ([ADR-0012](./docs/adr/0012-injecao-de-prompt-via-dado.md)).
+Trocar de provedor não muda o que sai daqui.
+
 ```
 make modelo   mostra provedor, modelo e modo em uso
 make env      confere o .env contra o .env.example

@@ -189,7 +189,9 @@ graph TD
 |---|---|---|---|---|---|
 | [T-040](./T-040-csrf-e-rate-limit.md) | **CSRF e rate limit** — segurança prometida e ausente | B | M | T-037 | ✅ |
 | [T-041](./T-041-ci.md) | CI no GitHub Actions | E | P | T-001 | ⬜ |
+| [T-042](./T-042-contract-test-repositorios.md) | **Contract test** fake ↔ repositório real — hoje o escopo do adaptador não é testado | A | M | T-007 | ⬜ |
 | T-043 | Instrumentação ao vivo do pipeline do assistente (duração real de span) | C | M | T-011 | ⬜ |
+| [T-044](./T-044-relatorio-movimentacao.md) | `relatorio_movimentacao` — relatório parametrizado ([ADR-0029](../adr/0029-relatorio-como-componente.md)) | C | M | T-024 | ⬜ |
 
 ### W5 — Garantias e fechamento · até 4 sessões
 
@@ -212,6 +214,9 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 | W3 | 15 de leitura + `vencimento_grafico` | 16 |
 | W4 | 7 de escrita | **23** |
 
+> **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
+> o teto de 25 e vira discussão de escopo (ADR-0011).
+
 **Registrados hoje: 7** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020) e `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018).
 
@@ -231,6 +236,7 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
 | A-04b | `arch:check` só do lado Python, 4 de 6 regras | A-002 | T-005 parcial |
 | A-09 | `make typecheck` roda `mypy --strict src` e **não `tests`**. Dez erros de tipo vivem lá há tempo, invisíveis ao DoD e ao CI — e visíveis no editor de quem abre o arquivo | T-018 | **T-041** |
+| A-11 | Os fakes de `tests/registry/` reimplementam a interseção de escopo da porta. Se o adaptador real parar de intersectar, **toda a suíte de registry continua verde** | auditoria de testes | **T-042** |
 | A-10 | O observador do LangFuse tinha três defeitos — região errada, `update_trace()` inexistente na v4, nota sem `trace_id` — todos invisíveis porque o `except` que torna a telemetria não-fatal a torna muda | execução real | [ADR-0026](../adr/0026-observabilidade.md) · **T-043** |
 | A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
 | A-07b | Não há CI | A-002 | **T-041** |

@@ -10,9 +10,9 @@ por isso que a validacao roda de novo aqui, e por isso `/componentes/{id}/dados`
 reautoriza por registro mesmo que a composicao ja' tenha sido validada.
 """
 
-from collections.abc import AsyncIterator
 import logging
 import secrets
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from typing import Any

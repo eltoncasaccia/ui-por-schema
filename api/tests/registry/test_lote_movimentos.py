@@ -82,8 +82,9 @@ async def test_ac3_o_extrato_bate_com_os_movimentos_do_fixture(
 
 
 def test_ac4_periodo_fora_do_enum_e_rejeitado() -> None:
+    # Dicionario, nao kwarg tipado: e' a forma como o param chega do modelo.
     with pytest.raises(ValidationError):
-        Params(lote_id="l-amox-mtz", periodo="45")
+        Params.model_validate({"lote_id": "l-amox-mtz", "periodo": "45"})
 
 
 def test_ac4_periodo_nao_aceita_data_livre() -> None:

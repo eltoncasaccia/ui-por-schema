@@ -82,17 +82,22 @@ async def test_ac3_lote_com_entrada_e_saida_iguais_fica_esgotado(
 # --- AC-4 · enum fechado, risco R-5 --------------------------------------
 
 
+# `model_validate` com dicionario, e nao `Params(status=...)`, porque e' assim
+# que o valor chega DE VERDADE: JSON produzido pelo modelo, sem tipo nenhum.
+# Escrever o literal invalido em Python faria o verificador de tipos reclamar
+# de um erro que o caminho real nao tem como cometer — e a validacao em runtime,
+# que e' a unica que protege aqui, deixaria de ser o que o teste exercita.
 def test_ac4_status_fora_do_enum_e_rejeitado() -> None:
     """Um recorte que o modelo inventa tem de morrer na validacao, nao virar
     filtro ignorado — filtro ignorado devolve MAIS linhas, e mais linhas
     parecem uma resposta boa."""
     with pytest.raises(ValidationError):
-        Params(status="quase_liberado")
+        Params.model_validate({"status": "quase_liberado"})
 
 
 def test_ac4_janela_fora_do_enum_e_rejeitada() -> None:
     with pytest.raises(ValidationError):
-        Params(janela="45")
+        Params.model_validate({"janela": "45"})
 
 
 def test_ac4_nao_existe_campo_de_busca_livre() -> None:

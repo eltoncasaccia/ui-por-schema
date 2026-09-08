@@ -229,6 +229,7 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
 | A-04b | `arch:check` só do lado Python, 4 de 6 regras | A-002 | T-005 parcial |
+| A-09 | `make typecheck` roda `mypy --strict src` e **não `tests`**. Dez erros de tipo vivem lá há tempo, invisíveis ao DoD e ao CI — e visíveis no editor de quem abre o arquivo | T-018 | **T-041** |
 | A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
 | A-07b | Não há CI | A-002 | **T-041** |
 | A-08b | Spike sem relatório R-001 | A-002 | T-017 parcial |

@@ -295,8 +295,8 @@ def contexto(ator: Ator, *, limite: int = 20, cursor: str | None = None) -> Load
             lote=FakeRepoLote(),
             produto=FakeRepoProduto(),
             movimento=FakeRepoMovimento(),
-            recebimento=_NaoUsado(),  # type: ignore[arg-type]
-            temperatura=_NaoUsado(),  # type: ignore[arg-type]
+            recebimento=_NaoUsado(),
+            temperatura=_NaoUsado(),
         ),
         dados=dados,
         pagina=Pagina(limite=limite, cursor=cursor),

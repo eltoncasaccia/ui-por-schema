@@ -91,7 +91,10 @@ async def semear(url: str) -> None:
                     "status": st,
                     "endereco": end,
                 }
-                for lid, pid, num, uid, fab, val, st, end in dados.lotes()
+                for lid, pid, num, uid, fab, val, st, end in [
+                    *dados.lotes(),
+                    *dados.lotes_em_volume(),
+                ]
             ],
             ["id"],
         )

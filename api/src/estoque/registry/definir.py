@@ -28,7 +28,7 @@ class Pagina:
     quantas linhas cabem nem por onde continuar. Isso pertence a quem rola.
     """
 
-    limite: int = 40
+    limite: int = 20
     cursor: str | None = None
 
 

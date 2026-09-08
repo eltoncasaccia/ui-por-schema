@@ -520,7 +520,7 @@ async def caixa(sessao: str | None = Cookie(default=None)) -> dict[str, Any]:
 
 # ---------------------------------------------------------------- dados
 class PaginaPedido(BaseModel):
-    limite: int = Field(default=40, ge=1, le=200)
+    limite: int = Field(default=20, ge=1, le=200)
     cursor: str | None = None
 
 

@@ -10,11 +10,13 @@
  */
 import { view as estoque_indicador } from './estoque_indicador'
 import { view as fila_vencimento } from './fila_vencimento'
+import { view as vencimento_grafico } from './vencimento_grafico'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const VIEWS: Record<string, (props: { vm: any }) => JSX.Element> = {
   estoque_indicador,
   fila_vencimento,
+  vencimento_grafico,
 }
 
 export const IDS_DAS_VIEWS = Object.keys(VIEWS).sort()

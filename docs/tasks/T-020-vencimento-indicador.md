@@ -6,7 +6,7 @@
 | **Trilha** | D |
 | **Tamanho** | M |
 | **Depende de** | T-007, T-008, T-009, T-012, T-015 · liberada por T-017 |
-| **Componentes** | `fila_vencimento` `estoque_indicador` |
+| **Componentes** | `fila_vencimento` `estoque_indicador` `vencimento_grafico` |
 | **Regras** | RN-L04, RN-L05, RN-A01, RN-A02 |
 | **Requisitos** | `CA-03` |
 
@@ -46,6 +46,12 @@ web/src/views/estoque_indicador.tsx
 |---|---|---|---|
 | `fila_vencimento` | `unidadeId?` `janela: 30\|60\|90` | `lote.ler` | `inteira` |
 | `estoque_indicador` | `metrica` (enum) `unidadeId?` | varia por métrica | `linha` |
+| `vencimento_grafico` | `horizonte: 90\|180\|365` `unidadeId?` | `lote.ler` | `inteira` |
+
+> **Por que a curva é componente próprio, e não param do indicador:** o
+> indicador responde *quantos*; a curva responde *quando*. "12 lotes vencem em
+> 90 dias" não diz se são 12 na semana que vem ou 12 espalhados no trimestre —
+> e essa é a diferença entre uma tarde de trabalho e R$ 183 mil perdidos.
 
 Métricas do enum de `estoque_indicador`:
 `lotes_em_quarentena` · `lotes_vencendo_90d` · `lotes_bloqueados` ·
@@ -68,7 +74,7 @@ Ação sobre lote vencido — bloqueio e liberação são T-027.
       valor literal. *(negativo — inegociável nº 3 da arquitetura)*
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+2**.
+- [ ] Contagem de catálogo no BOARD: **+3**.
 
 ## Armadilhas
 

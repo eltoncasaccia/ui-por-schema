@@ -97,6 +97,6 @@ export const api = {
       method: 'POST',
       // `pagina` vai FORA de `params`: paginação é transporte, e o modelo
       // nunca escolhe quantas linhas cabem nem por onde continuar.
-      body: JSON.stringify({ params, pagina: { limite: 40, cursor: cursor ?? null } }),
+      body: JSON.stringify({ params, pagina: { limite: 20, cursor: cursor ?? null } }),
     }),
 }

@@ -156,7 +156,7 @@ graph TD
 |---|---|---|---|---|
 | [T-018](./T-018-componentes-lote.md) | Lote | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` | G | ⬜ |
 | [T-019](./T-019-componentes-produto.md) | Produto e custo restrito | `produto_ficha` `produto_saldo_por_unidade` | M | ⬜ |
-| [T-020](./T-020-vencimento-indicador.md) | Vencimento e indicador | `fila_vencimento` `estoque_indicador` | M | ⬜ |
+| [T-020](./T-020-vencimento-indicador.md) | Vencimento, indicador e curva | `fila_vencimento` `estoque_indicador` `vencimento_grafico` | G | ⬜ |
 | [T-021](./T-021-rastreabilidade.md) | Rastreabilidade `CA-01` | `rastreabilidade` | M | ⬜ |
 | [T-022](./T-022-recebimento-leitura.md) | Recebimento | `recebimento_lista` `recebimento_detalhe` | M | ⬜ |
 | [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | ⬜ |
@@ -195,10 +195,10 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 
 | Onda | Componentes | Acumulado |
 |---|---|---|
-| W3 | 15 de leitura | 15 |
-| W4 | 7 de escrita | **22** |
+| W3 | 15 de leitura + `vencimento_grafico` | 16 |
+| W4 | 7 de escrita | **23** |
 
-**22, folga de 3.** Toda tarefa que registra componente atualiza esta tabela no
+**23, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no
 mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.
 
 ---

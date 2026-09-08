@@ -4,12 +4,13 @@
  * Nunca emoji: emoji muda de forma entre plataformas, não recolore e não
  * escala junto do texto.
  */
-type Props = { tamanho?: number; titulo?: string }
+type Props = { tamanho?: number; titulo?: string; preenchida?: boolean }
 
-function Svg({ tamanho = 18, titulo, children }: Props & { children: React.ReactNode }) {
+function Svg({ tamanho = 18, titulo, preenchida, children }: Props & { children: React.ReactNode }) {
   return (
     <svg
-      width={tamanho} height={tamanho} viewBox="0 0 20 20" fill="none"
+      width={tamanho} height={tamanho} viewBox="0 0 20 20"
+      fill={preenchida ? 'currentColor' : 'none'}
       stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"
       role={titulo ? 'img' : 'presentation'} aria-label={titulo} aria-hidden={titulo ? undefined : true}
     >

@@ -9,54 +9,78 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
 
 :root {
-  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --raio: 10px;
-  --raio-sm: 7px;
-  --e1: 4px;  --e2: 8px;  --e3: 12px;  --e4: 16px;  --e5: 22px;  --e6: 32px;
+  --raio: 12px;
+  --raio-sm: 8px;
+  --e1: 4px;  --e2: 8px;  --e3: 12px;  --e4: 18px;  --e5: 26px;  --e6: 40px;
   --barra: 52px;
-  --toque: 44px;             /* alvo mínimo de toque */
+  --toque: 44px;
 
-  /* claro é o padrão; escuro sobrescreve abaixo */
-  --s0: #f4f6f9;  --s1: #fafbfc;  --s2: #ffffff;  --campo: #ffffff;
-  --linha: #dfe3e9;  --linha-fraca: #eaedf1;
-  --texto: #16191f;  --dim: #545c6b;  --fraco: #7c8697;
-  --acento: #2563c9;  --acento-bg: #e8f0fd;  --acento-borda: #b9d1f7;
+  /* ── Tema claro — neutros de papel, quentes ─────────────────────────
+     Não é um cinza-azulado de editor de código: é um sistema de REGISTRO
+     lido o dia inteiro sob luz de armazém. O fundo tem calor, o texto é
+     tinta, e a cor só aparece onde significa estado.                   */
+  --s0: #f7f5f2;   /* o chão */
+  --s1: #fbfaf8;   /* painéis */
+  --s2: #ffffff;   /* cartões */
+  --campo: #ffffff;
+  --linha: #e5e0d8;  --linha-fraca: #efebe4;
+  --texto: #1c1a17;  --dim: #5e574d;  --fraco: #8a8175;
+
+  /* Verde-azulado profundo: registro clínico, não SaaS genérico. */
+  --acento: #0f6b62;  --acento-bg: #e3f2ef;  --acento-borda: #a8d5ce;
+
   --bom: #17794c;      --bom-b: #bfe3d0;
-  --ciano: #0e6d92;    --ciano-b: #bfe0ec;
-  --ambar: #8a6100;    --ambar-b: #f0dcae;
-  --laranja: #a34a10;  --laranja-b: #f3d4b8;
-  --ruim: #b3261e;     --ruim-b: #f2c9c6;
-  --sombra: 0 1px 2px rgb(16 25 40 / 5%), 0 4px 12px rgb(16 25 40 / 4%);
+  --ciano: #0d5fa8;    --ciano-b: #c3daf2;
+  --ambar: #a86800;    --ambar-b: #ecd9ab;
+  --laranja: #a34a10;  --laranja-b: #f0cfb2;
+  --ruim: #c62828;     --ruim-b: #f2c9c6;
+  --fixada: #a86800;   --fixada-b: #ecd9ab;
+
+  --u0: #dda06a;  --u1: #b8590d;  --u2: #7a3408;  --u3: #c62828;
+
+  /* Sombra de papel: elevação por luz, não por borda. */
+  --sombra: 0 1px 1px rgb(38 30 20 / 4%), 0 3px 8px rgb(38 30 20 / 5%);
+  --sombra-alta: 0 12px 40px rgb(38 30 20 / 16%);
+  --borda-cartao: transparent;
   color-scheme: light;
 }
 
+/* ── Tema escuro — tinta quente, não preto azulado ───────────────── */
 :root[data-tema="escuro"] {
-  --s0: #0e1014;  --s1: #12151a;  --s2: #15181e;  --campo: #1b1f27;
-  --linha: #242932;  --linha-fraca: #1c212a;
-  --texto: #e6e9ef;  --dim: #98a1b0;  --fraco: #6b7484;
-  --acento: #6ea8fe;  --acento-bg: #223252;  --acento-borda: #33507d;
+  --s0: #14120f;  --s1: #1a1815;  --s2: #201d19;  --campo: #191612;
+  --linha: #302c26;  --linha-fraca: #272320;
+  --texto: #ece7de;  --dim: #a89f92;  --fraco: #7a7266;
+  --acento: #4ec5b3;  --acento-bg: #143b36;  --acento-borda: #1f5c53;
   --bom: #4ade80;      --bom-b: #1e4632;
-  --ciano: #7dd3fc;    --ciano-b: #1c4257;
+  --ciano: #6ba7f5;    --ciano-b: #1c3a5c;
   --ambar: #fbbf24;    --ambar-b: #4a3c15;
   --laranja: #fb923c;  --laranja-b: #5c3416;
-  --ruim: #f87171;     --ruim-b: #5a2626;
+  --ruim: #ef4444;     --ruim-b: #5a2626;
+  --fixada: #fbbf24;   --fixada-b: #4a3c15;
+  --u0: #a8621f;  --u1: #d9822b;  --u2: #fdba74;  --u3: #ef4444;
   --sombra: none;
+  --sombra-alta: 0 12px 40px rgb(0 0 0 / 45%);
+  --borda-cartao: var(--linha);
   color-scheme: dark;
 }
-
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema="claro"]) {
-    --s0: #0e1014;  --s1: #12151a;  --s2: #15181e;  --campo: #1b1f27;
-    --linha: #242932;  --linha-fraca: #1c212a;
-    --texto: #e6e9ef;  --dim: #98a1b0;  --fraco: #6b7484;
-    --acento: #6ea8fe;  --acento-bg: #223252;  --acento-borda: #33507d;
+    --s0: #14120f;  --s1: #1a1815;  --s2: #201d19;  --campo: #191612;
+    --linha: #302c26;  --linha-fraca: #272320;
+    --texto: #ece7de;  --dim: #a89f92;  --fraco: #7a7266;
+    --acento: #4ec5b3;  --acento-bg: #143b36;  --acento-borda: #1f5c53;
     --bom: #4ade80;      --bom-b: #1e4632;
-    --ciano: #7dd3fc;    --ciano-b: #1c4257;
+    --ciano: #6ba7f5;    --ciano-b: #1c3a5c;
     --ambar: #fbbf24;    --ambar-b: #4a3c15;
     --laranja: #fb923c;  --laranja-b: #5c3416;
-    --ruim: #f87171;     --ruim-b: #5a2626;
+    --ruim: #ef4444;     --ruim-b: #5a2626;
+    --fixada: #fbbf24;   --fixada-b: #4a3c15;
+    --u0: #a8621f;  --u1: #d9822b;  --u2: #fdba74;  --u3: #ef4444;
     --sombra: none;
+    --sombra-alta: 0 12px 40px rgb(0 0 0 / 45%);
+    --borda-cartao: var(--linha);
     color-scheme: dark;
   }
 }
@@ -99,45 +123,50 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn:disabled { opacity: .45; cursor: default; }
 .btn-primario { background: var(--acento-bg); border-color: var(--acento-borda); color: var(--acento); }
 .btn-icone { padding: 6px 8px; }
-.btn.is-ativo { color: var(--ambar); border-color: var(--ambar-b); }
+/* Fixada: a estrela preenchida em âmbar. Clicar de novo devolve ao contorno. */
+.btn.is-fixada { color: var(--fixada); border-color: var(--fixada-b); }
+.btn.is-fixada:hover { color: var(--fixada); border-color: var(--fixada); }
+.fixada-linha { position: relative; }
+.fixada-linha .nav-item { padding-right: 40px; }
+.fixada-estrela {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  border-color: transparent; background: none;
+}
 
 /* ─── cartão ─────────────────────────────────────────────────────── */
 .cartao {
-  background: var(--s2); border: 1px solid var(--linha);
+  background: var(--s2); border: 1px solid var(--borda-cartao);
   border-radius: var(--raio); box-shadow: var(--sombra); overflow: hidden;
 }
 .cartao-cabeca {
   display: flex; align-items: center; justify-content: space-between; gap: var(--e2);
-  padding: 11px 15px; border-bottom: 1px solid var(--linha-fraca);
+  padding: 14px var(--e4); border-bottom: 1px solid var(--linha-fraca);
 }
-.cartao-corpo { padding: var(--e3) 15px; }
+.cartao-corpo { padding: var(--e4); }
 
 /* ─── indicador ──────────────────────────────────────────────────── */
+/* Sem barra de acento na borda esquerda: era decoração repetindo o que a
+   etiqueta e o gráfico já dizem — e é um clichê. O estado vive no dado. */
 .indicador {
-  background: var(--s2); border: 1px solid var(--linha);
-  border-left: 2px solid var(--acento); border-radius: var(--raio);
-  padding: 13px 15px; display: flex; flex-direction: column; gap: 2px;
-  min-width: 0; box-shadow: var(--sombra);
+  background: var(--s2); border: 1px solid var(--borda-cartao);
+  border-radius: var(--raio); box-shadow: var(--sombra);
+  padding: var(--e4); display: flex; flex-direction: column;
+  min-width: 0;
 }
 .indicador-rotulo {
-  font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--fraco); overflow-wrap: anywhere;   /* não estoura em coluna estreita */
+  font-size: 12px; font-weight: 500; color: var(--dim);
+  overflow-wrap: anywhere; margin-bottom: 6px;
 }
+/* O número é o elemento dominante — e é o único que cresce com a coluna. */
 .indicador-valor {
-  font-size: clamp(20px, 2.2vw + 12px, 27px); font-weight: 600; line-height: 1.1;
-  overflow-wrap: anywhere;
+  font-size: clamp(28px, 3.4vw + 14px, 40px); font-weight: 600; line-height: 1;
+  letter-spacing: -.025em; overflow-wrap: anywhere;
 }
-.indicador-nota { font-size: 11px; color: var(--fraco); }
-.tom-bom     { border-left-color: var(--bom); }
-.tom-ciano   { border-left-color: var(--ciano); }
-.tom-ambar   { border-left-color: var(--ambar); }
-.tom-laranja { border-left-color: var(--laranja); }
-.tom-ruim    { border-left-color: var(--ruim); }
-.tom-neutro  { border-left-color: var(--acento); }
+.indicador-nota { font-size: 12px; color: var(--fraco); margin-top: 5px; }
 
 /* ─── etiquetas de estado ────────────────────────────────────────── */
 .etiqueta {
-  display: inline-block; padding: 2px 9px; border-radius: 20px;
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
   font-size: 11px; white-space: nowrap; border: 1px solid var(--linha);
   color: var(--dim);
 }
@@ -152,7 +181,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ─── grade de indicadores ───────────────────────────────────────── */
 .grade-indicadores {
   display: grid; gap: var(--e3);
-  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
 }
 /* dentro do assistente a coluna é estreita: uma por linha, sempre */
 .assistente-dock .grade-indicadores { grid-template-columns: minmax(0, 1fr); }
@@ -161,11 +190,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tabela-rolagem { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .tabela { width: 100%; border-collapse: collapse; font-size: 13px; }
 .tabela th {
-  text-align: left; padding: 9px 15px; font-size: 11px; font-weight: 500;
+  text-align: left; padding: 10px var(--e4); font-size: 11px; font-weight: 500;
   letter-spacing: .05em; text-transform: uppercase; color: var(--fraco);
   border-bottom: 1px solid var(--linha); white-space: nowrap;
 }
-.tabela td { padding: 10px 15px; border-bottom: 1px solid var(--linha-fraca); }
+.tabela td { padding: 12px var(--e4); border-bottom: 1px solid var(--linha-fraca); }
 .tabela tr:last-child td { border-bottom: 0; }
 .tabela .num { text-align: right; font-variant-numeric: tabular-nums; }
 
@@ -451,23 +480,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .so-estreito { display: inline-flex; }
 @media (min-width: 900px) { .so-estreito { display: none; } }
 
-/* ─── rampa sequencial de urgência ───────────────────────────────
-   Uma matiz, clara → escura. Urgência é magnitude, não identidade:
-   rampa separa por luminosidade, que todo daltonismo preserva.
-   Duas matizes (âmbar/laranja) deram ΔE 0.4 para deuteranopia no
-   tema claro — indistinguíveis. Foi medido, não estimado.          */
-:root {
-  --u0: #dda06a;  --u1: #b8590d;  --u2: #7a3408;  --u3: #c62828;
-}
-:root[data-tema="escuro"] { --u0: #a8621f; --u1: #d9822b; --u2: #fdba74; --u3: #ef4444; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-tema="claro"]) { --u0: #a8621f; --u1: #d9822b; --u2: #fdba74; --u3: #ef4444; }
-}
-
-.faixas { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+.faixas { display: flex; flex-direction: column; gap: 9px; margin-top: 16px; }
 .faixas-barra {
   display: flex; gap: 2px;            /* 2px de superfície entre segmentos */
-  height: 7px; border-radius: 4px; overflow: hidden;
+  height: 6px; border-radius: 3px;
 }
 .seg { display: block; border-radius: 2px; min-width: 3px; }
 .seg-u0 { background: var(--u0); } .seg-u1 { background: var(--u1); }
@@ -481,12 +497,44 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .ponto { width: 8px; height: 8px; border-radius: 2px; flex: none; }
 .faixas-rotulo { color: var(--dim); }
 .faixas-valor { color: var(--texto); font-variant-numeric: tabular-nums; font-weight: 500; }
-.indicador-detalhe {
-  margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: var(--dim);
-  border-top: 1px solid var(--linha-fraca); padding-top: 8px;
-}
+/* Sem divisória: o espaço já separa, e menos linha é menos ruído. */
+.indicador-detalhe { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: var(--dim); }
 
 .sentinela {
   min-height: 36px; display: grid; place-items: center;
   font-size: 12px; color: var(--fraco);
+}
+
+/* ─── gráfico de barras ──────────────────────────────────────────
+   Um eixo só. Marcas finas, topo arredondado, 2px de superfície
+   entre colunas. Rótulo do eixo desbastado: legenda a cada N.     */
+.gr {
+  display: flex; align-items: flex-end; gap: 2px;
+  height: 168px; margin-top: 14px;
+}
+.gr-col {
+  flex: 1; min-width: 0; height: 100%;
+  display: flex; align-items: flex-end; justify-content: center;
+  position: relative; border-radius: 3px; background: none; border: 0; padding: 0;
+}
+.gr-col:hover, .gr-col:focus-visible { background: var(--linha-fraca); outline: none; }
+.gr-barra {
+  display: block; width: 100%; min-height: 2px;
+  border-radius: 3px 3px 0 0; transition: opacity .12s;
+}
+.gr-u0 { background: var(--u0); } .gr-u1 { background: var(--u1); }
+.gr-u2 { background: var(--u2); } .gr-u3 { background: var(--u3); }
+.gr-dica {
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--s2); border: 1px solid var(--linha); border-radius: var(--raio-sm);
+  box-shadow: var(--sombra-alta); padding: 6px 10px; font-size: 12px;
+  white-space: nowrap; z-index: 5; pointer-events: none;
+}
+.gr-eixo {
+  display: flex; gap: 2px; margin-top: 7px;
+  font-size: 10px; color: var(--fraco); font-family: var(--mono);
+}
+.gr-eixo > span {
+  flex: 1; min-width: 0; text-align: center;
+  white-space: nowrap; overflow: visible;
 }

@@ -315,6 +315,46 @@ def lotes() -> list[tuple[str, str, str, str, date, date, str, str | None]]:
     ]
 
 
+def lotes_em_volume() -> list[tuple[str, str, str, str, date, date, str, str | None]]:
+    """Volume para a fila de vencimento ter o que rolar.
+
+    Os casos NOMEADOS acima continuam sendo a fixture de teste — cada um existe
+    por uma regra. Estes aqui sao massa: 130 lotes espalhados pelo ano, para
+    exercitar paginacao, scroll infinito e a curva de vencimento com forma de
+    verdade em vez de tres barras.
+    """
+    rnd = random.Random(SEED + 2)
+    saida: list[tuple[str, str, str, str, date, date, str, str | None]] = []
+    produtos_secos = ["p-losartana", "p-amoxicilina", "p-dipirona", "p-omeprazol"]
+    frios = ["p-insulina", "p-vacina-hep"]
+
+    for i in range(160):
+        # Distribuicao com picos, como um estoque real: o que foi comprado
+        # junto vence junto.
+        base = rnd.choice([8, 18, 25, 25, 38, 50, 50, 62, 80, 80, 110, 145, 200, 280])
+        dias = max(-25, base + rnd.randint(-12, 12))
+        frio = i % 7 == 0
+        pid = rnd.choice(frios if frio else produtos_secos)
+        uid = (
+            "cd-refrigerado"
+            if frio
+            else rnd.choice(["cd-matriz", "cd-matriz", "filial-uberlandia"])
+        )
+        saida.append(
+            (
+                f"l-v{i:03d}",
+                pid,
+                f"V{i:03d}",
+                uid,
+                _d(-rnd.randint(120, 500)),
+                _d(dias),
+                "liberado" if dias > -1 or rnd.random() > 0.4 else "bloqueado",
+                f"{'F' if frio else 'R'}{rnd.randint(1, 9)}-{rnd.choice('ABCD')}",
+            )
+        )
+    return saida
+
+
 def movimentos() -> list[dict[str, object]]:
     """Entradas, saidas com cliente e nota (CA-01), e um controlado pendente."""
     rnd = random.Random(SEED)
@@ -328,7 +368,7 @@ def movimentos() -> list[dict[str, object]]:
         kw.setdefault("status", "efetivado")
         saida.append(kw)
 
-    todos = lotes()
+    todos = [*lotes(), *lotes_em_volume()]
     for lid, _pid, _num, uid, _fab, _val, status, _end in todos:
         if status == "descartado":
             continue

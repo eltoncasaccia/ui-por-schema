@@ -58,7 +58,9 @@ class VM(BaseModel):
     tem_mais: bool = False
 
 
-PAGINA = 40
+# Pagina curta de proposito: uma tabela operacional e' lida de cima para
+# baixo, e 20 linhas cabem na tela sem rolar duas vezes antes de carregar.
+PAGINA = 20
 
 
 class Dados(BaseModel):

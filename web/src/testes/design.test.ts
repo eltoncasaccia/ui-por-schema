@@ -11,10 +11,13 @@ import { describe, expect, it } from 'vitest'
 
 const css = readFileSync(join(import.meta.dirname, '..', 'estilo.css'), 'utf8')
 
+/** Casa o seletor no INÍCIO de uma linha — senão `.nav-item` acha
+ *  `.fixada-linha .nav-item` e o teste passa a testar outra regra. */
 function regra(seletor: string): string {
-  const i = css.indexOf(seletor + ' {')
-  if (i === -1) throw new Error(`seletor ausente: ${seletor}`)
-  return css.slice(i, css.indexOf('}', i))
+  const esc = seletor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const m = new RegExp(`^${esc}\\s*\\{`, 'm').exec(css)
+  if (!m) throw new Error(`seletor ausente: ${seletor}`)
+  return css.slice(m.index, css.indexOf('}', m.index))
 }
 
 describe('tokens', () => {
@@ -47,9 +50,9 @@ describe('componentes não quebram', () => {
   })
 
   it('a grade de indicadores nunca fica mais larga que o container', () => {
-    // `minmax(min(190px, 100%), 1fr)` — sem o `min()`, 190px estoura a coluna
-    // estreita do assistente e as colunas se sobrepõem. Foi o bug da captura.
-    expect(regra('.grade-indicadores')).toContain('minmax(min(190px, 100%), 1fr)')
+    // Sem o `min()`, a largura mínima estoura a coluna estreita do assistente
+    // e as colunas se sobrepõem. Foi um bug real.
+    expect(regra('.grade-indicadores')).toMatch(/minmax\(min\(\d+px, 100%\), 1fr\)/)
   })
 
   it('dentro do assistente os indicadores empilham', () => {
@@ -59,6 +62,22 @@ describe('componentes não quebram', () => {
   it('alvo de toque de 44px é token, não número solto', () => {
     expect(regra(':root')).toContain('--toque: 44px')
     expect(regra('.nav-item')).toContain('min-height: var(--toque)')
+  })
+})
+
+describe('sem clichês', () => {
+  it('nenhum cartão tem barra de acento na borda esquerda', () => {
+    // Está na lista de clichês da própria diretriz de design, e era o que o
+    // indicador fazia: decoração repetindo o que a etiqueta já diz.
+    expect(regra('.indicador')).not.toContain('border-left')
+    expect(regra('.cartao')).not.toContain('border-left')
+  })
+
+  it('o número é o elemento dominante do indicador', () => {
+    const valor = regra('.indicador-valor')
+    const rotulo = regra('.indicador-rotulo')
+    expect(valor).toContain('clamp(')
+    expect(rotulo).toContain('font-size: 12px')
   })
 })
 

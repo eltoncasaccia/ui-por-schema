@@ -10,6 +10,7 @@ import { MENU, PainelNavegacao, type ItemNav } from './shell/PainelNavegacao'
 import { Workspace } from './shell/Workspace'
 import { Icone } from './ui/icones'
 import { useDivisor } from './ui/useDivisor'
+import { LIMITE_ESTREITO, useLargura } from './ui/useLargura'
 import { useTema } from './ui/useTema'
 
 type PainelId = 'navegacao' | 'fixadas'
@@ -32,6 +33,7 @@ export function App() {
   const [itemAtual, setItemAtual] = useState<string | null>(null)
   const [tema, setTema] = useTema()
   const { composicoes, noWorkspace } = useSessao()
+  const largura = useLargura()
 
   const lateral = useDivisor(272, 200, 460, 'esquerda')
   const dock = useDivisor(380, 300, 620, 'direita')
@@ -40,11 +42,19 @@ export function App() {
     api.eu().then(setEu).catch(() => setEu(null)).finally(() => setCarregando(false))
   }, [])
 
+  // Ao estreitar, painel e assistente viram sobreposição. Deixar os dois
+  // abertos empilha um sobre o outro e some com o workspace — o que a captura
+  // mostrava. Ao estreitar, recolhe; ao alargar, devolve o assistente.
+  useEffect(() => {
+    if (largura < LIMITE_ESTREITO) { setPainel(null); setAssistente(false) }
+    else setAssistente(true)
+  }, [largura])
+
   if (carregando) return <p className="vazio" style={{ padding: 32 }}>carregando…</p>
   if (!eu) return <Login aoEntrar={setEu} />
 
   const atual = noWorkspace ? composicoes[noWorkspace] : undefined
-  const estreito = typeof window !== 'undefined' && window.innerWidth < 900
+  const estreito = largura < LIMITE_ESTREITO
 
   function abrir(titulo: string, blocos: Bloco[], item: string | null = null) {
     setItemAtual(item)

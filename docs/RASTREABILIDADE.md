@@ -72,6 +72,7 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 6 | `produto_saldo_por_unidade` | `lote.ler` | T-019 |
 | 7 | `fila_vencimento` | `lote.ler` | [T-020](./tasks/T-020-vencimento-indicador.md) |
 | 8 | `estoque_indicador` | varia por métrica | T-020 |
+| 8b | `vencimento_grafico` | `lote.ler` | T-020 |
 | 9 | `rastreabilidade` | `auditoria.rastrear` | [T-021](./tasks/T-021-rastreabilidade.md) |
 | 10 | `recebimento_lista` | `recebimento.ler` | [T-022](./tasks/T-022-recebimento-leitura.md) |
 | 11 | `recebimento_detalhe` | `recebimento.ler` | T-022 |

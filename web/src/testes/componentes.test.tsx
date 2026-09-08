@@ -15,6 +15,7 @@ import { Tabela, type Coluna } from '../ui/Tabela'
 import { SITUACAO } from '../ui/estados'
 import { view as ViewIndicador, formatar } from '../views/estoque_indicador'
 import { view as ViewFila, dataBr, type Linha } from '../views/fila_vencimento'
+import { view as ViewGrafico } from '../views/vencimento_grafico'
 import { agrupar } from '../render/motor'
 import type { Bloco } from '../api'
 
@@ -191,5 +192,51 @@ describe('não vazar existência', () => {
   it('bloco negado por registro não renderiza nada', () => {
     const motor = readFileSync(join(import.meta.dirname, '..', 'render', 'motor.tsx'), 'utf8')
     expect(motor).toContain("e.codigo === 'nao_encontrado') return null")
+  })
+})
+
+describe('vencimento_grafico', () => {
+  const VM = {
+    horizonte_dias: 180, escopo: '2 unidades', total_lotes: 30, pico_rotulo: '08 out',
+    baldes: [
+      { rotulo: '08 set', inicio: '2026-09-08', lotes: 10, unidades: 400, urgencia: 2 },
+      { rotulo: '23 set', inicio: '2026-09-23', lotes: 0, unidades: 0, urgencia: 2 },
+      { rotulo: '08 out', inicio: '2026-10-08', lotes: 20, unidades: 900, urgencia: 1 },
+    ],
+    legenda: ['vencidos', 'até 30 dias', '31–90 dias', 'acima de 90 dias'],
+  }
+
+  it('a altura da barra é proporcional ao valor, não à posição', () => {
+    const { container } = render(<ViewGrafico vm={VM} />)
+    const alturas = [...container.querySelectorAll('.gr-barra')].map((b) => (b as HTMLElement).style.height)
+    expect(alturas).toEqual(['50%', '0%', '100%'])
+  })
+
+  it('tem descrição acessível com os períodos que têm lotes', () => {
+    render(<ViewGrafico vm={VM} />)
+    expect(screen.getByRole('img')).toHaveAccessibleName(/08 set, 10/)
+  })
+
+  it('balde vazio não recebe foco — nada a inspecionar ali', () => {
+    const { container } = render(<ViewGrafico vm={VM} />)
+    const tabs = [...container.querySelectorAll('.gr-col')].map((c) => c.getAttribute('tabindex'))
+    expect(tabs).toEqual(['0', '-1', '0'])
+  })
+
+  it('horizonte sem nada não desenha barra nenhuma', () => {
+    const { container } = render(
+      <ViewGrafico vm={{ ...VM, total_lotes: 0, pico_rotulo: null, baldes: [] }} />,
+    )
+    expect(container.querySelector('.gr')).toBeNull()
+    expect(screen.getByText('Nada vence neste horizonte.')).toBeInTheDocument()
+  })
+
+  it('o eixo desbasta rótulos em vez de sobrepor', () => {
+    const muitos = Array.from({ length: 24 }, (_, i) => ({
+      rotulo: `d${i}`, inicio: `2026-01-${i + 1}`, lotes: i, unidades: i, urgencia: 0,
+    }))
+    const { container } = render(<ViewGrafico vm={{ ...VM, baldes: muitos }} />)
+    const visiveis = [...container.querySelectorAll('.gr-eixo > span')].filter((s) => s.textContent)
+    expect(visiveis.length).toBeLessThanOrEqual(8)
   })
 })

@@ -25,16 +25,19 @@ export function PainelFixadas({
           <p className="vazio" style={{ padding: '0 4px 8px' }}>Use a estrela no cabeçalho.</p>
         ) : (
           fixadas.map((f) => (
-            <div key={f.viewKey} style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <button className="nav-item" style={{ flex: 1, minWidth: 0 }} onClick={() => aoAbrir(f.titulo, f.blocos)}>
-                <span className="nav-icone"><Icone.Estrela tamanho={16} /></span>
+            <div key={f.viewKey} className="fixada-linha">
+              <button className="nav-item" onClick={() => aoAbrir(f.titulo, f.blocos)}>
+                <span className="nav-icone" />
                 <span className="nav-titulo" style={{ overflowWrap: 'anywhere' }}>{f.titulo}</span>
                 <span className="nav-sub mono">{f.viewKey}</span>
               </button>
+              {/* A própria estrela desafixa. Um "x" ao lado era um segundo
+                  controle para a mesma ação, e mais ruído na coluna. */}
               <button
-                className="btn btn-icone" aria-label={`Desafixar ${f.titulo}`}
+                className="btn btn-icone is-fixada fixada-estrela"
+                aria-label={`Desafixar ${f.titulo}`} title="Desafixar"
                 onClick={() => sessao.fixar({ id: '', titulo: f.titulo, origem: 'sistema', blocos: f.blocos, schema: null, viewKey: f.viewKey })}
-              ><Icone.Fechar tamanho={14} /></button>
+              ><Icone.Estrela tamanho={15} preenchida /></button>
             </div>
           ))
         )}

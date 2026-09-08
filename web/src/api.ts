@@ -68,7 +68,10 @@ export const api = {
       method: 'POST', body: JSON.stringify({ titulo, schema }),
     }),
   abrirView: (viewId: string) => chamar<ViewAberta>(`/api/views/${viewId}`),
-  destinatarios: () => chamar<Destinatario[]>('/api/destinatarios'),
+  destinatarios: (schema: unknown) =>
+    chamar<Destinatario[]>('/api/destinatarios', {
+      method: 'POST', body: JSON.stringify({ schema }),
+    }),
   compartilhar: (view_id: string, para: string, mensagem?: string) =>
     chamar<unknown>('/api/compartilhamentos', {
       method: 'POST', body: JSON.stringify({ view_id, para, mensagem: mensagem ?? null }),

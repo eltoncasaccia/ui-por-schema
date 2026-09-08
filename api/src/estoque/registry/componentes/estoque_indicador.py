@@ -204,10 +204,12 @@ COMPONENTE = registrar(
         # ele e' FILTRADO por permissao. Repetir em prosa vazaria para o catalogo
         # de quem nao pode um valor que ele nao pode propor.
         description=(
-            "Mostra um número único do estoque para a métrica escolhida em `metrica`, "
+            "Mostra UM NÚMERO do estoque para a métrica escolhida em `metrica`, "
             "com a decomposição por unidade ou por faixa de urgência, sempre restrito "
-            "às unidades do usuário. Use para responder perguntas de contagem, de "
-            "total, ou para compor um panorama com vários indicadores."
+            "às unidades do usuário. Use quando a resposta é uma quantidade ou um "
+            "total. NÃO use quando pedirem gráfico, curva, evolução ou distribuição "
+            "ao longo do tempo — para isso existe `vencimento_grafico`, inclusive "
+            "quando a pergunta for por um panorama em forma de gráfico."
         ),
         # Exemplos SEM nome de unidade: uma unidade citada aqui pode nao pertencer
         # a quem esta' perguntando, e o catalogo e' o vocabulario DELE.
@@ -215,6 +217,7 @@ COMPONENTE = registrar(
             "quantos lotes estão em quarentena",
             "quanto tem bloqueado",
             "me dê um panorama do estoque",
+            "qual o total em quarentena",
         ),
         params=Params,
         requires=RequiresPorValor(

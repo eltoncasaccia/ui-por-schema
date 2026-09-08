@@ -40,7 +40,7 @@ export function Workspace({ eu, aoCompartilhar }: { eu: Eu; aoCompartilhar: () =
         <div className="workspace-acoes">
           {/* Só a estrela: o rótulo repetia o que o ícone já diz, e o estado
               (fixada ou não) fica no preenchimento, não num texto. */}
-          <button className={`btn btn-icone ${fixada ? 'is-fixada' : ''}`} onClick={() => sessao.fixar(c)}
+          <button className={`estrela ${fixada ? 'is-fixada' : ''}`} onClick={() => sessao.fixar(c)}
             aria-pressed={fixada} aria-label={fixada ? 'Desafixar view' : 'Fixar view'}
             title={fixada ? 'Desafixar' : 'Fixar'}>
             <Icone.Estrela tamanho={16} preenchida={fixada} />

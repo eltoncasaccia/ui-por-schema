@@ -19,19 +19,25 @@ const PAPEL: Record<string, string> = {
  * concede acesso.** Quem abre carrega sob a própria permissão.
  */
 export function Compartilhar({
-  titulo, blocos, schema, aoFechar,
-}: { titulo: string; blocos: Bloco[]; schema: unknown; aoFechar: () => void }) {
+  atorId, titulo, blocos, schema, aoFechar,
+}: { atorId: string; titulo: string; blocos: Bloco[]; schema: unknown; aoFechar: () => void }) {
   const [escolhido, setEscolhido] = useState('')
   const [mensagem, setMensagem] = useState('')
   const [estado, setEstado] = useState<'edicao' | 'enviando' | 'enviado'>('edicao')
   const [erro, setErro] = useState('')
-  const pessoas = useQuery({ queryKey: ['destinatarios'], queryFn: api.destinatarios })
+  const esquema = schema ?? { versao: 1, blocos: blocos.map((b) => ({ tipo: b.tipo, params: b.params })) }
+  // A chave carrega o ator E o schema: a lista depende dos dois. Sem o ator,
+  // o cache serve a lista de quem estava logado antes (ADR-0008).
+  const pessoas = useQuery({
+    queryKey: [atorId, 'destinatarios', esquema],
+    queryFn: () => api.destinatarios(esquema),
+  })
 
   async function enviar() {
     if (!escolhido) return
     setEstado('enviando'); setErro('')
     try {
-      const v = await api.criarView(titulo, schema ?? { versao: 1, blocos })
+      const v = await api.criarView(titulo, esquema)
       await api.compartilhar(v.view_id, escolhido, mensagem || undefined)
       setEstado('enviado')
     } catch (e) {
@@ -62,11 +68,13 @@ export function Compartilhar({
           <div className="dialogo-corpo">
             <p className="vazio" style={{ marginTop: 0 }}>
               Compartilha-se <strong>o schema</strong>, não os dados — assim o item
-              continua correto meses depois.
+              continua correto meses depois. A lista abaixo tem só quem consegue
+              abrir <em>esta</em> composição sob a permissão dele.
             </p>
 
             <fieldset className="lista-destinatarios">
               <legend className="rotulo">Para</legend>
+              {pessoas.isPending && <p className="vazio">carregando…</p>}
               {pessoas.data?.map((p) => (
                 <label key={p.id} className={`destinatario ${escolhido === p.id ? 'is-escolhido' : ''}`}>
                   <input
@@ -80,7 +88,12 @@ export function Compartilhar({
                   </span>
                 </label>
               ))}
-              {pessoas.data?.length === 0 && <p className="vazio">Ninguém para contatar.</p>}
+              {pessoas.data?.length === 0 && (
+                <p className="vazio">
+                  Ninguém pode abrir esta composição. Mandar assim entregaria
+                  uma tela vazia.
+                </p>
+              )}
             </fieldset>
 
             <label className="rotulo" htmlFor="msg" style={{ display: 'block', marginTop: 14 }}>

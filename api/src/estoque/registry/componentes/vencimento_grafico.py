@@ -142,14 +142,16 @@ COMPONENTE = registrar(
         id="vencimento_grafico",
         label="Curva de vencimento",
         description=(
-            "Gráfico de barras da quantidade de lotes que vence ao longo do tempo, "
-            "por quinzena ou por mês, dentro do horizonte escolhido. Use quando "
-            "pedirem um gráfico, uma curva, a evolução, a distribuição ao longo do "
-            "tempo, ou quando a pergunta for QUANDO as coisas vencem — e não "
-            "apenas quantas."
+            "GRÁFICO de barras da quantidade de lotes que vence ao longo do tempo, "
+            "por quinzena ou por mês, dentro do horizonte escolhido. Use SEMPRE que "
+            "a pergunta mencionar gráfico, curva, evolução, distribuição, linha do "
+            "tempo ou visualização — inclusive quando pedirem um panorama em forma "
+            "de gráfico. Também é a escolha certa para QUANDO as coisas vencem, e "
+            "não apenas quantas."
         ),
         examples=(
             "me mostre um gráfico do vencimento",
+            "panorama do estoque em formato de gráfico",
             "como se distribuem os vencimentos ao longo do ano",
             "quando vencem os lotes",
         ),

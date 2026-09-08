@@ -123,15 +123,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn:disabled { opacity: .45; cursor: default; }
 .btn-primario { background: var(--acento-bg); border-color: var(--acento-borda); color: var(--acento); }
 .btn-icone { padding: 6px 8px; }
-/* Fixada: a estrela preenchida em âmbar. Clicar de novo devolve ao contorno. */
-.btn.is-fixada { color: var(--fixada); border-color: var(--fixada-b); }
-.btn.is-fixada:hover { color: var(--fixada); border-color: var(--fixada); }
-.fixada-linha { position: relative; }
-.fixada-linha .nav-item { padding-right: 40px; }
-.fixada-estrela {
-  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
-  border-color: transparent; background: none;
+/* A estrela é só a estrela: sem caixa, sem borda, sem fundo. O estado vive no
+   preenchimento — contorno quando não fixada, âmbar cheia quando fixada. */
+.estrela {
+  display: inline-grid; place-items: center;
+  width: 32px; height: 32px; padding: 0;
+  background: none; border: 0; border-radius: var(--raio-sm);
+  color: var(--fraco);
 }
+.estrela:hover { color: var(--dim); background: var(--linha-fraca); }
+.estrela.is-fixada { color: var(--fixada); }
+.estrela.is-fixada:hover { color: var(--fixada); }
+.fixada-linha { position: relative; }
+.fixada-linha .nav-item { padding-right: 38px; }
+.fixada-estrela { position: absolute; right: 3px; top: 50%; transform: translateY(-50%); }
 
 /* ─── cartão ─────────────────────────────────────────────────────── */
 .cartao {

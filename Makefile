@@ -47,9 +47,12 @@ arch:  ## verificadores de arquitetura dos dois lados
 	cd api && uv run lint-imports
 	cd web && npx tsx scripts/arch-check.ts
 
-eval:  ## suíte de avaliação do assistente
-	cd api && uv run python -m eval.executar
+eval:  ## suíte de avaliação: mede os dois modos e publica no LangFuse
+	docker compose run --rm api python -m estoque.eval
+
+eval-livre:  ## só o modo livre — a pergunta original da v1
+	docker compose run --rm api python -m estoque.eval --modo livre
 
 check: lint typecheck test arch  ## tudo que o CI roda
 
-.PHONY: help up down reset logs db-local migrate seed types test typecheck lint arch eval check
+.PHONY: help up down reset logs db-local eval-livre migrate seed types test typecheck lint arch eval check

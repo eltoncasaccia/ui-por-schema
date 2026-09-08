@@ -17,14 +17,12 @@ import json
 import os
 import time
 from dataclasses import dataclass
-from typing import Any, Literal, Protocol
+from typing import Any, Protocol
 
 import httpx
 
 from estoque.assistant.prompt import montar
-from estoque.assistant.trace import Trace
-
-Modo = Literal["restrito", "livre"]
+from estoque.assistant.trace import Modo, Origem, Trace
 
 TIMEOUT_S = 30.0
 MAX_TOKENS = 1024
@@ -129,6 +127,27 @@ def _tipo_json(tipo_python: str) -> str:
     return "string"
 
 
+def ferramenta_do_catalogo(catalogo: list[dict[str, Any]]) -> dict[str, Any]:
+    """O MESMO schema, embrulhado como ferramenta.
+
+    Tool calling tem suporte mais amplo que `response_format: json_schema` —
+    modelos abertos servidos por Ollama, vLLM ou Groq costumam ter um e nao o
+    outro. Como a restricao e' identica, o resultado e' equivalente; muda so' o
+    envelope.
+
+    Derivado da MESMA funcao do modo restrito, de proposito: duas construcoes
+    do mesmo schema divergiriam, e a divergencia so' apareceria em producao.
+    """
+    return {
+        "type": "function",
+        "function": {
+            "name": "compor_tela",
+            "description": "Compõe a tela escolhendo componentes do catálogo.",
+            "parameters": json_schema_do_catalogo(catalogo),
+        },
+    }
+
+
 class ErroDeModelo(RuntimeError):
     """Falha do provedor. Erro tratado, nunca tela quebrada."""
 
@@ -139,14 +158,24 @@ class AdaptadorOpenRouter:
 
     BASE = "https://openrouter.ai/api/v1/chat/completions"
 
-    def __init__(self, chave: str | None = None, modelo: str | None = None) -> None:
-        self._chave = chave or os.environ.get("OPENROUTER_API_KEY", "")
+    def __init__(
+        self,
+        chave: str | None = None,
+        modelo: str | None = None,
+        base: str | None = None,
+        origem: Origem = "openrouter",
+        nome_da_chave: str = "OPENROUTER_API_KEY",
+    ) -> None:
+        self._chave = chave or os.environ.get(nome_da_chave, "")
         self._modelo = modelo or os.environ.get(
             "MODELO_ASSISTENTE", "anthropic/claude-haiku-4.5"
         )
+        self._base = base or self.BASE
+        self._origem: Origem = origem
+        self._nome_da_chave = nome_da_chave
         if not self._chave:
             msg = (
-                "OPENROUTER_API_KEY ausente. O adaptador real NAO cai para o mock: "
+                f"{nome_da_chave} ausente. O adaptador real NAO cai para o mock: "
                 "foi assim que a POC v1 publicou numeros de um parser simulado "
                 "sem perceber. Configure a chave ou use AdaptadorMock explicitamente."
             )
@@ -156,12 +185,68 @@ class AdaptadorOpenRouter:
         self, pergunta: str, catalogo: list[dict[str, Any]], modo: Modo = "restrito"
     ) -> Resposta:
         prompt = montar(pergunta, catalogo)
-        trace = Trace(origem="openrouter", modelo=self._modelo, pergunta=pergunta, modo=modo)
+        trace = Trace(
+            origem=self._origem,
+            modelo=self._modelo,
+            pergunta=pergunta,
+            modo=modo,
+            modo_efetivo=modo,
+        )
+        inicio = time.perf_counter()
+
+        # Nem todo provedor aceita `json_schema` estrito. Em vez de exigir, o
+        # adaptador tenta e CAI para a proxima forma — registrando qual valeu.
+        # Cair em silencio atribuiria o numero medido ao experimento errado.
+        for tentativa in _cadeia(modo):
+            corpo = self._corpo(prompt, catalogo, tentativa)
+            try:
+                async with httpx.AsyncClient(timeout=TIMEOUT_S) as cli:
+                    r = await cli.post(
+                        self._base,
+                        headers={
+                            "Authorization": f"Bearer {self._chave}",
+                            "X-Title": "Estoque Bertoni",
+                        },
+                        json=corpo,
+                    )
+                if r.status_code == 400 and tentativa != "livre":
+                    # 400 aqui e' quase sempre "nao suporto este envelope".
+                    trace.rejeitados.append((tentativa, "provedor recusou o envelope"))
+                    continue
+                r.raise_for_status()
+                dados = r.json()
+            except httpx.HTTPError as e:
+                trace.erro = type(e).__name__
+                trace.ms_total = int((time.perf_counter() - inicio) * 1000)
+                return Resposta("", trace)
+
+            trace.modo_efetivo = tentativa
+            trace.ms_total = int((time.perf_counter() - inicio) * 1000)
+            trace.ms_ate_primeiro_token = trace.ms_total  # sem streaming no ciclo 1
+            uso = dados.get("usage") or {}
+            trace.tokens_entrada = int(uso.get("prompt_tokens", 0))
+            trace.tokens_saida = int(uso.get("completion_tokens", 0))
+            # Custo RELATADO pelo provedor. Nao estimamos por tabela: tabela
+            # envelhece, e o roteador pode servir por caminhos de preco distinto.
+            if uso.get("cost") is not None:
+                trace.custo_usd = float(uso["cost"])
+            trace.provedor_efetivo = str(dados.get("provider") or "")
+            conteudo = _primeiro_conteudo(dados)
+            trace.resposta_bruta = conteudo
+            return Resposta(conteudo, trace)
+
+        trace.erro = "nenhum modo de saída aceito pelo provedor"
+        trace.ms_total = int((time.perf_counter() - inicio) * 1000)
+        return Resposta("", trace)
+
+    def _corpo(self, prompt: str, catalogo: list[dict[str, Any]], modo: Modo) -> dict[str, Any]:
         corpo: dict[str, Any] = {
             "model": self._modelo,
             "max_tokens": MAX_TOKENS,
             "temperature": 0,
             "messages": [{"role": "user", "content": prompt}],
+            # Pede o custo de volta; provedor que ignora simplesmente nao manda.
+            "usage": {"include": True},
         }
         if modo == "restrito":
             corpo["response_format"] = {
@@ -172,41 +257,33 @@ class AdaptadorOpenRouter:
                     "schema": json_schema_do_catalogo(catalogo),
                 },
             }
+        elif modo == "ferramenta":
+            corpo["tools"] = [ferramenta_do_catalogo(catalogo)]
+            corpo["tool_choice"] = {
+                "type": "function",
+                "function": {"name": "compor_tela"},
+            }
+        return corpo
 
-        inicio = time.perf_counter()
-        try:
-            async with httpx.AsyncClient(timeout=TIMEOUT_S) as cli:
-                r = await cli.post(
-                    self.BASE,
-                    headers={
-                        "Authorization": f"Bearer {self._chave}",
-                        "X-Title": "Estoque Bertoni",
-                    },
-                    json=corpo,
-                )
-                r.raise_for_status()
-                dados = r.json()
-        except httpx.HTTPError as e:
-            trace.erro = f"{type(e).__name__}"
-            trace.ms_total = int((time.perf_counter() - inicio) * 1000)
-            return Resposta("", trace)
 
-        trace.ms_total = int((time.perf_counter() - inicio) * 1000)
-        trace.ms_ate_primeiro_token = trace.ms_total  # sem streaming no ciclo 1
-        uso = dados.get("usage") or {}
-        trace.tokens_entrada = int(uso.get("prompt_tokens", 0))
-        trace.tokens_saida = int(uso.get("completion_tokens", 0))
-        trace.provedor_efetivo = str(dados.get("provider") or "")
-        conteudo = _primeiro_conteudo(dados)
-        trace.resposta_bruta = conteudo
-        return Resposta(conteudo, trace)
+def _cadeia(modo: Modo) -> tuple[Modo, ...]:
+    """Ordem de tentativa. `livre` fecha a fila porque funciona em toda parte."""
+    if modo == "restrito":
+        return ("restrito", "ferramenta", "livre")
+    if modo == "ferramenta":
+        return ("ferramenta", "livre")
+    return ("livre",)
 
 
 def _primeiro_conteudo(dados: dict[str, Any]) -> str:
+    """Le a resposta nas duas formas: conteudo direto ou argumento da ferramenta."""
     escolhas = dados.get("choices") or []
     if not escolhas:
         return ""
     msg = escolhas[0].get("message") or {}
+    chamadas = msg.get("tool_calls") or []
+    if chamadas:
+        return str((chamadas[0].get("function") or {}).get("arguments") or "")
     return str(msg.get("content") or "")
 
 

@@ -33,7 +33,6 @@ def bloco(tipo: str, **params: Any) -> dict[str, Any]:
             {"versao": 2, "blocos": [{"tipo": "fila_vencimento", "params": {}}]},
             "versao invalida",
         ),
-        ({"versao": 1, "blocos": []}, "sem blocos"),
         (bloco("fila_vencimento", **{"__proto__": "x"}), "chave perigosa"),
         (bloco("fila_vencimento", **{"constructor": "x"}), "chave perigosa"),
         (
@@ -50,6 +49,29 @@ def test_entrada_hostil_e_rejeitada(bruto: Any, porque: str, personas: dict[str,
     r = validar_schema(bruto, personas["marco"])
     assert r.schema is None, porque
     assert r.rejeitados, "rejeicao precisa aparecer no trace"
+
+
+def test_composicao_vazia_e_resposta_valida(personas: dict[str, Ator]) -> None:
+    """`blocos: []` NÃO é entrada hostil — é o modelo dizendo "nada no seu
+    catálogo responde a isso", que é o que o prompt pede.
+
+    Este teste começou invertido: afirmava que composição vazia era rejeitada.
+    A suíte de avaliação expôs a contradição — o prompt mandava devolver vazio
+    e o schema proibia, e os 6 casos negativos contavam como schema inválido
+    quando "não compor" era exatamente o certo.
+    """
+    r = validar_schema({"versao": 1, "blocos": []}, personas["cleide"])
+    assert r.ok, "composição vazia é uma resposta"
+    assert r.vazia
+    assert not r.rejeitados
+
+
+def test_tudo_rejeitado_nao_e_composicao_vazia(personas: dict[str, Ator]) -> None:
+    """Distinção que importa: o modelo decidir não compor é diferente de o
+    servidor rejeitar tudo que ele propôs."""
+    r = validar_schema(bloco("componente_inventado"), personas["cleide"])
+    assert not r.ok
+    assert r.rejeitados
 
 
 def test_schema_valido_passa(personas: dict[str, Ator]) -> None:

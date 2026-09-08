@@ -34,7 +34,12 @@ class ResultadoValidacao:
 
     @property
     def ok(self) -> bool:
-        return self.schema is not None and bool(self.aceitos)
+        """Schema utilizavel. Composicao vazia conta — e' uma resposta."""
+        return self.schema is not None
+
+    @property
+    def vazia(self) -> bool:
+        return self.schema is not None and not self.aceitos
 
 
 def validar_schema(bruto: object, ator: Ator) -> ResultadoValidacao:
@@ -61,7 +66,9 @@ def validar_schema(bruto: object, ator: Ator) -> ResultadoValidacao:
         aceitos.append(bloco.tipo)
         blocos_ok.append(bloco)
 
-    if not blocos_ok:
+    # Composicao intencionalmente vazia e' VALIDA: o modelo olhou o catalogo e
+    # concluiu que nada serve. Distinta de "tudo foi rejeitado", que e' falha.
+    if not blocos_ok and rejeitados:
         return ResultadoValidacao(None, aceitos, rejeitados)
 
     limpo = ViewSchema(versao=1, titulo=schema.titulo, blocos=tuple(blocos_ok))

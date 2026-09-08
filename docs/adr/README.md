@@ -34,6 +34,8 @@ antigo recebe `Status: Substituído por ADR-XXXX`. O histórico é o valor.
 | [0022](./0022-status-registrado-e-efetivo.md) | Status registrado vs. status efetivo | Fundacional | Aceito |
 | [0023](./0023-provedor-de-modelo.md) | OpenRouter como provedor, atrás do adaptador | Ciclo 1 | Aceito |
 | [0024](./0024-decodificacao-restrita.md) | Decodificação restrita, e o que ela faz com a métrica | Ciclo 1 | Aceito |
+| [0025](./0025-agnosticismo-de-provedor.md) | Provedor trocável por configuração; três modos de saída | Fundacional | Aceito — **emenda 0023** |
+| [0026](./0026-observabilidade.md) | Observabilidade como porta, com LangFuse do outro lado | Ciclo 1 | Aceito |
 
 ## Origem das decisões
 

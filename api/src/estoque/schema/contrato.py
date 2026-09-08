@@ -31,4 +31,10 @@ class ViewSchema(BaseModel):
 
     versao: Literal[1]
     titulo: str | None = None
-    blocos: tuple[Bloco, ...] = Field(min_length=1, max_length=MAX_BLOCOS)
+    # `blocos` PODE ser vazio, e isso é uma resposta — não uma falha.
+    #
+    # O prompt instrui: "se a pergunta não puder ser respondida com o catálogo,
+    # devolva blocos vazio". Exigir min_length=1 aqui punia o modelo por
+    # obedecer, e a suíte de avaliação registrava os 6 casos negativos como
+    # schema inválido — quando "não compor" era exatamente o certo.
+    blocos: tuple[Bloco, ...] = Field(max_length=MAX_BLOCOS)

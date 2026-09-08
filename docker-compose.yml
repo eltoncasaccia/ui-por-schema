@@ -28,6 +28,13 @@ services:
       MODELO_ASSISTENTE: ${MODELO_ASSISTENTE:-anthropic/claude-haiku-4.5}
       MODO_DECODIFICACAO: ${MODO_DECODIFICACAO:-restrito}
       SEED_NO_BOOT: ${SEED_NO_BOOT:-true}
+      PROVEDOR: ${PROVEDOR:-openrouter}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-https://cloud.langfuse.com}
     ports:
       - "8000:8000"
     depends_on:

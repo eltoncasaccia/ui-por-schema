@@ -27,12 +27,10 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
 import estoque.registry.indice  # noqa: F401  — registra os componentes
-from estoque.assistant.adapter import (
-    AdaptadorModelo,
-    AdaptadorOpenRouter,
-    ErroDeModelo,
-    extrair_json,
-)
+from estoque.assistant.adapter import AdaptadorModelo, ErroDeModelo, extrair_json
+from estoque.assistant.fabrica import criar_adaptador
+from estoque.assistant.langfuse_obs import criar as criar_observador
+from estoque.assistant.observador import Observador, ObservadorNulo
 from estoque.auditoria import registro as aud
 from estoque.autorizacao.motor import (
     autorizar_ou_falhar,
@@ -52,6 +50,8 @@ from estoque.server import sessao as ses
 from estoque.server.config import Config
 
 CFG = Config.do_ambiente()
+# Nulo quando nao ha chave do LangFuse: telemetria e' opcional por construcao.
+OBS: Observador = criar_observador() or ObservadorNulo()
 PH = PasswordHasher()
 _engine = create_async_engine(CFG.database_url, future=True, pool_pre_ping=True)
 
@@ -343,11 +343,8 @@ class Pergunta(BaseModel):
 
 
 def _adaptador() -> AdaptadorModelo:
-    """Sem chave, FALHA. Nunca cai para o mock em silencio — o erro da v1."""
-    try:
-        return AdaptadorOpenRouter(modelo=CFG.modelo)
-    except ErroDeModelo:
-        raise
+    """Escolhido por configuracao (PROVEDOR), nao por codigo."""
+    return criar_adaptador(modelo=CFG.modelo)
 
 
 @app.post("/api/assistente/compor")
@@ -380,6 +377,10 @@ async def compor(corpo: Pergunta, sessao: str | None = Cookie(default=None)) -> 
         r.trace.rejeitados = (
             [(x.tipo, x.motivo) for x in resultado.rejeitados] if resultado else []
         )
+
+        # Telemetria externa. Nunca levanta — e a auditoria abaixo, que e'
+        # requisito regulatorio, nao depende dela.
+        OBS.composicao(trace=r.trace, ator_id=ator.id, papel=ator.papel, catalogo=len(cat))
 
         # RN-D05 / CS-05: a resposta do assistente e' auditada, com o que foi
         # aceito E o que foi rejeitado.

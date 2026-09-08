@@ -38,6 +38,7 @@ Hierarquia em caso de conflito: **`RN-*` > ADR > PRD > tarefa.**
 | [**CONTRATOS**](./tasks/CONTRATOS.md) | Interfaces congeladas: identidade, erros, domínio, registry, schema, borda HTTP | Normativo para **interfaces** |
 | [**Acordo de Trabalho**](./tasks/README.md) | Como várias sessões trabalham em paralelo sem colidir. DoR, DoD, git, quando parar | Normativo para **processo** |
 | [**BOARD**](./tasks/BOARD.md) | 34 tarefas, 6 ondas, 5 trilhas, grafo de dependências, caminho crítico | Normativo para **execução** |
+| [**Cenários de teste**](./CENARIOS.md) | Roteiro manual: compartilhar, gráfico, schema forjado, escopo, imutabilidade | Verificado em execução |
 | [**Rastreabilidade**](./RASTREABILIDADE.md) | `RN` → `CA` → tarefa → teste. Cobertura de ADR | Referência cruzada |
 | [Relatórios](./relatorios/) | R-001 a R-004 — o que foi medido | Produzido durante a execução |
 

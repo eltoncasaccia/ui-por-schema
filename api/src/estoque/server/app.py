@@ -11,6 +11,8 @@ reautoriza por registro mesmo que a composicao ja' tenha sido validada.
 """
 
 from collections.abc import AsyncIterator
+import logging
+import secrets
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from typing import Any
@@ -21,7 +23,7 @@ from argon2.exceptions import VerifyMismatchError
 from fastapi import Cookie, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
 import estoque.registry.indice  # noqa: F401  — registra os componentes
@@ -68,6 +70,37 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(ValidationError)
+async def _invalido(_: Request, e: ValidationError) -> JSONResponse:
+    """Entrada que nao casa com o modelo e' `invalido`, nao erro do servidor.
+
+    ACHADO ao escrever os cenarios de teste: uma metrica fora do enum levantava
+    `ValidationError`, que nao e' `ErroDominio` — escapava do handler e virava
+    500. Status errado, e um 500 num caminho que o usuario alcanca digitando.
+
+    A mensagem NAO ecoa o valor recebido: eco devolveria conteudo hostil para
+    dentro do log, e confirmaria ao atacante o que ele mandou.
+    """
+    return JSONResponse(
+        status_code=422,
+        content={"ok": False, "erro": {"codigo": "invalido", "mensagem": "Entrada invalida."}},
+    )
+
+
+@app.exception_handler(Exception)
+async def _inesperado(_: Request, e: Exception) -> JSONResponse:
+    """T-011 AC-5: erro inesperado devolve envelope generico, sem stack.
+
+    Estava no criterio de aceite e nao existia. O traceback vai para o log do
+    servidor; a resposta nao carrega nada alem do codigo.
+    """
+    logging.getLogger("estoque").exception("erro nao tratado")
+    return JSONResponse(
+        status_code=500,
+        content={"ok": False, "erro": {"codigo": "invalido", "mensagem": "Erro interno."}},
+    )
 
 
 @app.exception_handler(ErroDominio)
@@ -135,6 +168,64 @@ async def saude() -> dict[str, str]:
 class Entrada(BaseModel):
     email: str
     senha: str
+
+
+class Cadastro(BaseModel):
+    nome: str = Field(min_length=2, max_length=120)
+    email: str = Field(min_length=5, max_length=200)
+    senha: str = Field(min_length=10, max_length=200)
+
+
+@app.post("/api/auth/registrar")
+async def registrar(corpo: Cadastro) -> dict[str, Any]:
+    """Cadastro cria usuario SEM papel e SEM unidade. ADR-0019.
+
+    Zero permissoes: catalogo vazio, nenhum `load` autorizado, nenhuma tela.
+    Papel e unidades sao atribuidos por quem tem `usuario.gerenciar`, com
+    auditoria.
+
+    Este e' um distribuidor farmaceutico com papeis regulados. Se o cadastro
+    deixasse a pessoa ESCOLHER o proprio papel, `RN-R02` (liberacao privativa
+    do RT) e `CA-04` (dupla identificacao) virariam enfeite — seria escalacao
+    de privilegio por formulario.
+
+    A resposta e' a MESMA para e-mail novo e e-mail ja' cadastrado. Distinguir
+    os dois transforma o cadastro num verificador de contas (ADR-0014).
+    """
+    email = corpo.email.strip().lower()
+    async with _engine.begin() as c:
+        ja = (
+            await c.execute(sa.select(m.usuario.c.id).where(m.usuario.c.email == email))
+        ).first()
+        if ja is None:
+            uid = f"u-{secrets.token_hex(8)}"
+            await c.execute(
+                sa.insert(m.usuario).values(
+                    id=uid,
+                    nome=corpo.nome.strip(),
+                    email=email,
+                    senha_hash=PH.hash(corpo.senha),
+                    papel=None,  # ← o ponto inteiro deste endpoint
+                    ativo=True,
+                )
+            )
+            await aud.registrar(
+                c,
+                ator_id=uid,
+                acao="registrar",
+                origem="tela",
+                entidade="usuario",
+                entidade_id=uid,
+            )
+        else:
+            # Gasta o mesmo tempo de hash, para nao vazar por temporizacao.
+            PH.hash(corpo.senha)
+    return _ok(
+        {
+            "criado": True,
+            "aviso": "Seu acesso precisa ser liberado por um administrador.",
+        }
+    )
 
 
 @app.post("/api/auth/entrar")

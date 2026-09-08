@@ -92,13 +92,52 @@ MODELO_ASSISTENTE=anthropic/claude-haiku-4.5
 MODO_DECODIFICACAO=restrito                    # restrito | ferramenta | livre
 ```
 
-Rodando com modelo aberto na própria máquina:
+#### Modelo local, na própria máquina
+
+Verificado em 2026-09-08 com Ollama 0.33.3 e `qwen2.5:7b`, num Apple M4 de 16 GB.
 
 ```bash
-PROVEDOR=compativel                            # qualquer API compatível com OpenAI
-LLM_BASE_URL=http://host.docker.internal:11434/v1/chat/completions
-MODELO_ASSISTENTE=qwen2.5:14b
+brew install ollama && brew services start ollama
+ollama pull qwen2.5:7b          # ~4,7 GB
 ```
+
+No `.env`:
+
+```bash
+PROVEDOR=compativel             # qualquer API compatível com OpenAI
+MODELO_ASSISTENTE=qwen2.5:7b
+LLM_BASE_URL=http://host.docker.internal:11434/v1/chat/completions
+LLM_API_KEY=ollama              # o Ollama ignora, mas o adapter EXIGE — ver abaixo
+```
+
+> **`LLM_BASE_URL` tem dois valores possíveis, e depende de onde o código roda.**
+> `host.docker.internal` é o certo para a aplicação (que roda em container), e é
+> o que fica no `.env`. Para scripts no host — `uv run` direto — sobreponha com
+> `LLM_BASE_URL=http://localhost:11434/v1/chat/completions`, porque
+> `host.docker.internal` **não resolve fora do container**.
+
+> **`LLM_API_KEY` não pode ficar vazia.** O Ollama não valida nada, mas o adapter
+> levanta sem chave em vez de cair para o mock — *"telemetria ausente degrada o
+> diagnóstico; modelo ausente falsifica o resultado"*. Foi assim que a POC v1
+> publicou números de um parser simulado.
+
+Resultado medido, catálogo de 7 componentes, persona conferente:
+
+| Pergunta | Composição | Latência |
+|---|---|---|
+| *o que está vencendo nos próximos 30 dias* | `fila_vencimento` | 18,6 s **(fria)** |
+| *quantos lotes estão em quarentena* | `estoque_indicador` | 3,1 s |
+| *qual o valor total do estoque em reais* | **vazio** ✅ | 1,4 s |
+
+`modo_efetivo=restrito` nas três — o endpoint compatível do Ollama aceita
+`response_format: json_schema` com `strict: true`, sem precisar do fallback.
+
+A terceira linha é a que importa: a conferente **não tem `custo.ler`**, a métrica
+de valor não existe no catálogo dela, e o modelo local devolveu composição vazia.
+A barreira de permissão não depende do modelo ser bom.
+
+A primeira chamada carrega o modelo na memória; depois fica em segundos.
+Modelo local **não reporta custo** — `custo_usd` vem `None` no trace.
 
 #### Modelos gratuitos no OpenRouter
 

@@ -37,8 +37,9 @@ env-completar:  ## acrescenta ao .env as variáveis novas do exemplo
 modelo:  ## mostra qual modelo e provedor estão em uso
 	@docker compose exec -T api sh -c 'echo "provedor : $$PROVEDOR"; echo "modelo   : $$MODELO_ASSISTENTE"; echo "modo     : $$MODO_DECODIFICACAO"; echo "base     : $${LLM_BASE_URL:-(padrão do provedor)}"'
 
-types:  ## gera os tipos do cliente a partir do OpenAPI
-	cd web && npm run gerar-tipos
+types:  ## gera os tipos do cliente a partir do registry da API
+	docker compose run --rm -T api python -m estoque.registry.exportar > web/src/generated/contrato.json
+	cd web && npx tsx scripts/gerar-tipos.ts
 
 test:  ## testes dos dois lados
 	cd api && uv run pytest -q

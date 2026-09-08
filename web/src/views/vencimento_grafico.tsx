@@ -1,13 +1,10 @@
 import { useState } from 'react'
 import type { View } from './tipos'
 
-export interface Balde {
-  rotulo: string; inicio: string; lotes: number; unidades: number; urgencia: number
-}
-export interface VM {
-  horizonte_dias: number; escopo: string; total_lotes: number
-  pico_rotulo: string | null; baldes: Balde[]; legenda: string[]
-}
+import type { ViewModel } from '../generated/componentes'
+
+type VM = ViewModel<'vencimento_grafico'>
+export type Balde = VM['baldes'][number]
 
 /**
  * A curva de vencimento — barras verticais por período.
@@ -19,7 +16,7 @@ export interface VM {
  * Um eixo só. Rótulo direto no pico e nas pontas — nunca um número em cada
  * barra, que vira ruído. Hover mostra o valor exato de qualquer barra.
  */
-export const view: View<VM> = ({ vm }) => {
+export const view: View<'vencimento_grafico'> = ({ vm }) => {
   const [ativo, setAtivo] = useState<number | null>(null)
   const max = Math.max(...vm.baldes.map((b) => b.lotes), 1)
   const passo = Math.max(1, Math.ceil(vm.baldes.length / 8))

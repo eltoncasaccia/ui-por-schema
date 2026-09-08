@@ -32,6 +32,8 @@ from estoque.assistant.fabrica import criar_adaptador
 from estoque.assistant.langfuse_obs import criar as criar_observador
 from estoque.assistant.observador import Observador, ObservadorNulo
 from estoque.auditoria import registro as aud
+from estoque.auth import csrf
+from estoque.auth.limite import Limitador
 from estoque.autorizacao.motor import (
     autorizar_ou_falhar,
     autorizar_params_ou_falhar,
@@ -70,6 +72,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def _csrf(req: Request, seguir: Any) -> Any:
+    """Confere origem em TODA escrita, antes de chegar na rota.
+
+    Middleware e nao dependencia por rota: dependencia esquecida numa rota nova
+    e' um buraco silencioso — e rota nova e' exatamente o que se acrescenta com
+    pressa.
+    """
+    try:
+        csrf.conferir(req, CFG.cors_origin)
+    except ErroDominio as e:
+        return await _erro(req, e)
+    return await seguir(req)
 
 
 @app.exception_handler(ValidationError)
@@ -228,17 +245,36 @@ async def registrar(corpo: Cadastro) -> dict[str, Any]:
     )
 
 
+LIMITE = Limitador()
+
+
 @app.post("/api/auth/entrar")
-async def entrar(corpo: Entrada, resposta: Response) -> dict[str, Any]:
+async def entrar(corpo: Entrada, req: Request, resposta: Response) -> dict[str, Any]:
     """Resposta e tempo UNIFORMES para usuario inexistente e senha errada.
 
     E' o ADR-0014 aplicado ao login: distinguir os dois casos enumera contas.
     Por isso o hash e' verificado mesmo quando o usuario nao existe — senao a
     diferenca de tempo faria o mesmo vazamento.
     """
+    ip = req.client.host if req.client else "desconhecido"
+    conta = corpo.email.strip().lower()
+
+    # Consulta ANTES de tocar no banco: bloqueado nao gasta consulta nem hash.
+    if LIMITE.bloqueado(conta=conta, ip=ip):
+        async with _engine.begin() as c:
+            await aud.registrar(
+                c,
+                ator_id=None,
+                acao="login_bloqueado",
+                origem="tela",
+                entidade="usuario",
+                valor_novo={"conta": conta, "ip": ip},
+            )
+        raise ErroDominio("limite", "Muitas tentativas. Tente de novo em alguns minutos.")
+
     async with _engine.begin() as c:
         r = (
-            (await c.execute(sa.select(m.usuario).where(m.usuario.c.email == corpo.email)))
+            (await c.execute(sa.select(m.usuario).where(m.usuario.c.email == conta)))
             .mappings()
             .first()
         )
@@ -249,8 +285,11 @@ async def entrar(corpo: Entrada, resposta: Response) -> dict[str, Any]:
         except VerifyMismatchError:
             valido = False
         if not valido or r is None:
+            LIMITE.registrar_falha(conta=conta, ip=ip)
             raise ErroDominio("nao_autenticado", "E-mail ou senha invalidos.")
 
+        # Provou a identidade: nao carrega as tentativas erradas de antes.
+        LIMITE.limpar_conta(conta)
         sid = await ses.criar(c, str(r["id"]))
         await aud.registrar(c, ator_id=str(r["id"]), acao="entrar", origem="tela")
         # BUG achado em uso: esta resposta devolvia apenas {id, nome, papel}, e o

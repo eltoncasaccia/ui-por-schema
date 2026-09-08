@@ -2,15 +2,9 @@ import { Indicador } from '../ui/Indicador'
 import type { Tom } from '../ui/estados'
 import type { View } from './tipos'
 
-export interface Faixa { rotulo: string; valor: number; ordem: number }
-export interface VM {
-  metrica: string; rotulo: string; valor: number
-  unidade_medida: 'lotes' | 'centavos'
-  escopo: string
-  detalhe: string | null
-  faixas: Faixa[]
-  tipo_faixa: 'urgencia' | 'unidade' | 'nenhum'
-}
+import type { ViewModel } from '../generated/componentes'
+
+type VM = ViewModel<'estoque_indicador'>
 
 /** A métrica carrega o tom: quarentena é informativa, bloqueio é grave. */
 const TOM: Record<string, Tom> = {
@@ -26,7 +20,7 @@ export function formatar(valor: number, unidade: VM['unidade_medida']): string {
     : valor.toLocaleString('pt-BR')
 }
 
-export const view: View<VM> = ({ vm }) => (
+export const view: View<'estoque_indicador'> = ({ vm }) => (
   <Indicador
     rotulo={vm.rotulo}
     valor={formatar(vm.valor, vm.unidade_medida)}

@@ -7,6 +7,7 @@
 | **Tamanho** | M |
 | **Depende de** | T-003, T-004 |
 | **Bloqueia** | T-015, T-016, toda a W3 |
+| **Estado** | ✅ **concluída** em 2026-09-08 |
 | **ADRs** | [0016](../adr/0016-api-python-cliente-typescript.md), [0017](../adr/0017-registry-servidor-views-cliente.md) |
 
 ## Objetivo
@@ -42,16 +43,26 @@ Motor de render (T-015). Views (W3/W4).
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Registrar componente na API sem criar a view quebra o CI.
+> **Verificado por** `web/src/testes/bijecao.test.ts` (8 testes) e por
+> `tsc --noEmit`. Todos os seis foram conferidos **provocando a falha** — a
+> regra da casa: regra que nunca falhou não é evidência de nada.
+
+- [x] **AC-1** Registrar componente na API sem criar a view quebra o CI.
       *(negativo — **o critério central desta tarefa**)*
-- [ ] **AC-2** Criar view sem registro correspondente quebra o CI. *(negativo)*
-- [ ] **AC-3** `web/src/generated/**` regenerado é idêntico ao versionado; CI falha
+      → *removi `vencimento_grafico` do índice → 1 erro de `tsc` e 2 testes falhando*
+- [x] **AC-2** Criar view sem registro correspondente quebra o CI. *(negativo)*
+      → *criei `views/orfa.tsx` → `expected [ 'orfa' ] to deeply equal []`*
+- [x] **AC-3** `web/src/generated/**` regenerado é idêntico ao versionado; CI falha
       se alguém editou à mão. *(negativo)*
-- [ ] **AC-4** Um `ComponentId` inexistente não compila no cliente.
-- [ ] **AC-5** Mudar o viewmodel na API e não regenerar quebra o `typecheck` do
+      → *acrescentei uma linha ao gerado → 1 teste falhando; regeneração comparada byte a byte*
+- [x] **AC-4** Um `ComponentId` inexistente não compila no cliente.
+      → *`const x: ComponentId = 'relatorio_secreto'` → `TS2322: not assignable to type ComponentId`*
+- [x] **AC-5** Mudar o viewmodel na API e não regenerar quebra o `typecheck` do
       cliente — a divergência aparece **no build**, não em produção.
-- [ ] **AC-6** O cliente não tem nenhum tipo de domínio escrito à mão que duplique
+      → *renomeei um campo no gerado → 6 erros de `tsc`, incluindo `Property 'total' does not exist`*
+- [x] **AC-6** O cliente não tem nenhum tipo de domínio escrito à mão que duplique
       um tipo da API. *(negativo)*
+      → *nenhuma view declara `interface VM`; todas importam de `generated/componentes`*
 
 ## Armadilhas
 

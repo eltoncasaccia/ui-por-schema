@@ -13,6 +13,7 @@
  */
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { ErroApi, api, type Bloco } from '../api'
+import type { ComponentId } from '../generated/componentes'
 import { VIEWS } from '../views/indice'
 import { useScrollInfinito } from '../ui/useScrollInfinito'
 
@@ -51,7 +52,9 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
     Boolean(q.hasNextPage),
   )
 
-  const View = VIEWS[bloco.tipo]
+  // `bloco.tipo` é string na borda; o mapa é indexado por ComponentId.
+  // O `in` estreita o tipo e cobre o caso de id que a API tem e o cliente não.
+  const View = bloco.tipo in VIEWS ? VIEWS[bloco.tipo as ComponentId] : undefined
   if (!View) {
     // Bijeção quebrada: id registrado na API sem view no cliente. Em CI isso
     // falha o build; em runtime, falha visível — nunca silenciosa.

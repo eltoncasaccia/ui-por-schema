@@ -126,7 +126,7 @@ graph TD
 | [T-002](./T-002-dominio-tipos-erros.md) | Domínio: 7 tipos, erros, identidade | A | M | T-001 | ✅ |
 | [T-003](./T-003-contrato-registry.md) | Contrato do registry (sem `render`) | C | M | T-002 | ✅ |
 | [T-004](./T-004-contratos-de-borda.md) | Schema, `viewKey`/`viewId`, envelope | C | M | T-002, T-003 | ✅ |
-| [T-039](./T-039-codegen-e-bijecao.md) | **Codegen OpenAPI→TS + bijeção** · congela | C | M | T-003, T-004 | ⬜ |
+| [T-039](./T-039-codegen-e-bijecao.md) | **Codegen OpenAPI→TS + bijeção** · congela | C | M | T-003, T-004 | ✅ |
 | [T-005](./T-005-arch-check.md) | Verificadores: `import-linter` + `arch:check` | E | M | T-002 | 🟡 |
 
 ### W1 — Núcleo · até 13 sessões
@@ -139,7 +139,7 @@ graph TD
 | [T-008](./T-008-regras-puras.md) | FEFO, validade, **status efetivo**, saldo | A | M | T-002 | ✅ |
 | [T-009](./T-009-motor-de-permissao.md) | Motor de permissão e escopo | B | M | T-004 | ✅ |
 | [T-010](./T-010-auditoria.md) | Trilha de auditoria append-only | B | M | T-004 | ✅ |
-| [T-037](./T-037-autenticacao.md) | **Autenticação, sessão, CSRF** | B | G | T-004, T-036 | 🟡 |
+| [T-037](./T-037-autenticacao.md) | **Autenticação, sessão, CSRF** | B | G | T-004, T-036 | ✅ |
 | [T-011](./T-011-servidor.md) | Servidor FastAPI, autorização por registro | B | G | T-009, T-010, T-037 | 🟡 |
 | [T-012](./T-012-catalogo.md) | Registry runtime e catálogo por ator | C | M | T-004, T-009 | ✅ |
 | [T-013](./T-013-validador-schema.md) | Validador de schema e revalidação | C | M | T-012 | ✅ |
@@ -187,7 +187,7 @@ graph TD
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-040](./T-040-csrf-e-rate-limit.md) | **CSRF e rate limit** — segurança prometida e ausente | B | M | T-037 | ⬜ |
+| [T-040](./T-040-csrf-e-rate-limit.md) | **CSRF e rate limit** — segurança prometida e ausente | B | M | T-037 | ✅ |
 | [T-041](./T-041-ci.md) | CI no GitHub Actions | E | P | T-001 | ⬜ |
 
 ### W5 — Garantias e fechamento · até 4 sessões
@@ -222,9 +222,9 @@ Registro vivo. Achado é dado do projeto, não ruído.
 
 | # | Achado | Origem | Consequência |
 |---|---|---|---|
-| **A-02b** | **CSRF prometido em 3 lugares, implementado em nenhum** | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | **T-040** |
-| **A-03b** | **Rate limit no login não existe** | A-002 | **T-040** |
-| **A-05b** | **Bijeção registry ↔ views não verificada** | A-002 | T-039 segue aberta |
+| ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
+| ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
+| ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
 | A-04b | `arch:check` só do lado Python, 4 de 6 regras | A-002 | T-005 parcial |
 | A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
 | A-07b | Não há CI | A-002 | **T-041** |

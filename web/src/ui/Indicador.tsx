@@ -16,7 +16,7 @@ export function Indicador({
   escopo?: string | undefined
   detalhe?: string | undefined
   faixas?: Faixa[] | undefined
-  tipoFaixa?: 'urgencia' | 'unidade' | 'nenhum'
+  tipoFaixa?: 'urgencia' | 'unidade' | 'nenhum' | undefined
   tom?: Tom
 }) {
   return (

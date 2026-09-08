@@ -4,7 +4,10 @@
 critério de aceite não conferido **fica em branco** — marcar por otimismo é pior
 que deixar vazio, porque cria evidência falsa.
 
-Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md).
+Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
+atualizado a cada entrega.
+
+**21 concluídas · 4 parciais · 14 não iniciadas** · 3 de 23 componentes.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -33,7 +36,7 @@ está pronto.
 | T-002 | Domínio: 7 tipos, erros, identidade | ✅ | — |
 | T-003 | Contrato do registry | ✅ | — |
 | T-004 | Schema, `viewKey`/`viewId`, envelope | ✅ | — |
-| T-039 | **Codegen OpenAPI→TS + bijeção** | ⬜ | tudo — **A-05, o mais grave** |
+| T-039 | Codegen do registry → TS + bijeção | ✅ | 6 ACs verificados negativamente |
 | T-005 | Verificadores de arquitetura | 🟡 | 4 de 6 regras Python; **as 6 do TS não existem** |
 
 ## W1 — Núcleo
@@ -46,7 +49,7 @@ está pronto.
 | T-008 | FEFO, validade, status efetivo, saldo | ✅ | — |
 | T-009 | Motor de permissão e escopo | ✅ | — |
 | T-010 | Trilha de auditoria | ✅ | — |
-| T-037 | **Autenticação, sessão, CSRF** | 🟡 | **CSRF não validado · rate limit inexistente** — A-02, A-03 |
+| T-037 | Autenticação, sessão, CSRF | ✅ | CSRF e rate limit entregues em T-040 |
 | T-011 | Servidor FastAPI | 🟡 | `Idempotency-Key` e `If-Match` não implementados |
 | T-012 | Registry runtime e catálogo por ator | ✅ | — |
 | T-013 | Validador de schema | ✅ | — |
@@ -101,7 +104,7 @@ está pronto.
 
 | | Tarefa | Estado | Origem |
 |---|---|---|---|
-| T-040 | **CSRF e rate limit** | ⬜ | A-02, A-03 |
+| T-040 | CSRF e rate limit | ✅ | A-02, A-03 — **fechados** |
 | T-041 | CI no GitHub Actions | ⬜ | A-07 |
 
 ---
@@ -131,4 +134,4 @@ que não existem.
 | CS-03 negativa não revela existência | ✅ testado |
 | CS-04 injeção via dado do banco | ⬜ **nunca testado** — é o de menor confiança |
 | CS-05 resposta do assistente auditada | ✅ |
-| CS-06 rate limit por ator | ⬜ **não existe** — A-03 |
+| CS-06 rate limit por ator | 🟡 login coberto (T-040); falta o endpoint do assistente |

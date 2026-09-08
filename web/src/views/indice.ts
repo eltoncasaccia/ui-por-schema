@@ -1,19 +1,17 @@
-/**
- * O mapa id → view. Lado cliente da bijeção do ADR-0017.
- *
- * Este arquivo é GERADO por `make types` varrendo `views/*.tsx`. Um teste em CI
- * afirma a bijeção com o registry da API: id registrado sem view, ou view sem
- * registro, quebra o build.
- *
- * O ADR-0006 se orgulhava de não ter uma segunda lista. Agora ela existe — e o
- * teste de bijeção é o que impede o apodrecimento que aquele ADR descrevia.
- */
+import type { ComponentId } from '../generated/componentes'
 import { view as estoque_indicador } from './estoque_indicador'
 import { view as fila_vencimento } from './fila_vencimento'
 import { view as vencimento_grafico } from './vencimento_grafico'
 
+/**
+ * O mapa id → view. Lado cliente da bijeção do ADR-0017.
+ *
+ * `Record<ComponentId, ...>` é a metade que o COMPILADOR garante: falta uma
+ * view aqui e o `tsc` recusa. A outra metade — view sobrando, sem registro na
+ * API — é o teste de bijeção, porque tipo nenhum vê o servidor.
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const VIEWS: Record<string, (props: { vm: any }) => JSX.Element> = {
+export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   estoque_indicador,
   fila_vencimento,
   vencimento_grafico,

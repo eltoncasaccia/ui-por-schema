@@ -6,6 +6,7 @@
 | **Data** | 2026-09-07 |
 | **Escopo** | Ciclo 1 |
 | **Regras** | RN-A01, RN-A03, RN-A06, RN-D01 · corrige achado [A-02](../relatorios/A-001-auditoria-pre-migracao.md) |
+| **Implementado** | CSRF e rate limit entregues em [T-040](../tasks/T-040-csrf-e-rate-limit.md) — ficaram por fazer na primeira passada, ver [A-002](../relatorios/A-002-auditoria-de-execucao.md) |
 
 ## Contexto
 
@@ -88,7 +89,11 @@ registrado como rota** — não é escondido na interface, não existe no servid
 
 - Teste: `POST /auth/registrar` produz usuário com `papel = None` e `unidades = []`.
 - Teste: usuário sem papel recebe catálogo **vazio** e nenhum `load` autorizado.
-- Teste: escrita sem token CSRF é recusada. *(negativo)*
+- Teste: escrita sem token CSRF é recusada. *(negativo)* ✅
+- Teste: escrita com token divergente do cookie é recusada. *(negativo)* ✅
+- Teste: N tentativas de senha errada disparam `limite`, por conta **e** por IP.
+  *(negativo)* ✅ — limite só por conta deixaria passar o ataque que testa uma
+  senha em mil contas
 - Teste: login com usuário inexistente e com senha errada devolvem corpo idêntico,
   com diferença de tempo abaixo do limiar. *(negativo)*
 - Teste: com `MODO_DEMO=false`, a rota de entrada demo devolve 404. *(negativo)*

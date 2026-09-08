@@ -66,7 +66,7 @@ describe('estoque_indicador', () => {
   })
 
   it('mostra o escopo, para o número não ficar sem referência', () => {
-    render(<ViewIndicador vm={{ metrica: 'x', rotulo: 'R', valor: 1, unidade_medida: 'lotes', escopo: 'CD Matriz', detalhe: null, faixas: [], tipo_faixa: 'nenhum' }} />)
+    render(<ViewIndicador vm={{ metrica: 'lotes_bloqueados', rotulo: 'R', valor: 1, unidade_medida: 'lotes', escopo: 'CD Matriz', detalhe: null, faixas: [], tipo_faixa: 'nenhum' }} />)
     expect(screen.getByText('em CD Matriz')).toBeInTheDocument()
   })
 })

@@ -6,6 +6,7 @@
 | **Data** | 2026-09-07 |
 | **Escopo** | Fundacional |
 | **Substitui** | [ADR-0006](./0006-contrato-unico-de-componente.md) |
+| **Verificado** | Bijeção implementada em [T-039](../tasks/T-039-codegen-e-bijecao.md). Até então este ADR era, por sua própria definição, uma regressão |
 
 ## Contexto
 

@@ -1,16 +1,11 @@
-import { BarraFaixas, type Faixa } from '../ui/BarraFaixas'
+import { BarraFaixas } from '../ui/BarraFaixas'
 import { Tabela, type Coluna } from '../ui/Tabela'
-import { SITUACAO, classeTexto, type Situacao } from '../ui/estados'
+import { SITUACAO, classeTexto } from '../ui/estados'
+import type { ViewModel } from '../generated/componentes'
 import type { View } from './tipos'
 
-export interface Linha {
-  lote_id: string; produto: string; numero: string; unidade: string
-  validade: string; dias_restantes: number; saldo: number; situacao: Situacao
-}
-export interface VM {
-  janela_dias: number; total: number; linhas: Linha[]
-  resumo: Faixa[]; cursor: string | null; tem_mais: boolean
-}
+type VM = ViewModel<'fila_vencimento'>
+export type Linha = VM['linhas'][number]
 
 const UNIDADE: Record<string, string> = {
   'cd-matriz': 'CD Matriz',
@@ -51,7 +46,7 @@ const COLUNAS: Coluna<Linha>[] = [
  * antes de a pessoa ler linha por linha — e cobre a fila INTEIRA, não a página
  * carregada: um resumo que muda ao rolar não é resumo.
  */
-export const view: View<VM> = ({ vm }) => (
+export const view: View<'fila_vencimento'> = ({ vm }) => (
   <div className="cartao">
     <div className="cartao-cabeca">
       <span className="titulo-painel">Fila de vencimento</span>

@@ -6,6 +6,7 @@
 | **Motivo** | O BOARD dizia que nada tinha sido feito enquanto boa parte estava pronta |
 | **Método** | Código e testes conferidos contra as 39 tarefas e seus critérios de aceite |
 | **Resultado** | **19 tarefas concluídas · 5 parciais · 15 não iniciadas · 8 achados** |
+| **Depois** | A-02, A-03 e A-05 fechados em 2026-09-08 ([T-040](../tasks/T-040-csrf-e-rate-limit.md), [T-039](../tasks/T-039-codegen-e-bijecao.md)) — 21 concluídas |
 
 ---
 
@@ -34,8 +35,8 @@ A correção está no [PROGRESSO](../tasks/PROGRESSO.md) e na regra nova do
 **Severidade: alta (processo).** 19 tarefas concluídas marcadas como disponíveis.
 Corrigido nesta auditoria; a regra que evita a recorrência está no acordo §12.
 
-### A-02 · CSRF prometido em três lugares, implementado em nenhum
-**Severidade: alta (segurança).**
+### A-02 · CSRF prometido em três lugares, implementado em nenhum ✅ FECHADO
+**Severidade: alta (segurança).** Corrigido em [T-040](../tasks/T-040-csrf-e-rate-limit.md).
 
 | Onde | O que promete |
 |---|---|
@@ -52,8 +53,8 @@ segunda camada, que o ADR declara e o sistema não tem.
 
 → **T-040**, aberta.
 
-### A-03 · Rate limit no login não existe
-**Severidade: alta (segurança).** `auth/` está vazio. T-037 AC-8 e `CS-06`
+### A-03 · Rate limit no login não existe ✅ FECHADO
+**Severidade: alta (segurança).** Corrigido em [T-040](../tasks/T-040-csrf-e-rate-limit.md). `auth/` está vazio. T-037 AC-8 e `CS-06`
 exigem limite por conta e por IP; nada limita tentativas de senha hoje.
 
 → **T-040**, junto com A-02.
@@ -67,8 +68,8 @@ verificadas por nada.
 Faltam do lado Python: `domain`/`registry` não importam `sqlalchemy`, e fixtures
 só importadas por `data`.
 
-### A-05 · Bijeção registry ↔ views não é verificada
-**Severidade: alta.** [ADR-0017](../adr/0017-registry-servidor-views-cliente.md)
+### A-05 · Bijeção registry ↔ views não é verificada ✅ FECHADO
+**Severidade: alta.** Corrigido em [T-039](../tasks/T-039-codegen-e-bijecao.md). [ADR-0017](../adr/0017-registry-servidor-views-cliente.md)
 diz, com todas as letras: *"é este teste que faz o ADR-0017 valer o que o
 ADR-0006 valia. Sem ele, esta decisão é uma regressão."*
 

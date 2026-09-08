@@ -9,6 +9,7 @@
 | **Origem** | [A-002](../relatorios/A-002-auditoria-de-execucao.md), achados A-02 e A-03 |
 | **ADRs** | [0019](../adr/0019-autenticacao-e-cadastro.md) |
 | **Requisitos** | CS-06 · T-037 AC-2, AC-3, AC-8 |
+| **Estado** | ✅ **concluída** em 2026-09-08 |
 
 ## Objetivo
 
@@ -49,18 +50,30 @@ custo de token é decisão separada.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Escrita sem `X-CSRF-Token` é recusada. *(negativo — T-037 AC-2)*
-- [ ] **AC-2** Escrita com token diferente do cookie é recusada. *(negativo)*
-- [ ] **AC-3** Escrita com `Origin` de outro domínio é recusada. *(negativo — T-037 AC-3)*
-- [ ] **AC-4** Login e cadastro continuam funcionando sem token — não há sessão
+> **Verificado por** `tests/auth/test_csrf.py` e `tests/auth/test_limite.py`
+> (27 testes), mais execução contra o sistema no ar. Cada AC negativo foi
+> conferido provocando a falha, não só observando o caminho feliz.
+
+- [x] **AC-1** Escrita sem `X-CSRF-Token` é recusada. *(negativo — T-037 AC-2)*
+      → *sem header e sem cookie, os dois recusados · ponta a ponta: `token de origem inválido`*
+- [x] **AC-2** Escrita com token diferente do cookie é recusada. *(negativo)*
+      → *token ≠ cookie recusado; comparação por `compare_digest`*
+- [x] **AC-3** Escrita com `Origin` de outro domínio é recusada. *(negativo — T-037 AC-3)*
+      → *origem diferente recusada, inclusive esquema/porta/host quase iguais*
+- [x] **AC-4** Login e cadastro continuam funcionando sem token — não há sessão
       para tirá-lo de lá ainda.
-- [ ] **AC-5** N tentativas de senha errada na mesma conta disparam `limite`.
+      → *`/auth/entrar` e `/auth/registrar` passam sem token — ponta a ponta: Ivo entrou*
+- [x] **AC-5** N tentativas de senha errada na mesma conta disparam `limite`.
       *(negativo — T-037 AC-8)*
-- [ ] **AC-6** O mesmo limite vale por IP, para conta inexistente — senão o
+      → *5 tentativas erradas → `limite`; outra conta segue entrando*
+- [x] **AC-6** O mesmo limite vale por IP, para conta inexistente — senão o
       atacante enumera contas testando uma senha em muitas. *(negativo)*
-- [ ] **AC-7** Toda recusa por limite é auditada.
-- [ ] **AC-8** O contador de tentativas zera após janela, e o teste prova o
+      → *3 contas distintas do mesmo IP estouram o limite de IP sem nenhuma estourar o de conta*
+- [x] **AC-7** Toda recusa por limite é auditada.
+      → *`login_bloqueado` na trilha, gravado ANTES do raise; bloqueado não gasta hash*
+- [x] **AC-8** O contador de tentativas zera após janela, e o teste prova o
       caminho de reabertura — senão um erro de digitação bloqueia para sempre.
+      → *janela deslizante reabre sozinha; login certo limpa a conta*
 
 ## Armadilhas
 

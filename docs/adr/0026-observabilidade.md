@@ -6,7 +6,7 @@
 | **Data** | 2026-09-08 |
 | **Escopo** | Ciclo 1 |
 | **Relacionado** | [ADR-0013](./0013-suite-de-avaliacao.md) — a suíte que alimenta as métricas |
-| **Nota** | O caminho de código do LangFuse **ainda não foi exercitado** — ver "O que não está verificado" |
+| **Nota** | Exercitado e conferido em 2026-09-08; três defeitos encontrados e corrigidos — ver "O que foi verificado" |
 
 ## Contexto
 
@@ -88,25 +88,55 @@ ordem, e exigiria ADR próprio.
   derrubar a requisição que ela observa — mas isso significa que telemetria
   quebrada some em silêncio, e só o log denuncia.
 
-## O que não está verificado
+## O que foi verificado, em 2026-09-08
 
-**O ramo que fala com o LangFuse nunca executou.** Não há chaves neste ambiente,
-e nenhum teste cobre a chamada real — só o caminho nulo.
+O ramo executou. Chaves reais no `.env`, projeto `estoque-bertoni` na nuvem dos
+EUA, uma composição real com `anthropic/claude-haiku-4.5` via OpenRouter, e o
+trace buscado **de volta** pela API para conferência — não olhado no painel, que
+é fácil de confundir com outro.
 
-Registrar isto importa porque é a mesma falha da POC v1, que publicou números de
-um parser simulado: *"o caminho do Claude real foi escrito, tipado e compilado,
-mas nunca executado"*. O que existe aqui hoje é a porta e a implementação
-plausível, não a evidência de que ela funciona.
+O que chegou lá: raiz `agent` `compor-interface`, filhos `generation`
+`gerar-composicao` (modelo, 4002/65 tokens, US$ 0,004327) e `guardrail`
+`validar-schema` (aceitos e rejeitados com motivo), `user_id` e tags nos três, e
+três notas presas ao trace — `schema_valido`, `latencia_ms`,
+`ms_ate_primeiro_token`.
 
-**Fecha assim:** pôr as chaves no `.env`, rodar `make eval`, e conferir que as
-gerações aparecem no painel. Até lá, tratar como não verificado.
+### Os três defeitos que só a execução revelou
+
+Estavam escritos, tipados e compilados. Nenhum teste os pegaria.
+
+1. **Região errada, em silêncio.** O código lia só `LANGFUSE_HOST`; o `.env`
+   trazia `LANGFUSE_BASE_URL` apontando para os EUA. Sem a variável, o SDK caía
+   no padrão da Europa — chave dos EUA contra servidor da Europa não autentica.
+2. **`span.update_trace()` não existe no SDK v4.** Era como `user_id` e tags
+   eram anexados. Levantava `AttributeError` a cada chamada.
+3. **A nota do `schema_valido` não chegava a lugar nenhum** — `create_score`
+   sem `trace_id`, depois de o span já ter encerrado. É *a* métrica que decide
+   o projeto (PRD §9), e ela caía no vazio.
+
+Os três estavam invisíveis pelo mesmo motivo: o `except Exception` largo que
+torna a telemetria não-fatal também a torna silenciosa. O risco aceito abaixo
+tinha um preço maior do que o registrado, e ele foi cobrado.
+
+## O que continua não verificado
+
+**A duração das observações não é a latência real.** O observador é chamado
+depois que a composição termina, e o SDK v4 não aceita `start_time`/`end_time`
+arbitrários — então a árvore nasce com duração perto de zero. Preencher esses
+milissegundos com número inventado seria a falha da POC v1 de novo, então a
+latência real viaja como **nota numérica**, que o painel plota em série, e um
+metadado marca a árvore como artificial.
+
+**Fecha assim:** instrumentação ao vivo, envolvendo o pipeline em `app.py` —
+tarefa **T-043**.
 
 ## Conformidade
 
 - Sem `LANGFUSE_*`, `criar()` devolve `None` e o sistema usa o nulo.
 - Nenhuma chamada ao observador levanta para fora.
 - `make eval` recusa rodar com o adaptador mock.
-- **Pendente:** uma execução real contra o LangFuse hospedado.
+- ✅ Execução real conferida em 2026-09-08, com o trace buscado de volta pela API.
+- **Pendente:** duração real de span — exige instrumentação ao vivo (T-043).
 
 ## Referências
 - [PRD-001 §9](../prd/PRD-001-ciclo-1.md) · [ADR-0013](./0013-suite-de-avaliacao.md)

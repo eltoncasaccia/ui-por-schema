@@ -189,6 +189,7 @@ graph TD
 |---|---|---|---|---|---|
 | [T-040](./T-040-csrf-e-rate-limit.md) | **CSRF e rate limit** — segurança prometida e ausente | B | M | T-037 | ✅ |
 | [T-041](./T-041-ci.md) | CI no GitHub Actions | E | P | T-001 | ⬜ |
+| T-043 | Instrumentação ao vivo do pipeline do assistente (duração real de span) | C | M | T-011 | ⬜ |
 
 ### W5 — Garantias e fechamento · até 4 sessões
 
@@ -230,6 +231,7 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
 | A-04b | `arch:check` só do lado Python, 4 de 6 regras | A-002 | T-005 parcial |
 | A-09 | `make typecheck` roda `mypy --strict src` e **não `tests`**. Dez erros de tipo vivem lá há tempo, invisíveis ao DoD e ao CI — e visíveis no editor de quem abre o arquivo | T-018 | **T-041** |
+| A-10 | O observador do LangFuse tinha três defeitos — região errada, `update_trace()` inexistente na v4, nota sem `trace_id` — todos invisíveis porque o `except` que torna a telemetria não-fatal a torna muda | execução real | [ADR-0026](../adr/0026-observabilidade.md) · **T-043** |
 | A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
 | A-07b | Não há CI | A-002 | **T-041** |
 | A-08b | Spike sem relatório R-001 | A-002 | T-017 parcial |

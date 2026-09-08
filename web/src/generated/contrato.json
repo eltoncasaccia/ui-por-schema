@@ -215,6 +215,587 @@
       }
     },
     {
+      "id": "lote_detalhe",
+      "label": "Lote",
+      "tamanho": "meia",
+      "viewmodel": {
+        "description": "Sem custo, para papel nenhum (CA-05). O custo unitario e' de\n`produto_ficha`; nao esta' aqui, entao nao atravessa a rede (ADR-0020).",
+        "properties": {
+          "classe": {
+            "enum": [
+              "comum",
+              "controlado",
+              "termolabil",
+              "antimicrobiano"
+            ],
+            "type": "string"
+          },
+          "dias_restantes": {
+            "type": "integer"
+          },
+          "endereco": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fabricacao": {
+            "format": "date",
+            "type": "string"
+          },
+          "lote_id": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "produto": {
+            "type": "string"
+          },
+          "saldo": {
+            "type": "integer"
+          },
+          "situacao": {
+            "enum": [
+              "ok",
+              "alerta_90",
+              "bloqueio_30",
+              "vencido"
+            ],
+            "type": "string"
+          },
+          "status_efetivo": {
+            "enum": [
+              "quarentena",
+              "liberado",
+              "bloqueado",
+              "descartado",
+              "vencido",
+              "esgotado"
+            ],
+            "type": "string"
+          },
+          "status_registrado": {
+            "enum": [
+              "quarentena",
+              "liberado",
+              "bloqueado",
+              "descartado"
+            ],
+            "type": "string"
+          },
+          "unidade": {
+            "type": "string"
+          },
+          "validade": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lote_id",
+          "produto",
+          "classe",
+          "numero",
+          "unidade",
+          "fabricacao",
+          "validade",
+          "dias_restantes",
+          "saldo",
+          "status_registrado",
+          "status_efetivo",
+          "situacao",
+          "endereco"
+        ],
+        "title": "VMLoteDetalhe",
+        "type": "object"
+      }
+    },
+    {
+      "id": "lote_lista",
+      "label": "Lotes",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "LoteListaFaixa": {
+            "properties": {
+              "ordem": {
+                "default": 0,
+                "type": "integer"
+              },
+              "rotulo": {
+                "type": "string"
+              },
+              "valor": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "rotulo",
+              "valor"
+            ],
+            "title": "LoteListaFaixa",
+            "type": "object"
+          },
+          "LoteListaLinhaLote": {
+            "properties": {
+              "dias_restantes": {
+                "type": "integer"
+              },
+              "endereco": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "fabricacao": {
+                "format": "date",
+                "type": "string"
+              },
+              "lote_id": {
+                "type": "string"
+              },
+              "numero": {
+                "type": "string"
+              },
+              "produto": {
+                "type": "string"
+              },
+              "saldo": {
+                "type": "integer"
+              },
+              "situacao": {
+                "enum": [
+                  "ok",
+                  "alerta_90",
+                  "bloqueio_30",
+                  "vencido"
+                ],
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "quarentena",
+                  "liberado",
+                  "bloqueado",
+                  "descartado",
+                  "vencido",
+                  "esgotado"
+                ],
+                "type": "string"
+              },
+              "unidade": {
+                "type": "string"
+              },
+              "validade": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "lote_id",
+              "produto",
+              "numero",
+              "unidade",
+              "fabricacao",
+              "validade",
+              "dias_restantes",
+              "saldo",
+              "status",
+              "situacao",
+              "endereco"
+            ],
+            "title": "LoteListaLinhaLote",
+            "type": "object"
+          }
+        },
+        "description": "O que atravessa a rede. Sem custo, para papel nenhum (CA-05, ADR-0020):\ncusto e' de `produto_ficha`, e o que nao esta' aqui nao chega ao navegador.",
+        "properties": {
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "escopo": {
+            "type": "string"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/LoteListaLinhaLote"
+            },
+            "type": "array"
+          },
+          "recorte": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "resumo": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/LoteListaFaixa"
+            },
+            "type": "array"
+          },
+          "tem_mais": {
+            "default": false,
+            "type": "boolean"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "escopo",
+          "linhas"
+        ],
+        "title": "VMLoteLista",
+        "type": "object"
+      }
+    },
+    {
+      "id": "lote_movimentos",
+      "label": "Movimentos do lote",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "LoteMovimentosLinhaMovimento": {
+            "properties": {
+              "autor_id": {
+                "type": "string"
+              },
+              "autorizador_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "complemento": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "criado_em": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "estorna_movimento_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "motivo": {
+                "enum": [
+                  "recebimento",
+                  "venda",
+                  "transferencia",
+                  "avaria",
+                  "furto",
+                  "erro_de_separacao",
+                  "erro_de_recebimento",
+                  "vencimento",
+                  "erro_de_contagem_anterior",
+                  "estorno"
+                ],
+                "type": "string"
+              },
+              "movimento_id": {
+                "type": "string"
+              },
+              "quantidade": {
+                "type": "integer"
+              },
+              "saldo_apos": {
+                "type": "integer"
+              },
+              "status": {
+                "enum": [
+                  "efetivado",
+                  "aguardando_autorizacao",
+                  "recusado"
+                ],
+                "type": "string"
+              },
+              "tipo": {
+                "enum": [
+                  "entrada",
+                  "saida",
+                  "descarte",
+                  "estorno"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "movimento_id",
+              "criado_em",
+              "tipo",
+              "quantidade",
+              "motivo",
+              "complemento",
+              "autor_id",
+              "autorizador_id",
+              "status",
+              "saldo_apos",
+              "estorna_movimento_id"
+            ],
+            "title": "LoteMovimentosLinhaMovimento",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05): o extrato responde quanto entrou e\nquanto saiu, nunca quanto vale (ADR-0020).",
+        "properties": {
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/LoteMovimentosLinhaMovimento"
+            },
+            "type": "array"
+          },
+          "lote_id": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "periodo_dias": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "produto": {
+            "type": "string"
+          },
+          "saldo_atual": {
+            "type": "integer"
+          },
+          "tem_mais": {
+            "default": false,
+            "type": "boolean"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "unidade": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "lote_id",
+          "produto",
+          "numero",
+          "unidade",
+          "saldo_atual",
+          "periodo_dias",
+          "total",
+          "linhas"
+        ],
+        "title": "VMLoteMovimentos",
+        "type": "object"
+      }
+    },
+    {
+      "id": "quarentena_fila",
+      "label": "Quarentena",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "QuarentenaFilaFaixa": {
+            "properties": {
+              "ordem": {
+                "default": 0,
+                "type": "integer"
+              },
+              "rotulo": {
+                "type": "string"
+              },
+              "valor": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "rotulo",
+              "valor"
+            ],
+            "title": "QuarentenaFilaFaixa",
+            "type": "object"
+          },
+          "QuarentenaFilaLinhaQuarentena": {
+            "properties": {
+              "classe": {
+                "enum": [
+                  "comum",
+                  "controlado",
+                  "termolabil",
+                  "antimicrobiano"
+                ],
+                "type": "string"
+              },
+              "dias_restantes": {
+                "type": "integer"
+              },
+              "fabricacao": {
+                "format": "date",
+                "type": "string"
+              },
+              "fabricado_ha_dias": {
+                "type": "integer"
+              },
+              "lote_id": {
+                "type": "string"
+              },
+              "numero": {
+                "type": "string"
+              },
+              "produto": {
+                "type": "string"
+              },
+              "saldo": {
+                "type": "integer"
+              },
+              "situacao": {
+                "enum": [
+                  "ok",
+                  "alerta_90",
+                  "bloqueio_30",
+                  "vencido"
+                ],
+                "type": "string"
+              },
+              "status_efetivo": {
+                "enum": [
+                  "quarentena",
+                  "liberado",
+                  "bloqueado",
+                  "descartado",
+                  "vencido",
+                  "esgotado"
+                ],
+                "type": "string"
+              },
+              "unidade": {
+                "type": "string"
+              },
+              "validade": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "lote_id",
+              "produto",
+              "classe",
+              "numero",
+              "unidade",
+              "fabricacao",
+              "validade",
+              "dias_restantes",
+              "fabricado_ha_dias",
+              "saldo",
+              "situacao",
+              "status_efetivo"
+            ],
+            "title": "QuarentenaFilaLinhaQuarentena",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "escopo": {
+            "type": "string"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/QuarentenaFilaLinhaQuarentena"
+            },
+            "type": "array"
+          },
+          "resumo": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/QuarentenaFilaFaixa"
+            },
+            "type": "array"
+          },
+          "tem_mais": {
+            "default": false,
+            "type": "boolean"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "vencidos": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "escopo",
+          "vencidos",
+          "linhas"
+        ],
+        "title": "VMQuarentenaFila",
+        "type": "object"
+      }
+    },
+    {
       "id": "vencimento_grafico",
       "label": "Curva de vencimento",
       "tamanho": "inteira",

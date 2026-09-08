@@ -8,12 +8,36 @@ from estoque.domain.identidade import Ator
 from estoque.registry.orcamento import ALERTA_TOKENS, tokens_do_catalogo
 from estoque.registry.registry import ids_permitidos
 
+TODAS_AS_PERSONAS = ("marco", "helena", "ivo", "odair", "cleide", "rafael", "sandra")
+
+# Exigem so' `lote.ler`, que todos os sete papeis tem.
+SO_LOTE_LER = ("fila_vencimento", "lote_lista", "lote_detalhe", "quarentena_fila")
+
 
 def test_todo_papel_com_lote_ler_ve_os_componentes_de_lote(
     personas: dict[str, Ator],
 ) -> None:
-    for nome in ("marco", "helena", "ivo", "odair", "cleide", "rafael", "sandra"):
-        assert "fila_vencimento" in ids_permitidos(personas[nome]), nome
+    for nome in TODAS_AS_PERSONAS:
+        catalogo = ids_permitidos(personas[nome])
+        for componente in SO_LOTE_LER:
+            assert componente in catalogo, f"{nome} nao ve {componente}"
+
+
+def test_lote_movimentos_exige_as_duas_permissoes(personas: dict[str, Ator]) -> None:
+    """`requires` e' tupla, e tupla e' conjuncao — nao disjuncao.
+
+    Rafael (comprador) tem `lote.ler` e NAO tem `movimento.ler`. Se a exigencia
+    fosse "qualquer uma", ele veria o extrato do lote, que e' historico de
+    movimentacao e nao lhe diz respeito. Este e' o teste negativo que separa as
+    duas leituras de uma tupla de permissoes.
+    """
+    for nome in TODAS_AS_PERSONAS:
+        ator = personas[nome]
+        pode = {"movimento.ler", "lote.ler"} <= set(ator.permissoes)
+        assert ("lote_movimentos" in ids_permitidos(ator)) is pode, nome
+
+    assert "movimento.ler" not in personas["rafael"].permissoes
+    assert "lote_movimentos" not in ids_permitidos(personas["rafael"])
 
 
 def test_recem_cadastrado_tem_catalogo_vazio(recem_cadastrado: Ator) -> None:
@@ -94,4 +118,4 @@ def test_orcamento_de_tokens_abaixo_do_alerta(personas: dict[str, Ator]) -> None
 def test_teto_de_catalogo_e_verificado_na_importacao() -> None:
     from estoque.registry.orcamento import verificar_teto
 
-    verificar_teto()  # nao levanta com 2 componentes
+    verificar_teto()  # nao levanta abaixo do teto

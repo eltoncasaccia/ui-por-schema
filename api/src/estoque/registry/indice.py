@@ -8,6 +8,10 @@ Nao edite a mao: 22 componentes registrados manualmente num arquivo so' seriam
 from estoque.registry.componentes import (
     estoque_indicador,
     fila_vencimento,
+    lote_detalhe,
+    lote_lista,
+    lote_movimentos,
+    quarentena_fila,
     vencimento_grafico,
 )
 from estoque.registry.orcamento import verificar_teto
@@ -15,6 +19,10 @@ from estoque.registry.orcamento import verificar_teto
 __all__ = [
     "estoque_indicador",
     "fila_vencimento",
+    "lote_detalhe",
+    "lote_lista",
+    "lote_movimentos",
+    "quarentena_fila",
     "vencimento_grafico",
 ]
 

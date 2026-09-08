@@ -66,26 +66,26 @@ Escrita. Ações de status (T-027).
 
 ## Critérios de aceite
 
-- [ ] **AC-1** `lote_lista` como Odair devolve apenas lotes de Uberlândia,
+- [x] **AC-1** `lote_lista` como Odair devolve apenas lotes de Uberlândia,
       **qualquer que seja o param passado**. *(negativo — `CA-06`)*
-- [ ] **AC-2** `lote_detalhe` de um lote de outra unidade devolve `nao_encontrado`,
+- [x] **AC-2** `lote_detalhe` de um lote de outra unidade devolve `nao_encontrado`,
       idêntico a inexistente. *(negativo — ADR-0014)*
-- [ ] **AC-3** O saldo exibido é a soma dos movimentos; não existe campo `saldo` em
+- [x] **AC-3** O saldo exibido é a soma dos movimentos; não existe campo `saldo` em
       lugar nenhum do caminho. *(`RN-M06`)*
-- [ ] **AC-4** `status` é enum fechado; valor fora do enum é rejeitado na validação
+- [x] **AC-4** `status` é enum fechado; valor fora do enum é rejeitado na validação
       do schema. *(negativo — risco R-5)*
-- [ ] **AC-5** `quarentena_fila` lista apenas `status: quarentena`. *(`RN-R01`)*
-- [ ] **AC-6** Nenhum dos quatro expõe custo, para nenhum papel — custo é de
+- [x] **AC-5** `quarentena_fila` lista apenas `status: quarentena`. *(`RN-R01`)*
+- [x] **AC-6** Nenhum dos quatro expõe custo, para nenhum papel — custo é de
       `produto_ficha` (T-019). *(`CA-05`)*
-- [ ] **AC-7** Dois lotes de mesmo número em unidades diferentes aparecem como
+- [x] **AC-7** Dois lotes de mesmo número em unidades diferentes aparecem como
       **registros distintos**. *(`RN-L08`)*
-- [ ] **AC-8** `select` é pura; teste chama duas vezes e compara referência de
+- [x] **AC-8** `select` é pura; teste chama duas vezes e compara referência de
       saída estrutural.
 
 ## Definição de pronto — adicional
 
-- [ ] Contagem de catálogo no BOARD atualizada: **+4**.
-- [ ] Os quatro entraram no teste de catálogo por persona (T-012 AC-1).
+- [x] Contagem de catálogo no BOARD atualizada: **+4**.
+- [x] Os quatro entraram no teste de catálogo por persona (T-012 AC-1).
 
 ## Armadilhas
 

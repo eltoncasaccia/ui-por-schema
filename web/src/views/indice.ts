@@ -7,6 +7,10 @@
 import type { ComponentId } from '../generated/componentes'
 import { view as estoque_indicador } from './estoque_indicador'
 import { view as fila_vencimento } from './fila_vencimento'
+import { view as lote_detalhe } from './lote_detalhe'
+import { view as lote_lista } from './lote_lista'
+import { view as lote_movimentos } from './lote_movimentos'
+import { view as quarentena_fila } from './quarentena_fila'
 import { view as vencimento_grafico } from './vencimento_grafico'
 
 /**
@@ -20,6 +24,10 @@ import { view as vencimento_grafico } from './vencimento_grafico'
 export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   estoque_indicador,
   fila_vencimento,
+  lote_detalhe,
+  lote_lista,
+  lote_movimentos,
+  quarentena_fila,
   vencimento_grafico,
 }
 

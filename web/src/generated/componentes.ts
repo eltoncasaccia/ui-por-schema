@@ -55,6 +55,130 @@ export interface FilaVencimentoFaixaResumo {
   valor: number
 }
 
+/**
+ * Sem custo, para papel nenhum (CA-05). O custo unitario e' de
+ * `produto_ficha`; nao esta' aqui, entao nao atravessa a rede (ADR-0020).
+ */
+export interface VMLoteDetalhe {
+  classe: 'comum' | 'controlado' | 'termolabil' | 'antimicrobiano'
+  dias_restantes: number
+  endereco: string | null
+  fabricacao: string
+  lote_id: string
+  numero: string
+  produto: string
+  saldo: number
+  situacao: 'ok' | 'alerta_90' | 'bloqueio_30' | 'vencido'
+  status_efetivo: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado' | 'vencido' | 'esgotado'
+  status_registrado: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado'
+  unidade: string
+  validade: string
+}
+
+/**
+ * O que atravessa a rede. Sem custo, para papel nenhum (CA-05, ADR-0020):
+ * custo e' de `produto_ficha`, e o que nao esta' aqui nao chega ao navegador.
+ */
+export interface VMLoteLista {
+  cursor?: string | null
+  escopo: string
+  linhas: LoteListaLinhaLote[]
+  recorte?: string[]
+  resumo?: LoteListaFaixa[]
+  tem_mais?: boolean
+  total: number
+}
+export interface LoteListaLinhaLote {
+  dias_restantes: number
+  endereco: string | null
+  fabricacao: string
+  lote_id: string
+  numero: string
+  produto: string
+  saldo: number
+  situacao: 'ok' | 'alerta_90' | 'bloqueio_30' | 'vencido'
+  status: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado' | 'vencido' | 'esgotado'
+  unidade: string
+  validade: string
+}
+export interface LoteListaFaixa {
+  ordem?: number
+  rotulo: string
+  valor: number
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05): o extrato responde quanto entrou e
+ * quanto saiu, nunca quanto vale (ADR-0020).
+ */
+export interface VMLoteMovimentos {
+  cursor?: string | null
+  linhas: LoteMovimentosLinhaMovimento[]
+  lote_id: string
+  numero: string
+  periodo_dias: number | null
+  produto: string
+  saldo_atual: number
+  tem_mais?: boolean
+  total: number
+  unidade: string
+}
+export interface LoteMovimentosLinhaMovimento {
+  autor_id: string
+  autorizador_id: string | null
+  complemento: string | null
+  criado_em: string
+  estorna_movimento_id: string | null
+  motivo:
+    | 'recebimento'
+    | 'venda'
+    | 'transferencia'
+    | 'avaria'
+    | 'furto'
+    | 'erro_de_separacao'
+    | 'erro_de_recebimento'
+    | 'vencimento'
+    | 'erro_de_contagem_anterior'
+    | 'estorno'
+  movimento_id: string
+  quantidade: number
+  saldo_apos: number
+  status: 'efetivado' | 'aguardando_autorizacao' | 'recusado'
+  tipo: 'entrada' | 'saida' | 'descarte' | 'estorno'
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
+export interface VMQuarentenaFila {
+  cursor?: string | null
+  escopo: string
+  linhas: QuarentenaFilaLinhaQuarentena[]
+  resumo?: QuarentenaFilaFaixa[]
+  tem_mais?: boolean
+  total: number
+  vencidos: number
+}
+export interface QuarentenaFilaLinhaQuarentena {
+  classe: 'comum' | 'controlado' | 'termolabil' | 'antimicrobiano'
+  dias_restantes: number
+  fabricacao: string
+  fabricado_ha_dias: number
+  lote_id: string
+  numero: string
+  produto: string
+  saldo: number
+  situacao: 'ok' | 'alerta_90' | 'bloqueio_30' | 'vencido'
+  status_efetivo: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado' | 'vencido' | 'esgotado'
+  unidade: string
+  validade: string
+}
+export interface QuarentenaFilaFaixa {
+  ordem?: number
+  rotulo: string
+  valor: number
+}
+
 export interface VMVencimentoGrafico {
   baldes: VencimentoGraficoBalde[]
   escopo: string
@@ -78,12 +202,20 @@ export interface VencimentoGraficoBalde {
 export type ComponentId =
   | 'estoque_indicador'
   | 'fila_vencimento'
+  | 'lote_detalhe'
+  | 'lote_lista'
+  | 'lote_movimentos'
+  | 'quarentena_fila'
   | 'vencimento_grafico'
 
 /** Usado pelo teste de bijeção: toda view precisa corresponder a um destes. */
 export const IDS_DA_API: readonly ComponentId[] = [
   'estoque_indicador',
   'fila_vencimento',
+  'lote_detalhe',
+  'lote_lista',
+  'lote_movimentos',
+  'quarentena_fila',
   'vencimento_grafico',
 ] as const
 
@@ -91,6 +223,10 @@ export const IDS_DA_API: readonly ComponentId[] = [
 export interface ViewModels {
   estoque_indicador: VMEstoqueIndicador
   fila_vencimento: VMFilaVencimento
+  lote_detalhe: VMLoteDetalhe
+  lote_lista: VMLoteLista
+  lote_movimentos: VMLoteMovimentos
+  quarentena_fila: VMQuarentenaFila
   vencimento_grafico: VMVencimentoGrafico
 }
 
@@ -100,5 +236,9 @@ export type ViewModel<Id extends ComponentId> = ViewModels[Id]
 export const TAMANHOS: Record<ComponentId, string> = {
   estoque_indicador: 'linha',
   fila_vencimento: 'inteira',
+  lote_detalhe: 'meia',
+  lote_lista: 'inteira',
+  lote_movimentos: 'inteira',
+  quarentena_fila: 'inteira',
   vencimento_grafico: 'inteira',
 }

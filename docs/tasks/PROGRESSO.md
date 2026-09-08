@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**21 concluídas · 4 parciais · 14 não iniciadas** · 3 de 23 componentes.
+**22 concluídas · 4 parciais · 13 não iniciadas** · 7 de 23 componentes.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -63,12 +63,12 @@ está pronto.
 |---|---|---|---|
 | T-017 | SPIKE: medição com modelo real | 🟡 | medição feita e publicada no PRD §9; **falta o relatório R-001** e o commit das perguntas ANTES da execução — A-08 |
 
-## W3 — Leitura · 3 de 15 componentes
+## W3 — Leitura · 7 de 15 componentes
 
 | | Tarefa | Estado | Componentes |
 |---|---|---|---|
 | T-020 | Vencimento, indicador e curva | ✅ | `fila_vencimento` `estoque_indicador` `vencimento_grafico` |
-| T-018 | Lote | ⬜ | 4 componentes |
+| T-018 | Lote | ✅ | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` |
 | T-019 | Produto e custo restrito | ⬜ | 2 |
 | T-021 | Rastreabilidade `CA-01` | ⬜ | 1 |
 | T-022 | Recebimento — leitura | ⬜ | 2 |
@@ -121,7 +121,7 @@ que não existem.
 | CA-03 fila de vencimento | T-020 | ✅ **único completo** |
 | CA-04 dupla identificação | T-030 | ⬜ |
 | CA-05 custo invisível | T-019 | 🟡 provado no indicador e no catálogo; falta `produto_ficha` |
-| CA-06 escopo de unidade | T-018 | 🟡 provado na fila; falta cobrir os demais |
+| CA-06 escopo de unidade | T-018 | 🟡 provado na fila e nos quatro de lote; falta cobrir os demais |
 | CA-07 cadeia fria | T-023 | ⬜ |
 | CA-08 excluir recusado | T-029 + banco | 🟡 banco recusa; falta o caminho de estorno |
 

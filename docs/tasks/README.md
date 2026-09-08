@@ -76,7 +76,7 @@ Alguns arquivos são inevitavelmente tocados por muita gente. Regras específica
 
 | Arquivo | Regra |
 |---|---|
-| `registry/indice.ts` | **Gerado**, nunca editado à mão. Um script varre `registry/componentes/*` |
+| `registry/indice.py` · `views/indice.ts` | **Gerados** por `make gerar-indice`, nunca editados à mão. O script varre `registry/componentes/*.py` e `views/*.tsx`. `make arch` confere e falha se estiverem desatualizados |
 | `package.json` | Dependência nova é linha isolada; conflito se resolve mantendo as duas |
 | `BOARD.md` | Só a linha da própria tarefa. Conflito aqui é sempre trivial |
 | `CONTRATOS.md` | **Ninguém**, exceto tarefa de contrato explícita |

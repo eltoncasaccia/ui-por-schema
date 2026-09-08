@@ -1,3 +1,9 @@
+/* GERADO por `make gerar-indice` — NÃO EDITE.
+ *
+ * Varre `views/*.tsx`. É o par do `registry/indice.py` no lado cliente: os dois
+ * únicos arquivos que toda tarefa de componente precisaria editar, e por isso
+ * os dois únicos que ninguém edita.
+ */
 import type { ComponentId } from '../generated/componentes'
 import { view as estoque_indicador } from './estoque_indicador'
 import { view as fila_vencimento } from './fila_vencimento'

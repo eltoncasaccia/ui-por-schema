@@ -37,8 +37,11 @@ env-completar:  ## acrescenta ao .env as variáveis novas do exemplo
 modelo:  ## mostra qual modelo e provedor estão em uso
 	@docker compose exec -T api sh -c 'echo "provedor : $$PROVEDOR"; echo "modelo   : $$MODELO_ASSISTENTE"; echo "modo     : $$MODO_DECODIFICACAO"; echo "base     : $${LLM_BASE_URL:-(padrão do provedor)}"'
 
-types:  ## gera os tipos do cliente a partir do registry da API
-	docker compose run --rm -T api python -m estoque.registry.exportar > web/src/generated/contrato.json
+gerar-indice:  ## regenera registry/indice.py e views/indice.ts varrendo os diretórios
+	@python3 scripts/gerar_indice.py
+
+types: gerar-indice  ## gera os tipos do cliente a partir do registry da API
+	cd api && uv run python -m estoque.registry.exportar > ../web/src/generated/contrato.json
 	cd web && npx tsx scripts/gerar-tipos.ts
 
 test:  ## testes dos dois lados
@@ -54,6 +57,7 @@ lint:  ## ruff + eslint
 	cd web && npx eslint src
 
 arch:  ## verificadores de arquitetura dos dois lados
+	@python3 scripts/gerar_indice.py --conferir
 	cd api && uv run lint-imports
 	cd web && npx tsx scripts/arch-check.ts
 
@@ -65,4 +69,4 @@ eval-livre:  ## só o modo livre — a pergunta original da v1
 
 check: lint typecheck test arch  ## tudo que o CI roda
 
-.PHONY: help up down reset logs db-local env env-completar modelo eval-livre migrate seed types test typecheck lint arch eval check
+.PHONY: help up down reset logs db-local env env-completar modelo eval-livre migrate seed gerar-indice types test typecheck lint arch eval check

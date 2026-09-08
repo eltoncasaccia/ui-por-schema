@@ -12,6 +12,10 @@ from estoque.registry.componentes import (
 )
 from estoque.registry.orcamento import verificar_teto
 
-__all__ = ["estoque_indicador", "fila_vencimento", "vencimento_grafico"]
+__all__ = [
+    "estoque_indicador",
+    "fila_vencimento",
+    "vencimento_grafico",
+]
 
 verificar_teto()  # RNF-08: falha a inicializacao acima de 25 componentes

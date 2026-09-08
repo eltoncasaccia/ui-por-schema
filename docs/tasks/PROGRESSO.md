@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**22 concluídas · 4 parciais · 16 não iniciadas** · 7 de 24 componentes previstos.
+**23 concluídas · 4 parciais · 15 não iniciadas** · 7 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -50,7 +50,7 @@ está pronto.
 | T-009 | Motor de permissão e escopo | ✅ | — |
 | T-010 | Trilha de auditoria | ✅ | — |
 | T-037 | Autenticação, sessão, CSRF | ✅ | CSRF e rate limit entregues em T-040 |
-| T-011 | Servidor FastAPI | 🟡 | `Idempotency-Key` e `If-Match` não implementados |
+| T-011 | Servidor FastAPI | 🟡 | `Idempotency-Key` e `If-Match` **implementados na T-025** (rota `/api/comandos/{nome}`, com teste de borda). AC-3 e AC-4 da T-011 passam a valer; os demais ACs dela não foram reconferidos nesta sessão |
 | T-012 | Registry runtime e catálogo por ator | ✅ | — |
 | T-013 | Validador de schema | ✅ | — |
 | T-014 | Adapter de modelo e trace | ✅ | ampliado pelo ADR-0025 |
@@ -75,20 +75,26 @@ está pronto.
 | T-023 | Cadeia fria `CA-07` | ⬜ | 2 |
 | T-024 | Movimento e trilha | ⬜ | 2 |
 
-## W4 — Escrita · nada iniciado
+## W4 — Escrita · pipeline pronto, comandos por fazer
 
 | | Tarefa | Estado |
 |---|---|---|
-| T-025 | Pipeline de comando | ⬜ |
+| T-025 | Pipeline de comando | ✅ |
 | T-026 | Registrar recebimento | ⬜ |
 | T-027 | Quarentena e status | ⬜ |
 | T-028 | Saída com FEFO | ⬜ |
 | T-029 | Estorno e descarte | ⬜ |
 | T-030 | Dupla identificação `CA-04` | ⬜ |
 
-> **É a metade que falta da tese.** O [ADR-0002](../adr/0002-plano-render-plano-escrita.md)
-> — *"a saída do modelo autoriza renderizar, nunca autoriza escrever"* — não
-> está demonstrado, porque não existe escrita para o modelo deixar de autorizar.
+> **O ADR-0002 deixou de ser promessa.** Até a T-025, *"a saída do modelo
+> autoriza renderizar, nunca autoriza escrever"* não era falsificável: não havia
+> escrita para o modelo deixar de autorizar. Agora há um caminho de escrita, e a
+> barreira é verificada por três testes independentes — grafo de imports,
+> ausência de callable em `CommandDef`, e bijeção declarado ↔ executável
+> (`api/tests/commands/test_ac1_barreira.py`). Cada um foi confirmado vermelho
+> com a violação introduzida de propósito.
+>
+> O que ainda falta da metade: os 7 comandos concretos, T-026 a T-030.
 
 ## W5 — Garantias
 

@@ -163,3 +163,17 @@ view_compartilhamento = sa.Table(
     sa.Column("criado_em", sa.DateTime(timezone=True), nullable=False),
     sa.Column("lido_em", sa.DateTime(timezone=True)),
 )
+
+# Registro de idempotencia do plano de escrita (T-025). Chave composta com o
+# ator: `Idempotency-Key` de um cliente nao reproduz a resposta de outro.
+idempotencia = sa.Table(
+    "idempotencia",
+    metadata,
+    sa.Column("chave", sa.Text, primary_key=True),
+    sa.Column("ator_id", sa.Text, primary_key=True),
+    sa.Column("comando", sa.Text, nullable=False),
+    sa.Column("impressao", sa.Text, nullable=False),
+    sa.Column("resposta", sa.JSON, nullable=False),
+    sa.Column("etag", sa.Text),
+    sa.Column("criado_em", sa.DateTime(timezone=True), nullable=False),
+)

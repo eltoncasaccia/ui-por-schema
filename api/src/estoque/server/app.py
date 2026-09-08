@@ -39,6 +39,7 @@ from estoque.autorizacao.motor import (
     autorizar_params_ou_falhar,
     autorizar_unidade_do_param,
 )
+from estoque.commands import pipeline
 from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados, Repositorios
 from estoque.data.repositorios import RepoLoteSQL, RepoMovimentoSQL, RepoProdutoSQL
@@ -771,3 +772,39 @@ async def dados(
             valor_novo={"params": corpo.params},
         )
     return _ok(vm.model_dump(mode="json"))
+
+
+# ---------------------------------------------------------------- comandos
+@app.post("/api/comandos/{nome}")
+async def comando(
+    nome: str,
+    corpo: dict[str, Any],
+    req: Request,
+    resposta: Response,
+    sessao: str | None = Cookie(default=None),
+) -> dict[str, Any]:
+    """A borda do PLANO DE ESCRITA. T-025, T-011 AC-3 e AC-4.
+
+    Esta rota nao e' alcancavel a partir da saida do modelo, e nao e' por
+    disciplina: `assistant` nao importa `commands` (import-linter, contrato 3), e
+    o `CommandDef` que o catalogo publica nao carrega funcao nenhuma. O modelo
+    pode fazer o formulario aparecer; quem dispara e' a pessoa que clica em
+    salvar — pela mesma rota que a tela tradicional usa (ADR-0002).
+
+    CSRF e `Origin` ja' foram conferidos no middleware, que roda em TODA escrita.
+    """
+    async with _engine.connect() as c:
+        ator = await _ator(c, sessao)
+
+    r = await pipeline.executar(
+        nome,
+        corpo,
+        ator=ator,
+        motor=_engine,
+        origem="tela",
+        idempotency_key=req.headers.get("Idempotency-Key"),
+        if_match=req.headers.get("If-Match"),
+    )
+    if r.etag:
+        resposta.headers["ETag"] = r.etag
+    return _ok(r.dados, etag=r.etag, repetido=r.repetido)

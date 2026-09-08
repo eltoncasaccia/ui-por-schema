@@ -33,13 +33,13 @@ do ciclo 1** — nenhum caiu com o corte do [ADR-0010](./adr/0010-corte-de-escop
 | `RN-P` Produto | P01–P06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-019](./tasks/T-019-componentes-produto.md) · [T-026](./tasks/T-026-recebimento-registrar.md) |
 | `RN-L` Lote e validade | L01–L08 | [T-008](./tasks/T-008-regras-puras.md) · [T-018](./tasks/T-018-componentes-lote.md) · [T-020](./tasks/T-020-vencimento-indicador.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) · [T-028](./tasks/T-028-saida-fefo.md) |
 | `RN-R` Recebimento | R01–R05 | [T-022](./tasks/T-022-recebimento-leitura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) |
-| `RN-M` Movimentação | M01–M06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-028](./tasks/T-028-saida-fefo.md) · [T-029](./tasks/T-029-estorno-descarte.md) |
+| `RN-M` Movimentação | M01–M06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) **M04** · [T-028](./tasks/T-028-saida-fefo.md) · [T-029](./tasks/T-029-estorno-descarte.md) |
 | `RN-C` Controlados | C01–C05 | [T-026](./tasks/T-026-recebimento-registrar.md) · [T-028](./tasks/T-028-saida-fefo.md) · [T-030](./tasks/T-030-controlado-autorizar.md) — **C04 fora** (depende de contagem) |
 | `RN-F` Cadeia fria | F01–F04 | [T-023](./tasks/T-023-temperatura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) |
 | `RN-I` Inventário | I01–I08 | **Fora do ciclo 1** — [ADR-0010](./adr/0010-corte-de-escopo-ciclo-1.md) |
 | `RN-T` Transferência | T01–T05 | **Fora do ciclo 1** — ADR-0010 |
-| `RN-A` Acesso | A01–A07 | [T-007](./tasks/T-007-repositorios.md) · [T-009](./tasks/T-009-motor-de-permissao.md) · [T-011](./tasks/T-011-servidor.md) · [T-012](./tasks/T-012-catalogo.md) — **A05 fora** (substituto do RT) |
-| `RN-D` Auditoria | D01–D05 | [T-010](./tasks/T-010-auditoria.md) · [T-021](./tasks/T-021-rastreabilidade.md) · [T-024](./tasks/T-024-movimento-auditoria.md) |
+| `RN-A` Acesso | A01–A07 | [T-007](./tasks/T-007-repositorios.md) · [T-009](./tasks/T-009-motor-de-permissao.md) · [T-011](./tasks/T-011-servidor.md) · [T-012](./tasks/T-012-catalogo.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) **A03 na escrita** — **A05 fora** (substituto do RT) |
+| `RN-D` Auditoria | D01–D05 | [T-010](./tasks/T-010-auditoria.md) · [T-021](./tasks/T-021-rastreabilidade.md) · [T-024](./tasks/T-024-movimento-auditoria.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) **D01, inclusive da tentativa recusada** |
 
 ---
 
@@ -58,7 +58,7 @@ Nascem da composição dinâmica; não existiam no documento 02.
 
 ---
 
-## 4. Catálogo — 23 componentes
+## 4. Catálogo — 22 componentes
 
 Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-08`.
 
@@ -80,7 +80,6 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 13 | `temperatura_excursoes` | `temperatura.ler` | T-023 |
 | 14 | `movimento_lista` | `movimento.ler` | [T-024](./tasks/T-024-movimento-auditoria.md) |
 | 15 | `auditoria_trilha` | `auditoria.ler` | T-024 |
-| 16 | `confirm_action` | herda do comando | [T-025](./tasks/T-025-pipeline-de-comando.md) |
 | 17 | `recebimento_registrar` | `recebimento.criar` | [T-026](./tasks/T-026-recebimento-registrar.md) |
 | 18 | `quarentena_liberar` | `lote.liberar` | [T-027](./tasks/T-027-quarentena-e-status.md) |
 | 19 | `lote_status_acao` | `lote.status` | T-027 |
@@ -89,8 +88,17 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 22 | `movimento_descarte` | `movimento.descartar` | T-029 |
 | 23 | `controlado_autorizar` | `controlado.autorizar` | [T-030](./tasks/T-030-controlado-autorizar.md) |
 
-**Não é componente de catálogo:** `sem_acesso` — negativa é decisão do motor de
-render, nunca composição do modelo ([T-015](./tasks/T-015-motor-de-render.md), ADR-0014).
+**Não são componentes de catálogo**, e a razão é a mesma nos dois: são decisões
+do motor de render diante do que o servidor devolveu, nunca composição que o
+modelo escolhe.
+
+| | Por quê |
+|---|---|
+| `sem_acesso` | negativa é decisão do render ([T-015](./tasks/T-015-motor-de-render.md), ADR-0014) |
+| `confirm_action` | confirmação é decisão do render diante de `CommandDef.confirm` (achado A-05, [T-025](./tasks/T-025-pipeline-de-comando.md)). Era o único componente sem `requires` próprio, contra CONTRATOS §5 |
+
+A numeração acima pula o 16, que era o `confirm_action`. Renumerar apagaria o
+rastro de uma decisão — e é o rastro que este documento existe para guardar.
 
 ---
 

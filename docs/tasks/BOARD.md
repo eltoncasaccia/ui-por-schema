@@ -26,7 +26,7 @@ paralelizáveis; a seguinte abre quando as dependências declaradas fecham.
 | **W1** | Núcleo: banco, dados, permissão, auth, registry, render | até 13 sessões | T-039 ✅ |
 | **W2** | Furo de risco: medição com modelo real | 1 sessão | W1 ✅ |
 | **W3** | 15 componentes de leitura | até 7 sessões | T-017 revisado |
-| **W4** | 7 componentes de escrita | até 5 sessões | T-025 ✅ |
+| **W4** | 7 componentes de escrita | até 5 sessões | T-025 ✅ — **aberta** |
 | **W5** | Garantias e fechamento | até 4 sessões | W4 ✅ |
 
 **W0 é serial de propósito.** Sete tarefas em sequência compram treze simultâneas.
@@ -172,7 +172,7 @@ graph TD
 
 | Id | Tarefa | Componentes | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-025](./T-025-pipeline-de-comando.md) | Pipeline de comando e confirmação | *(nenhum — ver nota)* | G | T-011, T-015 | ⬜ |
+| [T-025](./T-025-pipeline-de-comando.md) | Pipeline de comando e confirmação | *(nenhum — ver nota)* | G | T-011, T-015 | ✅ |
 | [T-026](./T-026-recebimento-registrar.md) | Registrar recebimento | `recebimento_registrar` | G | T-025, T-022 | ⬜ |
 | [T-027](./T-027-quarentena-e-status.md) | Quarentena e status | `quarentena_liberar` `lote_status_acao` | G | T-025, T-018 | ⬜ |
 | [T-028](./T-028-saida-fefo.md) | Saída com FEFO | `movimento_saida` | G | T-025, T-008 | ⬜ |
@@ -234,6 +234,8 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
+| A-12 | **T-025 não cabia nos arquivos que declarava.** A lista de propriedade exclusiva citava `confirm_action.py` — arquivo que o escopo da própria tarefa manda não criar (A-05) — e `commands/*.test.py`, caminho inexistente. E os AC-3/AC-4/AC-7 exigem tabela (T-036) e rota HTTP (T-011) para serem verificáveis | execução da T-025 | lista corrigida; 3 arquivos de outra tarefa tocados, registrados no arquivo da tarefa |
+| A-13 | **`make check` nunca pôde passar.** `web/eslint.config.js` e `web/scripts/arch-check.ts` são invocados pelo Makefile e **nunca existiram** em commit nenhum; `eslint` não é dependência de `web/package.json`. O comando que o CLAUDE.md chama de "o que o CI roda" para na primeira etapa | execução da T-025 | **T-041** (CI) e **T-005** (arch do TS) |
 | A-04b | `arch:check` só do lado Python, 4 de 6 regras | A-002 | T-005 parcial |
 | A-09 | `make typecheck` roda `mypy --strict src` e **não `tests`**. Dez erros de tipo vivem lá há tempo, invisíveis ao DoD e ao CI — e visíveis no editor de quem abre o arquivo | T-018 | **T-041** |
 | A-11 | Os fakes de `tests/registry/` reimplementam a interseção de escopo da porta. Se o adaptador real parar de intersectar, **toda a suíte de registry continua verde** | auditoria de testes | **T-042** |

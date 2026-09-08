@@ -21,9 +21,24 @@ modelo** — é aqui que o ADR-0002 vira código.
 
 ```
 api/src/estoque/commands/pipeline.py   api/src/estoque/commands/tipos.py
-api/src/estoque/registry/componentes/confirm_action.py
-api/src/estoque/commands/*.test.py
+api/tests/commands/*.py
 ```
+
+> **A lista acima foi corrigida na execução** (achado A-12). A original declarava
+> `registry/componentes/confirm_action.py`, um arquivo que o próprio escopo desta
+> tarefa manda **não** criar (achado A-05), e `commands/*.test.py`, caminho que
+> não existe neste repositório — teste Python vive em `api/tests/`.
+
+### Arquivos de outra tarefa, tocados por necessidade — achado A-12
+
+| Arquivo | Dono | Por quê |
+|---|---|---|
+| `api/migrations/versions/0003_idempotencia.py` | T-036 | `Idempotency-Key` (AC-3) exige registro durável. Não havia tabela |
+| `api/src/estoque/data/modelos.py` | T-036 | a tabela precisa da definição Core correspondente |
+| `api/src/estoque/server/app.py` | T-011 | sem a rota `/api/comandos/{nome}` os AC-2 a AC-7 não são alcançáveis de fora |
+
+Nenhuma sessão estava em andamento nessas tarefas. A decisão foi tomada com o
+cliente antes de escrever — ver A-12 na seção 6 do BOARD.
 
 ## Escopo
 
@@ -46,25 +61,25 @@ Comandos específicos — T-026 a T-030.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Existe teste que percorre o grafo de imports e afirma que
+- [x] **AC-1** Existe teste que percorre o grafo de imports e afirma que
       `application/assistant/**` **não alcança** `application/commands/**`.
       *(negativo — ADR-0002, o critério central desta tarefa)*
-- [ ] **AC-2** Todo comando exige ator autenticado e revalida `requires` no
+- [x] **AC-2** Todo comando exige ator autenticado e revalida `requires` no
       servidor, mesmo que a interface já tenha escondido a ação. *(negativo —
       `RN-A03`)*
-- [ ] **AC-3** Repetir a mesma `Idempotency-Key` produz **um** efeito e a mesma
+- [x] **AC-3** Repetir a mesma `Idempotency-Key` produz **um** efeito e a mesma
       resposta.
-- [ ] **AC-4** Escrita concorrente com etag antigo devolve `conflito` sem aplicar
+- [x] **AC-4** Escrita concorrente com etag antigo devolve `conflito` sem aplicar
       nada. *(negativo)*
-- [ ] **AC-5** Todo comando bem-sucedido grava auditoria com valor anterior e novo.
+- [x] **AC-5** Todo comando bem-sucedido grava auditoria com valor anterior e novo.
       *(`RN-D01`)*
-- [ ] **AC-6** `criadoEm` é sempre do servidor; timestamp do cliente é ignorado.
+- [x] **AC-6** `criadoEm` é sempre do servidor; timestamp do cliente é ignorado.
       *(negativo — `RN-M04`)*
-- [ ] **AC-7** Comando que falha na regra de domínio não deixa efeito parcial —
+- [x] **AC-7** Comando que falha na regra de domínio não deixa efeito parcial —
       auditoria registra a tentativa recusada.
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+0** — confirmação não é componente.
+- [x] Contagem de catálogo no BOARD: **+0** — confirmação não é componente.
 
 ## Armadilhas
 

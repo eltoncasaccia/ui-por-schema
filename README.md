@@ -79,7 +79,38 @@ modelos de domínio, nunca linhas de banco.
 | **api** | Python 3.13 · FastAPI · Pydantic v2 · SQLAlchemy 2.0 · Alembic · `mypy --strict` |
 | **web** | React 18 · Vite · TypeScript estrito · TanStack Query + Router · CSS Modules |
 | **banco** | Postgres 17 — imutabilidade de movimento e auditoria aplicada por `REVOKE`, não por comentário |
-| **modelo** | Claude Haiku 4.5 / Sonnet 5 |
+| **modelo** | trocável por configuração — ver abaixo |
+
+### Escolhendo o modelo
+
+O provedor e o modelo são configuração, não código
+([ADR-0025](./docs/adr/0025-agnosticismo-de-provedor.md)). No `.env`:
+
+```bash
+PROVEDOR=openrouter                            # roteador multi-modelo
+MODELO_ASSISTENTE=anthropic/claude-haiku-4.5
+MODO_DECODIFICACAO=restrito                    # restrito | ferramenta | livre
+```
+
+Rodando com modelo aberto na própria máquina:
+
+```bash
+PROVEDOR=compativel                            # qualquer API compatível com OpenAI
+LLM_BASE_URL=http://host.docker.internal:11434/v1/chat/completions
+MODELO_ASSISTENTE=qwen2.5:14b
+```
+
+```
+make modelo   mostra provedor, modelo e modo em uso
+make env      confere o .env contra o .env.example
+make eval     roda a suíte e publica as métricas
+```
+
+O compose lê o `.env` **na criação do container** — depois de editar, use
+`docker compose up -d api`; `restart` não recarrega.
+
+O painel ⌥ (Execution Trace) mostra, a cada resposta, o modelo, o modo que
+**de fato** valeu, quem serviu por baixo, tokens e custo.
 
 ---
 

@@ -35,7 +35,9 @@ antigo recebe `Status: Substituído por ADR-XXXX`. O histórico é o valor.
 | [0023](./0023-provedor-de-modelo.md) | OpenRouter como provedor, atrás do adaptador | Ciclo 1 | Aceito |
 | [0024](./0024-decodificacao-restrita.md) | Decodificação restrita, e o que ela faz com a métrica | Ciclo 1 | Aceito |
 | [0025](./0025-agnosticismo-de-provedor.md) | Provedor trocável por configuração; três modos de saída | Fundacional | Aceito — **emenda 0023** |
-| [0026](./0026-observabilidade.md) | Observabilidade como porta, com LangFuse do outro lado | Ciclo 1 | Aceito |
+| [0026](./0026-observabilidade.md) | Observabilidade como porta, com LangFuse do outro lado | Ciclo 1 | Aceito — **não verificado** |
+| [0027](./0027-ambiente-verificado.md) | Conferir o `.env` contra o exemplo, por comando | Ferramental | Aceito |
+| [0028](./0028-processo-de-decisao.md) | Pergunta curta antes; ADR depois | Processo | Aceito |
 
 ## Origem das decisões
 

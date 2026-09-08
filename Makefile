@@ -28,6 +28,15 @@ migrate:  ## aplica as migrações
 seed:  ## popula o banco com os dados da Bertoni (idempotente)
 	docker compose run --rm api python -m estoque.data.seed
 
+env:  ## compara o .env com o .env.example
+	@python3 scripts/env.py
+
+env-completar:  ## acrescenta ao .env as variáveis novas do exemplo
+	@python3 scripts/env.py --completar
+
+modelo:  ## mostra qual modelo e provedor estão em uso
+	@docker compose exec -T api sh -c 'echo "provedor : $$PROVEDOR"; echo "modelo   : $$MODELO_ASSISTENTE"; echo "modo     : $$MODO_DECODIFICACAO"; echo "base     : $${LLM_BASE_URL:-(padrão do provedor)}"'
+
 types:  ## gera os tipos do cliente a partir do OpenAPI
 	cd web && npm run gerar-tipos
 
@@ -55,4 +64,4 @@ eval-livre:  ## só o modo livre — a pergunta original da v1
 
 check: lint typecheck test arch  ## tudo que o CI roda
 
-.PHONY: help up down reset logs db-local eval-livre migrate seed types test typecheck lint arch eval check
+.PHONY: help up down reset logs db-local env env-completar modelo eval-livre migrate seed types test typecheck lint arch eval check

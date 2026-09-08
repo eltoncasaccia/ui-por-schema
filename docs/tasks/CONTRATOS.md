@@ -5,7 +5,7 @@
 | **Status** | **CONGELADO** a partir da conclusão de T-004 |
 | **Autoridade** | Normativo. Código que divergir daqui está errado, não o contrário |
 | **Alteração** | Só por ADR novo + tarefa de contrato. Nunca em tarefa de feature |
-| **Revisão** | 2.0 — migração para API Python + cliente TypeScript, com os 11 achados da [auditoria A-001](../relatorios/A-001-auditoria-pre-migracao.md) corrigidos |
+| **Revisão** | 2.1 — provedor e modo de saída viraram configuração ([ADR-0025](../adr/0025-agnosticismo-de-provedor.md)); composição vazia passou a ser resposta válida |
 
 > **Por que este documento existe.** Trabalho paralelo em várias sessões só é
 > seguro se as fronteiras entre as partes forem decididas **antes** de as partes

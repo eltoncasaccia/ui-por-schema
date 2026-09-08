@@ -6,6 +6,7 @@
 | **Data** | 2026-09-08 |
 | **Escopo** | Ciclo 1 |
 | **Relacionado** | [ADR-0013](./0013-suite-de-avaliacao.md) — a suíte que alimenta as métricas |
+| **Nota** | O caminho de código do LangFuse **ainda não foi exercitado** — ver "O que não está verificado" |
 
 ## Contexto
 
@@ -44,6 +45,15 @@ nota `schema_valido` por execução.
 **O papel importa:** a mesma pergunta compõe diferente por papel, e uma métrica
 agregada sem ele mistura experimentos distintos.
 
+### Instância: a hospedada, não uma local
+
+O LangFuse é consumido em `cloud.langfuse.com`, com chaves no `.env`.
+
+Subir uma instância local foi **tentado e revertido**: exige clickhouse, redis e
+minio além do próprio serviço — quatro containers a mais. A promessa de que
+`docker compose up` sobe o sistema inteiro vale mais que ter telemetria ligada
+por padrão, ainda mais quando o sistema funciona inteiro sem ela.
+
 ### O que NÃO é registrado
 
 Nenhuma linha de dado do estoque. O prompt já não contém dados
@@ -78,11 +88,25 @@ ordem, e exigiria ADR próprio.
   derrubar a requisição que ela observa — mas isso significa que telemetria
   quebrada some em silêncio, e só o log denuncia.
 
+## O que não está verificado
+
+**O ramo que fala com o LangFuse nunca executou.** Não há chaves neste ambiente,
+e nenhum teste cobre a chamada real — só o caminho nulo.
+
+Registrar isto importa porque é a mesma falha da POC v1, que publicou números de
+um parser simulado: *"o caminho do Claude real foi escrito, tipado e compilado,
+mas nunca executado"*. O que existe aqui hoje é a porta e a implementação
+plausível, não a evidência de que ela funciona.
+
+**Fecha assim:** pôr as chaves no `.env`, rodar `make eval`, e conferir que as
+gerações aparecem no painel. Até lá, tratar como não verificado.
+
 ## Conformidade
 
 - Sem `LANGFUSE_*`, `criar()` devolve `None` e o sistema usa o nulo.
 - Nenhuma chamada ao observador levanta para fora.
 - `make eval` recusa rodar com o adaptador mock.
+- **Pendente:** uma execução real contra o LangFuse hospedado.
 
 ## Referências
 - [PRD-001 §9](../prd/PRD-001-ciclo-1.md) · [ADR-0013](./0013-suite-de-avaliacao.md)

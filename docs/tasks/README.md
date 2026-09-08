@@ -153,7 +153,31 @@ Na prática, para todo mecanismo de proteção:
 
 ---
 
-## 9. Quando parar
+## 9. Quando perguntar
+
+Antes de implementar, **uma linha** — com a recomendação
+([ADR-0028](../adr/0028-processo-de-decisao.md)).
+
+| Exige pergunta | Não exige |
+|---|---|
+| acrescentar dependência ou container | corrigir bug |
+| mudar contrato congelado | escrever teste |
+| escolher entre caminhos com custo ou risco distintos | seguir ADR já registrado |
+| alterar como o projeto é executado ou publicado | refatorar dentro da tarefa |
+
+Uma pergunta **sem recomendação** empurra o trabalho de volta em vez de
+adiantá-lo. Diga o que você faria e por quê; a decisão continua sendo de quem
+decide.
+
+Depois de decidida: implementa, escreve o ADR como **Aceito**, e revisa os
+documentos afetados **no mesmo commit**.
+
+> Isto nasceu de um erro concreto: quatro containers de observabilidade foram
+> acrescentados sem perguntar e revertidos em seguida. O trabalho perdido foi o
+> menor custo — o maior foi o ADR ter virado justificativa de fato consumado em
+> vez de registro de escolha.
+
+## 10. Quando parar
 
 Uma sessão para e sinaliza — não improvisa — quando:
 
@@ -171,7 +195,7 @@ código.** É assim que documentação e sistema divergem.
 
 ---
 
-## 10. Estimativas
+## 11. Estimativas
 
 | Tamanho | Significado |
 |---|---|

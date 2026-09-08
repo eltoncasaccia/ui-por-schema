@@ -314,8 +314,30 @@ entregue. Eles respondem a pergunta que a POC v1 deixou aberta.
 | **Tempo até o primeiro componente** | p50 e p95; p95 ≤ 3 s | Instrumentação no Execution Trace |
 | **Custo por pergunta** | Medir; teto de alerta em 4k tokens de entrada | Contagem de tokens com catálogo real |
 
-Medidos com **`claude-haiku-4-5-20251001` e `claude-sonnet-5`**, os dois, com o
-mesmo conjunto de perguntas. A escolha de produção sai do número, não da intuição.
+Medidos com **os dois modelos**, com o mesmo conjunto de perguntas. A escolha de
+produção sai do número, não da intuição.
+
+O modelo e o provedor são configuração
+([ADR-0025](../adr/0025-agnosticismo-de-provedor.md)): `PROVEDOR` e
+`MODELO_ASSISTENTE` no `.env`, sem tocar em código. `make eval` roda a suíte;
+`make modelo` diz o que está em uso.
+
+### Primeira medição — 17 casos, Claude Haiku 4.5 via OpenRouter
+
+| | restrito | livre |
+|---|---|---|
+| schema válido | 100% | 100% |
+| composição correta | 100% | 100% |
+| tokens de entrada (médio) | **2078** | **962** |
+| custo (17 casos) | US$ 0,039 | US$ 0,020 |
+
+> A decodificação restrita **mais que dobra os tokens de entrada** — o JSON
+> Schema do catálogo viaja em toda pergunta. Com 23 componentes os dois modos
+> acertam igual, o que torna o custo o único critério, e ele favorece o modo
+> livre. Pode inverter com catálogo maior ou modelo mais fraco.
+
+**Ainda não medido:** Sonnet, e a série histórica no LangFuse — cujo caminho de
+código não foi exercitado ([ADR-0026](../adr/0026-observabilidade.md)).
 
 ---
 

@@ -206,7 +206,29 @@ vencendo, o que é falso e pior.
 
 ---
 
-## 8. Auditoria
+## 8. Modelo e provedor
+
+| Comando | Resultado verificado |
+|---|---|
+| `make modelo` | `provedor: openrouter · modelo: anthropic/claude-haiku-4.5 · modo: restrito` |
+| `make env` | relata variáveis do `.env.example` ausentes no `.env` |
+| `make eval` | roda 17 casos nos dois modos e imprime o relatório |
+
+Trocar de modelo: edite `MODELO_ASSISTENTE` no `.env` e rode
+`docker compose up -d api`. **`restart` não recarrega variável de ambiente** —
+foi assim que a chave da OpenRouter pareceu não funcionar da primeira vez.
+
+Cada resposta do assistente carrega, no painel ⌥:
+
+```
+modelo            anthropic/claude-haiku-4.5
+modo_efetivo      restrito        ← se o provedor recusasse, cairia e diria
+provedor_efetivo  Amazon Bedrock  ← quem a OpenRouter usou por baixo
+tokens_entrada    2073
+custo_usd         0.002323
+```
+
+## 9. Auditoria
 
 Tudo acima deixou rastro. Abra o **Execution Trace** (ícone ⌥) ou consulte:
 
@@ -242,4 +264,8 @@ auditoria são imutáveis por regra, produto se inativa, usuário se desativa.
 
 ---
 
-*Executado em 2026-09-08 · 110 testes de API, 46 de componente*
+*Executado em 2026-09-08 · 120 testes de API, 46 de componente*
+
+**Não verificado neste roteiro:** o caminho do LangFuse. O código existe e o
+observador é nulo sem chave, mas a chamada real nunca executou
+([ADR-0026](./adr/0026-observabilidade.md)).

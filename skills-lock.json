@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "find-skills/SKILL.md"
+    },
     "langfuse": {
       "source": "langfuse/skills",
       "sourceType": "github",

@@ -150,12 +150,112 @@ O corte foi feito conferindo os oito critérios de aceite do cliente um a um:
 
 ## Comandos
 
+### Subir e derrubar
+
+```bash
+make up          # sobe tudo: db + api + web (docker compose)
+make down        # derruba os serviços
+make reset       # derruba e APAGA os dados
+make logs        # acompanha
 ```
-make up         sobe tudo          make test       testes dos dois lados
-make seed       popula o banco     make typecheck  mypy --strict + tsc
-make migrate    aplica migrações   make arch       verificadores de arquitetura
-make reset      apaga os dados     make check      tudo que o CI roda
+
+### Desenvolver localmente
+
+O banco precisa estar publicado em `localhost:15432`:
+
+```bash
+make db-local    # publica o Postgres na porta local
+make migrate     # alembic upgrade head
+make seed        # dados da Bertoni (idempotente)
 ```
+
+> ⚠️ `make migrate` recria o container **sem o mapeamento de porta**. Rode
+> `make db-local` de novo depois. Sem a porta, nove testes de imutabilidade
+> pulam — e teste que pula é teste que não existe.
+
+### Verificar
+
+```bash
+make check       # lint + typecheck + test + arch — é o que o CI roda
+```
+
+| | |
+|---|---|
+| `make lint` | `ruff` no Python, `eslint` no TypeScript |
+| `make typecheck` | `mypy --strict src` e `tsc --noEmit` |
+| `make test` | `pytest` e `vitest` |
+| `make arch` | índices em dia, `import-linter`, `arch-check.ts` |
+| `make types` | regenera contrato e tipos a partir do registry |
+| `make gerar-indice` | regenera `registry/indice.py` e `views/indice.ts` |
+| `make env` | compara `.env` com `.env.example` |
+| `make modelo` | mostra provedor, modelo e modo em uso |
+
+`make eval` roda a suíte de avaliação e **gasta token a cada execução** — não
+rode sem intenção.
+
+### Arquivos gerados — nunca edite à mão
+
+`api/src/estoque/registry/indice.py` · `web/src/views/indice.ts` ·
+`web/src/generated/*`
+
+São gerados porque são os únicos arquivos que toda tarefa de componente
+precisaria editar. `make arch` falha se estiverem desatualizados.
+
+### Derrubar processo preso
+
+```bash
+docker compose ps                 # o que está de pé
+docker compose down -v           # encerra e apaga volumes
+lsof -ti:15432 | xargs kill      # porta órfã
+```
+
+---
+
+## Organização do repositório
+
+```
+api/     backend Python — FastAPI, SQLAlchemy, Pydantic, uv
+  src/estoque/
+    domain/       tipos e regras puras. NÃO importa nada do projeto
+    data/         porta única de dados; o único lugar com SQLAlchemy
+    registry/     os componentes do catálogo: params, requires, load, select
+    schema/       validação da saída do modelo, viewKey
+    assistant/    adapter de modelo, prompt, trace, observabilidade
+    commands/     pipeline de escrita (o assistente NÃO alcança daqui)
+    server/       borda HTTP, autorização por registro, auditoria
+  tests/
+
+web/     cliente TypeScript — React, Vite, TanStack Query, Vitest
+  src/
+    views/        uma view por componente registrado. Só recebe `vm` e desenha
+    ui/           Tabela, Indicador, BarraFaixas, Etiqueta
+    render/       motor que monta a tela a partir do schema validado
+    shell/        a moldura: painéis, login, workspace
+    generated/    GERADO a partir do registry da API
+    testes/
+
+docs/    PRD, ADRs, regras de negócio, tarefas, relatórios de auditoria
+```
+
+As camadas do `api/` são **verificadas por `import-linter`**, não combinadas. A
+mais importante: **`assistant` não importa `commands`** — é a tese em forma de
+teste. Se existir caminho de código do assistente até a escrita, a promessa de
+que "o modelo nunca autoriza escrever" deixa de ser verificável.
+
+### Estilo
+
+- pt-BR em código, comentários, commits e documentos. No Python, comentários
+  **sem acento**; no TypeScript, com.
+- Comentário explica **por quê**, não **o quê**.
+- Sem `any`; `mypy --strict` obrigatório.
+- Nada de cor ou espaçamento literal no cliente — só tokens de `estilo.css`.
+
+### Trabalhando com agentes de IA
+
+[`CLAUDE.md`](./CLAUDE.md) na raiz, mais um por subprojeto
+([`api/`](./api/CLAUDE.md), [`web/`](./web/CLAUDE.md)). As skills em
+`.claude/skills/` cobrem os procedimentos: executar uma tarefa, criar um
+componente dos dois lados, e as duas auditorias.
 
 ---
 

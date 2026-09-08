@@ -11,6 +11,7 @@ dist/
 coverage/
 .DS_Store
 
-# Skills instaladas por `npx skills add` ficam versionadas (.agents/ e o
-# lockfile) para o time reproduzir a mesma versão. O symlink de .claude/
-# também, porque é o que o Claude Code enxerga.
+# Skills instaladas por `npx skills add` ficam versionadas em .claude/skills/
+# junto com skills-lock.json, para o time reproduzir a mesma versão.
+# `npx skills add` recria .agents/ — mova para .claude/ e apague.
+.agents/

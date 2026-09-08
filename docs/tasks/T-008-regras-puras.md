@@ -44,6 +44,8 @@ Persistir, autorizar, renderizar. **Nenhum import fora de `domain/`.**
 
 ## Critérios de aceite
 
+> **Verificado por** `tests/domain/test_validade.py, test_fefo.py, test_saldo_e_estados.py` — auditado em [A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
 - [ ] **AC-1** `classificarValidade` testada nas fronteiras exatas: 29, 30, 31, 89,
       90, 91 dias, e no dia do vencimento.
 - [ ] **AC-2** `proporFefo` ignora lotes não `liberado`. *(negativo — `RN-L06`)*

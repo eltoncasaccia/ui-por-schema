@@ -38,6 +38,8 @@ Registrar componentes (W3/W4). Validar schema (T-013).
 
 ## Critérios de aceite
 
+> **Verificado por** `tests/registry/test_catalogo_por_ator.py` — auditado em [A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
 - [ ] **AC-1** Para cada uma das 7 personas, o conjunto de ids no catálogo é
       **exatamente** o esperado. Entrar ou sair um componente quebra o teste.
       *(ADR-0003)*

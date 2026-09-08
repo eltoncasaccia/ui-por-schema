@@ -40,6 +40,8 @@ api/src/estoque/domain/index.py        api/src/estoque/domain/*.test.py
 
 ## Critérios de aceite
 
+> **Verificado por** `tests/domain/` — auditado em [A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
 - [ ] **AC-1** `Lote` **não possui** campo `saldo` **nem** os valores `vencido`/
       `esgotado` no seu status. Teste inspeciona os campos do dataclass.
       *(`RN-M06` + [ADR-0022](../adr/0022-status-registrado-e-efetivo.md) — o achado A-04)*

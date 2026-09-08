@@ -76,7 +76,7 @@ imutáveis**.
 | **NO-3** | Operação off-line | [ADR-0015](../adr/0015-assistente-exige-conexao.md) |
 | **NO-4** | Nota fiscal, financeiro, faturamento, precificação, roteirização | Permanecem no ERP — [documento 02 §1](../02-regras-de-negocio.md) |
 | **NO-5** | Substituto do RT (`RN-A05`) | Depende de decisão do cliente; sem contagem, não é caminho crítico |
-| **NO-6** | Compartilhamento de view entre usuários | Fundação (identidade de view) entra; a feature não — [ADR-0009](../adr/0009-identidade-de-view.md) |
+| ~~**NO-6**~~ | ~~Compartilhamento de view entre usuários~~ | **Entrou no escopo** a pedido, e foi entregue — ver §5.4 |
 | **NO-7** | Recuperação de catálogo (RAG sobre componentes) | Desnecessária em 23 componentes — [ADR-0011](../adr/0011-teto-de-catalogo.md) |
 | **NO-8** | Geração de código pelo modelo (L3) | [ADR-0001](../adr/0001-ui-por-schema.md) |
 
@@ -138,6 +138,22 @@ em [RASTREABILIDADE.md](../RASTREABILIDADE.md).
 | **RF-20** | Termolábil só existe em unidade refrigerada; controlado só em unidade com sala-cofre | RN-P02, RN-P03 |
 
 ---
+
+### 5.4 Escopo acrescentado durante a execução
+
+Três coisas entraram depois do PRD original. Registradas aqui porque um PRD que
+não acompanha a execução vira ficção — foi o achado A-06 da
+[auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
+| Entregue | Era | Por que entrou |
+|---|---|---|
+| **Compartilhamento de view** | `NO-6`, não-objetivo | Pedido explicitamente. Entregue com destinatários filtrados por quem consegue abrir a composição, e a regra "aponta para uma view, não concede acesso" verificada |
+| **`vencimento_grafico`** | não previsto | O indicador responde *quantos*; a curva responde *quando*. Catálogo passa de 22 para 23, folga de 2 |
+| **Cadastro de usuário** | não era RF | Pedido. Cria usuário sem papel e sem permissão ([ADR-0019](../adr/0019-autenticacao-e-cadastro.md)) |
+
+**RF-21** — Uma view pode ser compartilhada com quem consegue abri-la; o
+destinatário carrega sob a própria permissão, com o schema revalidado contra o
+catálogo dele.
 
 ## 6. Histórias de usuário
 
@@ -359,6 +375,11 @@ silêncio.** Não há erro para observar.
 ---
 
 ## 11. Critérios de release
+
+> **Estado real:** apurado na [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md)
+> e mantido em [PROGRESSO](../tasks/PROGRESSO.md). Hoje: **19 tarefas
+> concluídas, 5 parciais, 15 não iniciadas · 3 de 23 componentes · nenhuma
+> escrita.** Um único critério de aceite do cliente está completo (CA-03).
 
 O ciclo 1 está pronto quando **todos** os itens abaixo estiverem verdes:
 

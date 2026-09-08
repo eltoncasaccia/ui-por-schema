@@ -50,6 +50,8 @@ Repositórios (T-007). Dados (T-006).
 
 ## Critérios de aceite
 
+> **Verificado por** `tests/data/test_imutabilidade_no_banco.py` — auditado em [A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
 - [ ] **AC-1** `UPDATE` em `movimento` pelo papel da aplicação é **recusado pelo
       banco**. *(negativo — `RN-M02` além do código)*
 - [ ] **AC-2** `DELETE` em `auditoria` é recusado pelo banco, para qualquer papel

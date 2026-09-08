@@ -39,6 +39,8 @@ Validar (T-013). Medir em escala (T-017, T-032).
 
 ## Critérios de aceite
 
+> **Verificado por** `tests/assistant/test_adapter.py, test_agnosticismo.py` — auditado em [A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
 - [ ] **AC-1** O prompt **não contém nenhuma linha de dados do banco**. Teste
       inspeciona o prompt montado e falha se encontrar valor de fixture.
       *(negativo — ADR-0012, `CS-04`)*

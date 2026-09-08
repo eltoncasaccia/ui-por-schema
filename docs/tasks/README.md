@@ -195,7 +195,29 @@ código.** É assim que documentação e sistema divergem.
 
 ---
 
-## 11. Estimativas
+## 12. Status é entrega, não relatório
+
+O status muda **no mesmo commit da entrega**. Nunca depois, nunca em lote.
+
+Ao concluir, três coisas juntas:
+
+1. marcar no arquivo da tarefa os `- [ ]` que foram **de fato verificados**
+2. mudar a linha no [BOARD](./BOARD.md) e no [PROGRESSO](./PROGRESSO.md)
+3. se o escopo mudou, revisar o [PRD](../prd/PRD-001-ciclo-1.md)
+
+> **Critério de aceite não conferido fica em branco.** Marcar por otimismo é
+> pior que deixar vazio: cria evidência falsa, e a evidência falsa só é
+> descoberta quando alguém confia nela.
+
+A pergunta antes de marcar concluída é sempre a mesma: **cada AC tem um teste ou
+uma verificação que eu executei?** "Deve funcionar" não é pronto.
+
+Isto nasceu de um erro concreto: as 39 tarefas foram geradas com status `⬜` e
+nunca atualizadas. O board dizia que nada tinha sido feito enquanto dezenove
+tarefas estavam prontas, e o CSRF ficou prometido em três documentos e
+implementado em nenhum ([A-002](../relatorios/A-002-auditoria-de-execucao.md)).
+
+## 13. Estimativas
 
 | Tamanho | Significado |
 |---|---|

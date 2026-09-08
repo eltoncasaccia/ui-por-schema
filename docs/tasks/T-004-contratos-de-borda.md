@@ -39,6 +39,8 @@ api/src/estoque/server/envelope.py   api/src/estoque/server/rotas.py       (apen
 
 ## Critérios de aceite
 
+> **Verificado por** `tests/schema/test_viewkey.py` — auditado em [A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
 - [ ] **AC-1** `ViewSchema` não aceita campo desconhecido; chave extra é erro de
       validação. *(negativo — ADR-0001)*
 - [ ] **AC-2** O mesmo schema com chaves em ordem diferente produz **a mesma**

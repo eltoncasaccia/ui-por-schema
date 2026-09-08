@@ -10,6 +10,7 @@
 | **ADRs** | [0019](../adr/0019-autenticacao-e-cadastro.md), [0014](../adr/0014-erros-que-nao-vazam.md) |
 | **Regras** | RN-A03, RN-A06, RN-D01 |
 | **Requisitos** | CS-06 · achado A-02 |
+| **Estado** | 🟡 **parcial** — CSRF e rate limit ficaram por fazer ([A-002](../relatorios/A-002-auditoria-de-execucao.md)) |
 
 ## Objetivo
 
@@ -42,8 +43,8 @@ Atribuir papel (T-038). Reset de senha — **fora de escopo, declarado**.
 
 - [ ] **AC-1** Recém-cadastrado tem `papel=None`, catálogo **vazio** e nenhum `load`
       autorizado. *(negativo — ADR-0019, não há escalação por formulário)*
-- [ ] **AC-2** Escrita sem token CSRF é recusada. *(negativo — achado A-02)*
-- [ ] **AC-3** Escrita com `Origin` de outro domínio é recusada. *(negativo)*
+- [ ] **AC-2** Escrita sem token CSRF é recusada. *(negativo)* — **NÃO CUMPRIDO**, ver [T-040](./T-040-csrf-e-rate-limit.md)
+- [ ] **AC-3** Escrita com `Origin` de outro domínio é recusada. *(negativo)* — **NÃO CUMPRIDO**, ver [T-040](./T-040-csrf-e-rate-limit.md)
 - [ ] **AC-4** Login com usuário inexistente e com senha errada devolvem corpo
       **idêntico**, com diferença de tempo abaixo do limiar. *(negativo — ADR-0014
       aplicado ao login)*
@@ -52,7 +53,7 @@ Atribuir papel (T-038). Reset de senha — **fora de escopo, declarado**.
       válida. *(negativo — `RN-A06`; é o que JWT sem estado não daria)*
 - [ ] **AC-7** Com `MODO_DEMO=false`, a rota de entrada demo devolve **404** — não
       403, não escondida na interface: **não registrada**. *(negativo)*
-- [ ] **AC-8** Rate limit no login dispara e é auditado.
+- [ ] **AC-8** Rate limit no login dispara e é auditado. — **NÃO CUMPRIDO**, ver [T-040](./T-040-csrf-e-rate-limit.md)
 - [ ] **AC-9** Hash é argon2id com parâmetros explícitos e versionados.
 
 ## Armadilhas

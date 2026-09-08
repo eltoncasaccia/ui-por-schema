@@ -36,6 +36,8 @@ Chamar o modelo (T-014). Renderizar (T-015).
 
 ## Critérios de aceite
 
+> **Verificado por** `tests/schema/test_adversarial.py` — auditado em [A-002](../relatorios/A-002-auditoria-de-execucao.md).
+
 Bateria adversarial, herdada da v1 e ampliada — **todos devem ser rejeitados**:
 
 - [ ] **AC-1** `{"tipo":"RandomReactComponent"}` *(negativo)*

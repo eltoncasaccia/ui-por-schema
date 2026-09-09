@@ -180,6 +180,39 @@ export interface LoteStatusAcaoAcaoDisponivel {
 /**
  * Sem custo, para papel nenhum (CA-05, ADR-0020).
  */
+export interface VMMovimentoSaida {
+  alternativas?: MovimentoSaidaLoteCandidato[]
+  classe: 'comum' | 'controlado' | 'termolabil' | 'antimicrobiano'
+  escopo: string
+  exige_autorizacao: boolean
+  motivos: MovimentoSaidaOpcaoMotivo[]
+  produto: string
+  proposta?: MovimentoSaidaLoteCandidato | null
+  sem_estoque?: boolean
+}
+export interface MovimentoSaidaLoteCandidato {
+  dias_restantes: number
+  disponivel: boolean
+  exige_liberacao_rt?: boolean
+  lote_id: string
+  motivo?: string | null
+  numero: string
+  proposto: boolean
+  saldo: number
+  situacao: 'ok' | 'alerta_90' | 'bloqueio_30' | 'vencido'
+  status_efetivo: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado' | 'vencido' | 'esgotado'
+  unidade: string
+  validade: string
+}
+export interface MovimentoSaidaOpcaoMotivo {
+  exige_destinatario: boolean
+  rotulo: string
+  valor: 'venda' | 'avaria' | 'furto' | 'erro_de_separacao'
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
 export interface VMQuarentenaFila {
   cursor?: string | null
   escopo: string
@@ -271,6 +304,7 @@ export type ComponentId =
   | 'lote_lista'
   | 'lote_movimentos'
   | 'lote_status_acao'
+  | 'movimento_saida'
   | 'quarentena_fila'
   | 'quarentena_liberar'
   | 'vencimento_grafico'
@@ -283,6 +317,7 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'lote_lista',
   'lote_movimentos',
   'lote_status_acao',
+  'movimento_saida',
   'quarentena_fila',
   'quarentena_liberar',
   'vencimento_grafico',
@@ -296,6 +331,7 @@ export interface ViewModels {
   lote_lista: VMLoteLista
   lote_movimentos: VMLoteMovimentos
   lote_status_acao: VMLoteStatusAcao
+  movimento_saida: VMMovimentoSaida
   quarentena_fila: VMQuarentenaFila
   quarentena_liberar: VMQuarentenaLiberar
   vencimento_grafico: VMVencimentoGrafico
@@ -311,6 +347,7 @@ export const TAMANHOS: Record<ComponentId, string> = {
   lote_lista: 'inteira',
   lote_movimentos: 'inteira',
   lote_status_acao: 'inteira',
+  movimento_saida: 'inteira',
   quarentena_fila: 'inteira',
   quarentena_liberar: 'inteira',
   vencimento_grafico: 'inteira',

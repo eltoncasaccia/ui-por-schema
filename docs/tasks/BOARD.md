@@ -175,7 +175,7 @@ graph TD
 | [T-025](./T-025-pipeline-de-comando.md) | Pipeline de comando e confirmação | *(nenhum — ver nota)* | G | T-011, T-015 | ✅ |
 | [T-026](./T-026-recebimento-registrar.md) | Registrar recebimento | `recebimento_registrar` | G | T-025, T-022 | ⬜ |
 | [T-027](./T-027-quarentena-e-status.md) | Quarentena e status | `quarentena_liberar` `lote_status_acao` | G | T-025, T-018 | ✅ |
-| [T-028](./T-028-saida-fefo.md) | Saída com FEFO | `movimento_saida` | G | T-025, T-008 | ⬜ |
+| [T-028](./T-028-saida-fefo.md) | Saída com FEFO | `movimento_saida` | G | T-025, T-008 | ✅ |
 | [T-029](./T-029-estorno-descarte.md) | Estorno e descarte | `movimento_estorno` `movimento_descarte` | M | T-025, T-024 | ⬜ |
 | [T-030](./T-030-controlado-autorizar.md) | Dupla identificação `CA-04` | `controlado_autorizar` | G | T-028, T-024 | ⬜ |
 
@@ -217,9 +217,9 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 9** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
-(T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018) e
-`quarentena_liberar` `lote_status_acao` (T-027, **os dois primeiros de escrita**).
+**Registrados hoje: 10** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+(T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
+`quarentena_liberar` `lote_status_acao` (T-027) e `movimento_saida` (T-028).
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no
 mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.
@@ -235,6 +235,9 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
+| A-21 | **O FEFO propunha o que o próprio sistema recusa.** `propor_fefo` implementa `RN-L02` e não conhece `RN-L05`: propõe o lote de menor validade, que costuma ser o que está na janela de 30 dias e depende de liberação do RT. Pior: quem escolhesse o lote certo pagava justificativa por isso | execução da T-028 | proposta calculada entre os que podem sair de fato, nos dois lados. ✅ corrigido |
+| A-20 | **A view materializada `saldo_lote` nunca é atualizada pela aplicação.** Só `REFRESH MATERIALIZED VIEW` a atualiza, e `estoque_app` não tem o privilégio — conferido no banco. Depois da primeira escrita, todo saldo LIDO fica para trás e não se recupera | execução da T-028 | o comando de saída usa a soma dos movimentos; a leitura continua parada. Precisa de dono ou gatilho — **T-036** |
+| A-19 | Não há lista fechada de motivos de **saída** em documento nenhum. `RN-M05` exige uma "por tipo de movimento", e o documento 02 só define a de ajuste (`RN-I06`) | execução da T-028 | quatro motivos derivados do enum do domínio, com o corte justificado no arquivo da tarefa. **Confirmar com o cliente** |
 | A-17 | **O cache do grimp serviu um grafo velho.** Ao sabotar o teste de barreira de propósito, `.grimp_cache` continuou reportando a violação depois de o import ter sido removido. Um cache que atrasa num sentido atrasa no outro: o import proibido entra, o cache ainda não viu, e o teste que sustenta o ADR-0002 fica **verde sobre uma barreira já caída** | execução da T-027 | `cache_dir=None` nos três testes de grafo; `.grimp_cache/` no `.gitignore`. ✅ corrigido |
 | A-18 | `test_ac1_todo_comando_declarado_tem_executavel...` passava por **ausência de dado** quando rodado isolado: `commands/indice.py` só era importado por outro módulo de teste, então o registro chegava vazio e a bijeção não tinha o que comparar | execução da T-027 | o teste passou a importar o índice ele mesmo. ✅ corrigido |
 | ~~A-15~~ | ~~O corte de W4 não previu onde a execução do comando mora~~ — as quatro tarefas restantes ganharam `commands/<dominio>.py`, `commands/entradas/<dominio>.py` e o teste; `entradas` virou pacote (um módulo por tarefa) e **`commands/indice.py` passou a ser gerado** por `make gerar-indice`, porque as cinco precisariam da mesma linha nele | execução da T-027 | ✅ corrigido |

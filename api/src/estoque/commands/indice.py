@@ -11,8 +11,10 @@ contrato 3 do import-linter e' o que garante isso — nao a disciplina.
 
 from estoque.commands import (
     lote,
+    saida,
 )
 
 __all__ = [
     "lote",
+    "saida",
 ]

@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**24 concluídas · 4 parciais · 14 não iniciadas** · 9 de 24 componentes previstos.
+**25 concluídas · 4 parciais · 13 não iniciadas** · 10 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -82,7 +82,7 @@ está pronto.
 | T-025 | Pipeline de comando | ✅ |
 | T-026 | Registrar recebimento | ⬜ |
 | T-027 | Quarentena e status | ✅ |
-| T-028 | Saída com FEFO | ⬜ |
+| T-028 | Saída com FEFO | ✅ |
 | T-029 | Estorno e descarte | ⬜ |
 | T-030 | Dupla identificação `CA-04` | ⬜ |
 
@@ -120,19 +120,20 @@ está pronto.
 
 ## Critérios de aceite do cliente
 
-Nenhum dos oito está completo, porque todos dependem de componentes ou escrita
-que não existem.
+Um dos oito está completo. Os outros dependem de componentes ou de escrita que
+ainda não existem — mas a escrita deixou de ser zero: T-025, T-027 e T-028 já
+movem estoque, com auditoria e recusa negativa testadas.
 
 | | Depende de | Estado |
 |---|---|---|
 | CA-01 recall < 60 s | T-021 | ⬜ |
-| CA-02 saldo auditável | T-025, T-028, T-029 | 🟡 razão imutável pronto; falta escrita |
+| CA-02 saldo auditável | T-025, T-028, T-029 | 🟡 razão imutável, saída e liberação prontas, com trilha de valor anterior e novo; falta estorno (T-029) |
 | CA-03 fila de vencimento | T-020 | ✅ **único completo** |
-| CA-04 dupla identificação | T-030 | ⬜ |
+| CA-04 dupla identificação | T-030 | 🟡 **a metade que importa está pronta**: saída de controlado nasce `aguardando_autorizacao` e NÃO muda o saldo (T-028 AC-6). Falta o ato de autorizar |
 | CA-05 custo invisível | T-019 | 🟡 provado no indicador e no catálogo; falta `produto_ficha` |
 | CA-06 escopo de unidade | T-018 | 🟡 provado na fila e nos quatro de lote; falta cobrir os demais |
 | CA-07 cadeia fria | T-023 | ⬜ |
-| CA-08 excluir recusado | T-029 + banco | 🟡 banco recusa; falta o caminho de estorno |
+| CA-08 excluir recusado | T-029 + banco | 🟡 banco recusa, e agora há movimento criado pela aplicação para provar contra (T-028 AC-7); falta o caminho de estorno |
 
 ## Requisitos de segurança
 

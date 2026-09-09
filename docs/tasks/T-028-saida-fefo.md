@@ -80,25 +80,46 @@ web/src/views/movimento_saida.tsx
 ### Não faz
 Autorizar controlado (T-030). Descarte e estorno (T-029).
 
+### Decidido na execução, e registrado como achado
+
+| # | O quê | Por quê |
+|---|---|---|
+| A-19 | A lista fechada de motivos de **saída** — `venda`, `avaria`, `furto`, `erro_de_separacao` | O documento 02 lista os motivos de AJUSTE (`RN-I06`) e nunca os de saída. Estes saem do enum `MotivoMovimento` tirando os que pertencem a outro tipo. `transferencia` ficou de fora: o fluxo `RN-T` está fora do ciclo 1 (ADR-0010), e oferecê-lo deixaria mercadoria sair sem destino registrado |
+| A-20 | O saldo vem da **soma dos movimentos**, não da view `saldo_lote` | A view materializada só muda com `REFRESH`, e o papel `estoque_app` não tem esse privilégio — conferido no banco. Depois da primeira escrita pela aplicação ela fica para trás e não se recupera. Decidir uma escrita com dado velho aqui é autorizar vender o que já saiu |
+| A-21 | O FEFO propõe entre os que **podem sair de fato** | `propor_fefo` implementa `RN-L02` e não conhece `RN-L05`: sozinha, propõe o lote de menor validade, que costuma ser exatamente o que está na janela de 30 dias e não pode ser vendido. O sistema estaria propondo o que ele mesmo recusa, e cobrando justificativa de quem escolhesse o lote certo |
+
 ## Critérios de aceite
 
-- [ ] **AC-1** A proposta é sempre o lote liberado de menor validade. *(`RN-L02`)*
-- [ ] **AC-2** Escolher outro lote sem justificativa é recusado. *(negativo —
+- [x] **AC-1** A proposta é sempre o lote liberado de menor validade. *(`RN-L02`)*
+- [x] **AC-2** Escolher outro lote sem justificativa é recusado. *(negativo —
       `RN-L03`)*
-- [ ] **AC-3** Saída de lote vencido, bloqueado ou em quarentena é recusada.
+- [x] **AC-3** Saída de lote vencido, bloqueado ou em quarentena é recusada.
       *(negativo — `RN-L06`)*
-- [ ] **AC-4** Saída que deixaria saldo negativo é recusada. *(negativo — `RN-M01`)*
-- [ ] **AC-5** Motivo fora da lista fechada é recusado; complemento sozinho não
+- [x] **AC-4** Saída que deixaria saldo negativo é recusada. *(negativo — `RN-M01`)*
+- [x] **AC-5** Motivo fora da lista fechada é recusado; complemento sozinho não
       substitui o motivo. *(negativo — `RN-M05`)*
-- [ ] **AC-6** Saída de controlado **não altera o saldo** enquanto pendente.
+- [x] **AC-6** Saída de controlado **não altera o saldo** enquanto pendente.
       *(`RN-C01`, `AC-06.1` do PRD)*
-- [ ] **AC-7** O movimento criado é imutável: nenhuma rota permite editá-lo.
+- [x] **AC-7** O movimento criado é imutável: nenhuma rota permite editá-lo.
       *(negativo — `RN-M02`)*
-- [ ] **AC-8** Cliente e nota ficam registrados e são recuperáveis por
+- [x] **AC-8** Cliente e nota ficam registrados e são recuperáveis por
       `rastreabilidade`. *(liga a `CA-01`)*
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+1**.
+- [x] Contagem de catálogo no BOARD: **+1**.
+
+## Fora do alcance desta tarefa
+
+- **A tela não enxerga a trilha.** `RN-L05` é avaliado pelo comando, que lê a
+  liberação do RT na auditoria (achado A-14). O `registry` não tem repositório de
+  auditoria na porta, então o componente é **conservador**: marca o lote da janela
+  de 30 dias como dependente de liberação e não o propõe, mesmo quando o RT já
+  liberou. O servidor aceita. A divergência é no sentido seguro, e some quando
+  houver `RepoAuditoria` — T-007 e T-024.
+- **A view materializada continua parada.** O comando não depende dela, mas toda
+  LEITURA de saldo (`lote_lista`, `lote_detalhe`, `quarentena_fila`) mostra o
+  valor de antes da primeira escrita. Ver A-20: precisa de dono ou de gatilho, e
+  os dois são schema — T-036.
 
 ## Armadilhas
 

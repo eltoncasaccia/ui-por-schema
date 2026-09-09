@@ -83,7 +83,7 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 17 | `recebimento_registrar` | `recebimento.criar` | [T-026](./tasks/T-026-recebimento-registrar.md) |
 | 18 | `quarentena_liberar` ✅ | `lote.liberar` | [T-027](./tasks/T-027-quarentena-e-status.md) |
 | 19 | `lote_status_acao` ✅ | `lote.status` | T-027 |
-| 20 | `movimento_saida` | `movimento.criar` | [T-028](./tasks/T-028-saida-fefo.md) |
+| 20 | `movimento_saida` ✅ | `movimento.criar` | [T-028](./tasks/T-028-saida-fefo.md) |
 | 21 | `movimento_estorno` | `movimento.estornar` | [T-029](./tasks/T-029-estorno-descarte.md) |
 | 22 | `movimento_descarte` | `movimento.descartar` | T-029 |
 | 23 | `controlado_autorizar` | `controlado.autorizar` | [T-030](./tasks/T-030-controlado-autorizar.md) |

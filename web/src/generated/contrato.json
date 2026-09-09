@@ -762,6 +762,177 @@
       }
     },
     {
+      "id": "movimento_saida",
+      "label": "Separar saída",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "MovimentoSaidaLoteCandidato": {
+            "properties": {
+              "dias_restantes": {
+                "type": "integer"
+              },
+              "disponivel": {
+                "type": "boolean"
+              },
+              "exige_liberacao_rt": {
+                "default": false,
+                "type": "boolean"
+              },
+              "lote_id": {
+                "type": "string"
+              },
+              "motivo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "numero": {
+                "type": "string"
+              },
+              "proposto": {
+                "type": "boolean"
+              },
+              "saldo": {
+                "type": "integer"
+              },
+              "situacao": {
+                "enum": [
+                  "ok",
+                  "alerta_90",
+                  "bloqueio_30",
+                  "vencido"
+                ],
+                "type": "string"
+              },
+              "status_efetivo": {
+                "enum": [
+                  "quarentena",
+                  "liberado",
+                  "bloqueado",
+                  "descartado",
+                  "vencido",
+                  "esgotado"
+                ],
+                "type": "string"
+              },
+              "unidade": {
+                "type": "string"
+              },
+              "validade": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "lote_id",
+              "numero",
+              "unidade",
+              "validade",
+              "dias_restantes",
+              "saldo",
+              "situacao",
+              "status_efetivo",
+              "proposto",
+              "disponivel"
+            ],
+            "title": "MovimentoSaidaLoteCandidato",
+            "type": "object"
+          },
+          "MovimentoSaidaOpcaoMotivo": {
+            "properties": {
+              "exige_destinatario": {
+                "type": "boolean"
+              },
+              "rotulo": {
+                "type": "string"
+              },
+              "valor": {
+                "enum": [
+                  "venda",
+                  "avaria",
+                  "furto",
+                  "erro_de_separacao"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "valor",
+              "rotulo",
+              "exige_destinatario"
+            ],
+            "title": "MovimentoSaidaOpcaoMotivo",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "alternativas": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/MovimentoSaidaLoteCandidato"
+            },
+            "type": "array"
+          },
+          "classe": {
+            "enum": [
+              "comum",
+              "controlado",
+              "termolabil",
+              "antimicrobiano"
+            ],
+            "type": "string"
+          },
+          "escopo": {
+            "type": "string"
+          },
+          "exige_autorizacao": {
+            "type": "boolean"
+          },
+          "motivos": {
+            "items": {
+              "$ref": "#/$defs/MovimentoSaidaOpcaoMotivo"
+            },
+            "type": "array"
+          },
+          "produto": {
+            "type": "string"
+          },
+          "proposta": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/MovimentoSaidaLoteCandidato"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "sem_estoque": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "produto",
+          "classe",
+          "escopo",
+          "exige_autorizacao",
+          "motivos"
+        ],
+        "title": "VMMovimentoSaida",
+        "type": "object"
+      }
+    },
+    {
       "id": "quarentena_fila",
       "label": "Quarentena",
       "tamanho": "inteira",

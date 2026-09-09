@@ -38,7 +38,9 @@ web/vite.config.ts   web/vitest.config.ts   web/eslint.config.js
   `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`.
 - TanStack Query + TanStack Router. `openapi-fetch`. CSS Modules.
 - Vitest + Testing Library. ESLint.
-- Estrutura: `views/ render/ components/ app/ query/ state/ generated/`
+- Estrutura: `views/ render/ ui/ shell/ query/ estado/ generated/`
+  *(corrigido: a tarefa dizia `components/ app/ state/`; os nomes adotados na
+  implementação são `ui/ shell/ estado/` — ver [ADR-0030](../adr/0030-layout-de-diretorios.md))*
 
 ### Faz — CI
 `lint` · `typecheck` · `test` · `arch` **nos dois lados**, em todo push.

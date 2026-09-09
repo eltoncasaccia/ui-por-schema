@@ -170,7 +170,11 @@ tarefas de escrita de W4 precisariam da mesma linha de import nele.
    └─────────────────────────────┘
 ```
 
-**Camadas do `api/`, verificadas por `import-linter`** (não é convenção, é CI):
+**Camadas do `api/`, verificadas por `import-linter`** (não é convenção, é CI).
+O *porquê* de cada uma — e de `src/estoque` — está no
+[ADR-0030](docs/adr/0030-layout-de-diretorios.md): **diretório é definido pelo que
+pode importar, não pelo tipo de arquivo.**
+
 
 | Módulo | Papel | Não pode importar |
 |---|---|---|

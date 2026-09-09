@@ -243,6 +243,12 @@ O schema, não os dados — assim o item continua correto meses depois.
 
 ## 9. Camadas
 
+> ⚠️ **A tabela abaixo é a da v1**, e descreve o monólito TypeScript de antes do
+> [ADR-0016](./adr/0016-api-python-cliente-typescript.md). Cinco destas nove —
+> `application/`, `state/`, `render/`, `viewmodels/`, `components/` — não existem
+> no `api/`. Fica aqui como registro do que se planejou; **o layout que vale é o
+> do [ADR-0030](./adr/0030-layout-de-diretorios.md)**.
+
 Mantidas da v1 porque se pagaram:
 
 | Camada | Responsabilidade |

@@ -6,6 +6,7 @@
 | **Data** | 2026-09-06 |
 | **Escopo** | Fundacional |
 | **Emendado por** | [ADR-0016](./0016-api-python-cliente-typescript.md) — o verificador passa a ser dois: `import-linter` no Python, `arch:check` no TypeScript |
+| **Emendado por** | [ADR-0030](./0030-layout-de-diretorios.md) — **a tabela de camadas abaixo é a da v1.** Depois do ADR-0016, cinco das nove não existem no `api/`. A decisão deste ADR (verificar por script) continua valendo; o layout vigente está no 0030 |
 
 ## Contexto
 

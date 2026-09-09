@@ -25,6 +25,8 @@ from estoque.domain.tipos import (
     Lote,
     Movimento,
     Produto,
+    Recebimento,
+    RegistroTemperatura,
     StatusLoteRegistrado,
 )
 
@@ -145,6 +147,53 @@ class RepoMovimentoSQL:
         return [_para_movimento(dict(r)) for r in (await self._c.execute(q)).mappings()]
 
 
+class RepoRecebimentoSQL:
+    """Leitura de recebimento. Escopo de unidade sempre aplicado (RN-A01)."""
+
+    def __init__(self, conn: AsyncConnection) -> None:
+        self._c = conn
+
+    async def por_id(self, rid: str, ctx: ContextoDados) -> Recebimento | None:
+        q = sa.select(m.recebimento).where(
+            m.recebimento.c.id == rid, _escopo(m.recebimento.c.unidade_id, ctx)
+        )
+        r = (await self._c.execute(q)).mappings().first()
+        # Fora do escopo devolve None — indistinguivel de inexistente (ADR-0014).
+        return _para_recebimento(dict(r)) if r else None
+
+    async def listar(self, ctx: ContextoDados) -> Sequence[Recebimento]:
+        q = (
+            sa.select(m.recebimento)
+            .where(_escopo(m.recebimento.c.unidade_id, ctx))
+            .order_by(m.recebimento.c.recebido_em.desc(), m.recebimento.c.id)
+        )
+        return [_para_recebimento(dict(r)) for r in (await self._c.execute(q)).mappings()]
+
+
+class RepoTemperaturaSQL:
+    """Serie de temperatura de UMA unidade, dentro do escopo do ator (RN-A01)."""
+
+    def __init__(self, conn: AsyncConnection) -> None:
+        self._c = conn
+
+    async def serie(
+        self, unidade_id: UnidadeId, de: datetime, ate: datetime, ctx: ContextoDados
+    ) -> Sequence[RegistroTemperatura]:
+        q = (
+            sa.select(m.registro_temperatura)
+            .where(
+                m.registro_temperatura.c.unidade_id == unidade_id,
+                # Pedir unidade fora do escopo nao amplia nada: o WHERE de escopo
+                # ja' restringe, e a igualdade acima so' restringe mais.
+                _escopo(m.registro_temperatura.c.unidade_id, ctx),
+                m.registro_temperatura.c.medido_em >= de,
+                m.registro_temperatura.c.medido_em <= ate,
+            )
+            .order_by(m.registro_temperatura.c.medido_em)
+        )
+        return [_para_temperatura(dict(r)) for r in (await self._c.execute(q)).mappings()]
+
+
 # --- traducao banco -> dominio ---------------------------------------------
 def _para_lote(r: dict[str, object]) -> Lote:
     return Lote(
@@ -184,6 +233,34 @@ def _para_produto(r: dict[str, object], ctx: ContextoDados) -> Produto:
 
 def _txt(v: object) -> str | None:
     return None if v is None else str(v)
+
+
+def _float_ou_nulo(v: object) -> float | None:
+    return None if v is None else float(str(v))
+
+
+def _para_recebimento(r: dict[str, object]) -> Recebimento:
+    return Recebimento(
+        id=str(r["id"]),
+        unidade_id=r["unidade_id"],  # type: ignore[arg-type]
+        nota_fiscal=str(r["nota_fiscal"]),
+        fornecedor=str(r["fornecedor"]),
+        status=r["status"],  # type: ignore[arg-type]
+        conferente_id=str(r["conferente_id"]),
+        rt_id=_txt(r["rt_id"]),
+        temperatura_chegada_c=_float_ou_nulo(r["temperatura_chegada_c"]),
+        divergencia=bool(r["divergencia"]),
+        recebido_em=r["recebido_em"],  # type: ignore[arg-type]
+    )
+
+
+def _para_temperatura(r: dict[str, object]) -> RegistroTemperatura:
+    return RegistroTemperatura(
+        id=str(r["id"]),
+        unidade_id=r["unidade_id"],  # type: ignore[arg-type]
+        medido_em=r["medido_em"],  # type: ignore[arg-type]
+        celsius=float(str(r["celsius"])),
+    )
 
 
 def _para_movimento(r: dict[str, object]) -> Movimento:

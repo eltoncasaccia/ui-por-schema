@@ -23,7 +23,6 @@ O estoque foi montado para os casos dificeis, nao para parecer real:
 from collections.abc import Sequence
 from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
-from typing import Any
 
 from estoque.application.registry.definir import LoadContext, Pagina
 from estoque.data.porta import ContextoDados, LinhaAuditoria, Repositorios
@@ -32,6 +31,8 @@ from estoque.domain.tipos import (
     Lote,
     Movimento,
     Produto,
+    Recebimento,
+    RegistroTemperatura,
     StatusLoteRegistrado,
 )
 
@@ -380,16 +381,118 @@ class FakeRepoAuditoria:
         return sorted(linhas, key=lambda x: (x.criado_em, x.id), reverse=True)[:limite]
 
 
-class _NaoUsado:
-    """Recebimento e temperatura nao pertencem a nenhum componente de lote.
+# --- recebimento e temperatura (T-047) -----------------------------------
+#
+# Antes eram `_NaoUsado()`: explodia em qualquer acesso, porque nenhum
+# componente os tocava. T-022 e T-023 mudam isso. Os fakes abaixo intersectam
+# escopo do MESMO jeito que a porta manda (RN-A01) — fake permissivo faz a
+# suite passar sobre um buraco (achado A-11).
 
-    Explode em vez de devolver vazio: um `load` que os chamasse sem querer
-    passaria despercebido com lista vazia, e falharia so' em producao.
-    """
+RECEBIMENTOS: list[Recebimento] = [
+    # normal: nota conferida, sem divergencia, nao controlado, nao termolabil
+    Recebimento(
+        id="r-normal-mtz",
+        unidade_id="cd-matriz",
+        nota_fiscal="NF-70001",
+        fornecedor="Distribuidora Alfa",
+        status="conferido",
+        conferente_id="u-cleide",
+        rt_id=None,
+        temperatura_chegada_c=None,
+        divergencia=False,
+        recebido_em=AGORA - timedelta(days=10),
+    ),
+    # RN-R04: divergencia entre nota e fisico, pendencia aberta, nao impede
+    Recebimento(
+        id="r-diverg-mtz",
+        unidade_id="cd-matriz",
+        nota_fiscal="NF-70002",
+        fornecedor="Distribuidora Beta",
+        status="conferido",
+        conferente_id="u-cleide",
+        rt_id=None,
+        temperatura_chegada_c=None,
+        divergencia=True,
+        recebido_em=AGORA - timedelta(days=7),
+    ),
+    # RN-R05: controlado exige dupla identificacao (conferente E RT)
+    Recebimento(
+        id="r-controlado-mtz",
+        unidade_id="cd-matriz",
+        nota_fiscal="NF-70003",
+        fornecedor="Cristalia",
+        status="liberado",
+        conferente_id="u-cleide",
+        rt_id="u-helena",
+        temperatura_chegada_c=None,
+        divergencia=False,
+        recebido_em=AGORA - timedelta(days=5),
+    ),
+    # RN-F01: termolabil exige temperatura de chegada
+    Recebimento(
+        id="r-termo-ref",
+        unidade_id="cd-refrigerado",
+        nota_fiscal="NF-70004",
+        fornecedor="Butantan",
+        status="conferido",
+        conferente_id="u-cleide",
+        rt_id=None,
+        temperatura_chegada_c=5.4,
+        divergencia=False,
+        recebido_em=AGORA - timedelta(days=3),
+    ),
+    # so' em Uberlandia — para o teste de escopo (Odair ve so' este)
+    Recebimento(
+        id="r-uber",
+        unidade_id="filial-uberlandia",
+        nota_fiscal="NF-70005",
+        fornecedor="Distribuidora Gama",
+        status="rascunho",
+        conferente_id="u-odair",
+        rt_id=None,
+        temperatura_chegada_c=None,
+        divergencia=False,
+        recebido_em=AGORA - timedelta(days=1),
+    ),
+]
 
-    def __getattr__(self, nome: str) -> Any:
-        msg = f"componente de lote nao deveria chamar {nome!r}"
-        raise AssertionError(msg)
+# Serie curta de temperatura em CD Refrigerado, com UMA excursao de calor.
+TEMPERATURAS: list[RegistroTemperatura] = [
+    RegistroTemperatura(
+        id=f"t-{i:03d}",
+        unidade_id="cd-refrigerado",
+        medido_em=AGORA - timedelta(hours=6 * (12 - i)),
+        celsius=5.0 if i not in (5, 6) else 9.8,  # i=5,6: excursao acima de 8
+    )
+    for i in range(13)
+]
+
+
+class FakeRepoRecebimento:
+    """Intersecta escopo antes de qualquer criterio (RN-A01)."""
+
+    def _visiveis(self, ctx: ContextoDados) -> list[Recebimento]:
+        return [r for r in RECEBIMENTOS if r.unidade_id in ctx.unidades_permitidas]
+
+    async def por_id(self, rid: str, ctx: ContextoDados) -> Recebimento | None:
+        return next((r for r in self._visiveis(ctx) if r.id == rid), None)
+
+    async def listar(self, ctx: ContextoDados) -> Sequence[Recebimento]:
+        # Mesma ordem do repositorio real: `recebido_em` desc, `id` asc no empate.
+        por_id_asc = sorted(self._visiveis(ctx), key=lambda r: r.id)
+        return sorted(por_id_asc, key=lambda r: r.recebido_em, reverse=True)
+
+
+class FakeRepoTemperatura:
+    async def serie(
+        self, unidade_id: str, de: datetime, ate: datetime, ctx: ContextoDados
+    ) -> Sequence[RegistroTemperatura]:
+        if unidade_id not in ctx.unidades_permitidas:
+            return []
+        sel = [
+            t for t in TEMPERATURAS if t.unidade_id == unidade_id and de <= t.medido_em <= ate
+        ]
+        return sorted(sel, key=lambda t: t.medido_em)
 
 
 def contexto(ator: Ator, *, limite: int = 20, cursor: str | None = None) -> LoadContext:
@@ -402,8 +505,8 @@ def contexto(ator: Ator, *, limite: int = 20, cursor: str | None = None) -> Load
             produto=FakeRepoProduto(),
             movimento=FakeRepoMovimento(),
             auditoria=FakeRepoAuditoria(),
-            recebimento=_NaoUsado(),
-            temperatura=_NaoUsado(),
+            recebimento=FakeRepoRecebimento(),
+            temperatura=FakeRepoTemperatura(),
         ),
         dados=dados,
         pagina=Pagina(limite=limite, cursor=cursor),

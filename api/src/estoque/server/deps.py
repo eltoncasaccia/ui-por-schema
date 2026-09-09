@@ -23,6 +23,8 @@ from estoque.data.repositorios import (
     RepoLoteSQL,
     RepoMovimentoSQL,
     RepoProdutoSQL,
+    RepoRecebimentoSQL,
+    RepoTemperaturaSQL,
 )
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
@@ -55,8 +57,8 @@ def repos(conn: AsyncConnection) -> Repositorios:
         produto=RepoProdutoSQL(conn),
         movimento=RepoMovimentoSQL(conn),
         auditoria=RepoAuditoriaSQL(conn),
-        recebimento=None,  # type: ignore[arg-type]  # ciclo 1: T-022
-        temperatura=None,  # type: ignore[arg-type]  # ciclo 1: T-023
+        recebimento=RepoRecebimentoSQL(conn),
+        temperatura=RepoTemperaturaSQL(conn),
     )
 
 

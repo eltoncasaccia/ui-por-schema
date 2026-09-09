@@ -76,21 +76,32 @@ api/src/estoque/data/seed/__main__.py    bloco de upsert de recebimento
 
 ## Critérios de aceite
 
-- [ ] **AC-1** `RepoRecebimentoSQL.listar` e `.por_id` **nunca** devolvem
+- [x] **AC-1** `RepoRecebimentoSQL.listar` e `.por_id` **nunca** devolvem
       recebimento de unidade fora do escopo do ator — provado no banco, com um
-      ator restrito pedindo (inclusive por `unidade_id` no critério, se houver).
-      *(negativo — RN-A01)*
-- [ ] **AC-2** `RepoTemperaturaSQL.serie` idem: unidade fora do escopo devolve
+      ator restrito pedindo. *(negativo — RN-A01)*
+      → `test_bateria_contra_o_repositorio_real`: ator só-Uberlândia vê apenas
+      `unidade_id == "filial-uberlandia"` no `listar`.
+- [x] **AC-2** `RepoTemperaturaSQL.serie` idem: unidade fora do escopo devolve
       série vazia, não erro. *(negativo — RN-A01)*
-- [ ] **AC-3** `por_id` de recebimento inexistente **e** de recebimento fora do
+      → `_bateria_escopo`: `serie("cd-refrigerado", ...)` para o ator restrito
+      devolve `[]`.
+- [x] **AC-3** `por_id` de recebimento inexistente **e** de recebimento fora do
       escopo devolvem `None` pelo mesmo caminho. *(negativo — ADR-0014)*
-- [ ] **AC-4** O fake e o repositório real concordam na interseção de escopo —
-      a mesma asserção roda contra os dois (bateria da T-042 se já existir, ou o
-      par de testes aqui).
-- [ ] **AC-5** `make seed` popula recebimentos e é idempotente (rodar duas vezes
+      → `_bateria_escopo`: `por_id(rid_matriz, so_uberlandia) is None` e
+      `por_id("r-nunca-existiu", so_uberlandia) is None`.
+- [x] **AC-4** O fake e o repositório real concordam na interseção de escopo —
+      a mesma asserção roda contra os dois.
+      → `_bateria_escopo` é a mesma função; `test_bateria_contra_o_fake`
+      (sempre) e `test_bateria_contra_o_repositorio_real` (com banco).
+- [x] **AC-5** `make seed` popula recebimentos e é idempotente (rodar duas vezes
       não duplica). O seed cobre divergência, controlado e termolábil.
-- [ ] **AC-6** `deps.py` não tem mais `recebimento=None` nem `temperatura=None`;
+      → `dados.recebimentos()`: r-0001..r-0006, com `divergencia=True` (r-0002),
+      `rt_id` preenchido (r-0003), `temperatura_chegada_c` (r-0004). `make seed`
+      rodado 2×: 6 → 6 (`on_conflict_do_nothing`).
+- [x] **AC-6** `deps.py` não tem mais `recebimento=None` nem `temperatura=None`;
       `mypy --strict` passa sem o `type: ignore` daquelas linhas.
+      → `repos()` agora constrói `RepoRecebimentoSQL(conn)` /
+      `RepoTemperaturaSQL(conn)`; `mypy --strict` verde em 141 arquivos.
 
 ## Armadilhas
 

@@ -76,14 +76,16 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 > **T-021 fechou:** o recorte de período do `RN-D04` foi feito no `load` porque
 > `RepoMovimento.por_cliente` ignora `de`/`ate` (achado [A-31](./ACHADOS.md),
 > conserto em T-007/T-042). `RNF-01` medido de verdade fica para T-034.
-| [T-022](./T-022-recebimento-leitura.md) | Recebimento | `recebimento_lista` `recebimento_detalhe` | M | 🔴 T-047 |
-| [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | 🔴 T-047 |
+| [T-022](./T-022-recebimento-leitura.md) | Recebimento | `recebimento_lista` `recebimento_detalhe` | M | ⬜ |
+| [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | ⬜ |
 | [T-024](./T-024-movimento-auditoria.md) | Movimento e trilha | `movimento_lista` `auditoria_trilha` | M | ✅ |
-| [T-047](./T-047-repos-recebimento-temperatura.md) | **Repos de recebimento e temperatura** — escopo deferido da T-007; `deps.py` passava `None` ([A-32](./ACHADOS.md)) | G | ⬜ |
+| [T-047](./T-047-repos-recebimento-temperatura.md) | **Repos de recebimento e temperatura** — escopo deferido da T-007 ([A-32](./ACHADOS.md)) | G | ✅ |
 
-> **T-022 e T-023 estão 🔴:** dependem de `RepoRecebimento` / `RepoTemperatura`,
-> que a T-007 nunca entregou apesar de estarem no escopo dela. A [T-047](./T-047-repos-recebimento-temperatura.md)
-> termina isso.
+> **T-047 fechou:** `RepoRecebimentoSQL` / `RepoTemperaturaSQL` existem, `deps.py`
+> não passa mais `None`, o seed tem 6 recebimentos (divergência, controlado,
+> termolábil), e a bateria de escopo roda contra fake **e** banco. **T-022 e
+> T-023 desbloqueadas.** "Lotes gerados" (`lote.recebimento_id`) segue sem
+> schema — item descopado da T-022.
 
 ### W4 — Escrita · até 5 sessões · 7 componentes
 

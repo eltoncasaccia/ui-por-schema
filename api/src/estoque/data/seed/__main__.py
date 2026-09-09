@@ -123,6 +123,27 @@ async def semear(url: str) -> None:
             ["id"],
         )
 
+        await _upsert(
+            c,
+            m.recebimento,
+            [
+                {
+                    "id": rid,
+                    "unidade_id": uid,
+                    "nota_fiscal": nf,
+                    "fornecedor": forn,
+                    "status": st,
+                    "conferente_id": conf,
+                    "rt_id": rt,
+                    "temperatura_chegada_c": temp,
+                    "divergencia": div,
+                    "recebido_em": receb,
+                }
+                for rid, uid, nf, forn, st, conf, rt, temp, div, receb in dados.recebimentos()
+            ],
+            ["id"],
+        )
+
         # Nao ha mais REFRESH: `saldo_lote` virou view comum na migracao 0005.
         # Ela e' calculada, nao atualizada — e por isso nunca fica para tras
         # (achado A-20).
@@ -135,10 +156,13 @@ async def semear(url: str) -> None:
         n_tmp = (
             await c.execute(sa.select(sa.func.count()).select_from(m.registro_temperatura))
         ).scalar_one()
+        n_rec = (
+            await c.execute(sa.select(sa.func.count()).select_from(m.recebimento))
+        ).scalar_one()
     await eng.dispose()
     print(
         f"seed ok: {len(dados.USUARIOS)} usuarios, {n_lote} lotes, "
-        f"{n_mov} movimentos, {n_tmp} leituras de temperatura"
+        f"{n_mov} movimentos, {n_tmp} leituras de temperatura, {n_rec} recebimentos"
     )
     print(f"senha de todas as personas: {SENHA_DEMO!r}")
 

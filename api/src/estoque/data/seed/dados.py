@@ -451,5 +451,99 @@ def temperaturas() -> list[tuple[str, str, datetime, float]]:
     return saida
 
 
+def recebimentos() -> list[
+    tuple[str, str, str, str, str, str, str | None, float | None, bool, datetime]
+]:
+    """Casos da Bertoni para T-022, cada um nomeando uma regra.
+
+    RN-R01: nao existe recebimento que nasca liberado sem passar por quarentena
+    — aqui o status e' `rascunho`/`conferido`/`liberado`, nunca "entrada direta".
+    """
+
+    def _dt(dias: int) -> datetime:
+        return datetime.combine(_d(dias), datetime.min.time(), UTC)
+
+    return [
+        # normal
+        (
+            "r-0001",
+            "cd-matriz",
+            "NF-500123",
+            "Distribuidora Alfa",
+            "conferido",
+            "u-cleide",
+            None,
+            None,
+            False,
+            _dt(-12),
+        ),
+        # RN-R04: divergencia entre nota e fisico -> pendencia, nao impede
+        (
+            "r-0002",
+            "cd-matriz",
+            "NF-500124",
+            "Distribuidora Beta",
+            "conferido",
+            "u-cleide",
+            None,
+            None,
+            True,
+            _dt(-9),
+        ),
+        # RN-R05: controlado -> dupla identificacao (conferente E RT)
+        (
+            "r-0003",
+            "cd-matriz",
+            "NF-500125",
+            "Cristalia",
+            "liberado",
+            "u-cleide",
+            "u-helena",
+            None,
+            False,
+            _dt(-7),
+        ),
+        # RN-F01: termolabil -> temperatura de chegada registrada
+        (
+            "r-0004",
+            "cd-refrigerado",
+            "NF-500126",
+            "Instituto Butantan",
+            "conferido",
+            "u-cleide",
+            None,
+            5.6,
+            False,
+            _dt(-5),
+        ),
+        # rascunho, ainda em conferencia
+        (
+            "r-0005",
+            "cd-matriz",
+            "NF-500127",
+            "Distribuidora Alfa",
+            "rascunho",
+            "u-cleide",
+            None,
+            None,
+            False,
+            _dt(-2),
+        ),
+        # unidade diferente — para o teste de escopo (Odair ve so' este)
+        (
+            "r-0006",
+            "filial-uberlandia",
+            "NF-500128",
+            "Distribuidora Gama",
+            "conferido",
+            "u-odair",
+            None,
+            None,
+            False,
+            _dt(-4),
+        ),
+    ]
+
+
 def permissoes_do_papel(papel: str) -> list[str]:
     return sorted(PERMISSOES_POR_PAPEL[papel])  # type: ignore[index]

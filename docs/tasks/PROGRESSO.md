@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**32 concluídas · 2 parciais · 2 bloqueadas · 10 não iniciadas** · 16 de 24 componentes previstos.
+**33 concluídas · 2 parciais · 12 não iniciadas** · 16 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -71,8 +71,8 @@ está pronto.
 | T-018 | Lote | ✅ | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` |
 | T-019 | Produto e custo restrito | ✅ | `produto_ficha` `produto_saldo_por_unidade` (AC-7 em branco — `RN-P06` sem armazenamento: [A-30](./ACHADOS.md), [T-046](./T-046-minimo-maximo-por-unidade.md)) |
 | T-021 | Rastreabilidade `CA-01` | ✅ | `rastreabilidade` — AC-1..AC-7 testados. Recorte de período no `load` (porta ignora `de`/`ate`: [A-31](./ACHADOS.md)). `RNF-01` real fica para T-034 |
-| T-022 | Recebimento — leitura | 🔴 | bloqueada por [T-047](./T-047-repos-recebimento-temperatura.md): `RepoRecebimento` nunca foi implementado ([A-32](./ACHADOS.md)) |
-| T-023 | Cadeia fria `CA-07` | 🔴 | bloqueada por [T-047](./T-047-repos-recebimento-temperatura.md): `RepoTemperatura` nunca foi implementado ([A-32](./ACHADOS.md)) |
+| T-022 | Recebimento — leitura | ⬜ | 2 — **desbloqueada** pela T-047 (repos + fakes + seed prontos). "Lotes gerados" fica sem `lote.recebimento_id` |
+| T-023 | Cadeia fria `CA-07` | ⬜ | 2 — **desbloqueada** pela T-047 |
 | T-024 | Movimento e trilha | ✅ | 2 |
 
 ## W4 — Escrita · pipeline pronto, comandos por fazer
@@ -119,7 +119,7 @@ está pronto.
 | T-044 | `relatorio_movimentacao` | ⬜ | ADR-0029 |
 | T-045 | Borda HTTP por router | ✅ | ADR-0032 — `app.py` de 817 → 134 linhas; contrato 5 do import-linter, com teste negativo; 467 testes, mesma contagem |
 | T-046 | Mín/máx por produto e unidade (`RN-P06`) | ⬜ | A-30 — sem armazenamento; é também tarefa de contrato (CONTRATOS §4) |
-| T-047 | Repos de recebimento e temperatura | ⬜ | A-32 — escopo deferido da T-007; desbloqueia T-022 e T-023 |
+| T-047 | Repos de recebimento e temperatura | ✅ | A-32 — `RepoRecebimentoSQL`/`RepoTemperaturaSQL`, `deps.py` sem `None`, seed com 6 recebimentos, bateria de escopo fake↔real. Desbloqueou T-022 e T-023 |
 
 ---
 

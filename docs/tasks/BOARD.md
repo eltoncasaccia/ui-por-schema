@@ -52,10 +52,13 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-017](./T-017-spike-medicao.md) | **SPIKE: medição com modelo real** | C | M | T-011, T-014, T-016 | 🟡 |
+| [T-017](./T-017-spike-medicao.md) | **SPIKE: medição com modelo real** | C | M | T-011, T-014, T-016 | ✅ |
 
 > **A tarefa que pode matar o projeto**, e por isso está aqui e não no fim.
 > **Nenhuma tarefa de W3 começa antes de o relatório R-001 ser lido.**
+> R-001 entregue em 2026-09-09 ([relatório](../relatorios/R-001-medicao-modelo-real.md)):
+> 100% de schema válido nos dois modelos e nos dois modos — **seguir**. Lacunas
+> do spike (AC-1, 17 casos em vez de 30) em R-001 §8 e achado A-08b.
 
 ### W3 — Leitura · até 7 sessões · 15 componentes
 

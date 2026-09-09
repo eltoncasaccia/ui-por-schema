@@ -52,16 +52,32 @@ Componentes definitivos (W3). Suíte de regressão completa (T-032).
 
 - [ ] **AC-1** As 30 perguntas estão escritas e versionadas **antes** da primeira
       execução. Commit separado, anterior. *(evita ajustar a pergunta ao resultado)*
+      → **NÃO CUMPRIDO e não recuperável para esta tarefa.** A medição usou os 17
+      casos da suíte `estoque.eval` (T-032), escritos ao longo do desenvolvimento.
+      Registrado em [R-001 §8](../relatorios/R-001-medicao-modelo-real.md) e no
+      achado [A-08b](./ACHADOS.md). A disciplina só pode valer para os casos
+      **novos** que a T-032 acrescentar.
 - [ ] **AC-2** As execuções usam o adapter **real**, com `ANTHROPIC_API_KEY`
       presente. O trace de cada execução comprova. *(o erro central da v1)*
-- [ ] **AC-3** Relatório publica, por modelo: taxa de schema válido, taxa de
+      → **Parcial.** Adapter real confirmado (a suíte aborta com o mock); via
+      **OpenRouter**, não Anthropic nativo. O texto "`ANTHROPIC_API_KEY`" precede
+      o [ADR-0025](../adr/0025-agnosticismo-de-provedor.md) / [CONTRATOS 2.1](./CONTRATOS.md),
+      que tornaram o provedor configuração — e está superado por eles.
+- [x] **AC-3** Relatório publica, por modelo: taxa de schema válido, taxa de
       composição correta, p50 e p95 até o primeiro componente, tokens de entrada
-      por pergunta.
-- [ ] **AC-4** O relatório inclui **as falhas**, transcritas: toda pergunta cujo
-      schema foi rejeitado, com a razão.
-- [ ] **AC-5** Recomendação explícita ao final: **seguir**, **seguir com ajuste no
+      por pergunta. → [R-001 §4](../relatorios/R-001-medicao-modelo-real.md).
+- [x] **AC-4** O relatório inclui **as falhas**, transcritas: toda pergunta cujo
+      schema foi rejeitado, com a razão. → [R-001 §5](../relatorios/R-001-medicao-modelo-real.md):
+      uma falha (Haiku 4.5 restrito, `neg-escrita`), transcrita. Nenhum schema
+      rejeitado em 68 execuções.
+- [x] **AC-5** Recomendação explícita ao final: **seguir**, **seguir com ajuste no
       prompt ou no catálogo**, ou **rever o desenho**. Com o número que a sustenta.
-- [ ] **AC-6** `api/src/estoque/spike/` removido no commit de fechamento; `arch:check` verde.
+      → [R-001 §7](../relatorios/R-001-medicao-modelo-real.md): **seguir**, com
+      ajuste recomendado (modo `livre` como padrão). Número: 100% de schema válido
+      em 68 execuções, zero rejeição.
+- [x] **AC-6** `api/src/estoque/spike/` removido no commit de fechamento; `arch:check` verde.
+      → `spike/` nunca foi construído (medição feita contra o registry real);
+      `make check` verde neste commit.
 
 ## Regra de liberação de W3
 

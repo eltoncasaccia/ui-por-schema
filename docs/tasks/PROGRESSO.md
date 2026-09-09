@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**29 concluídas · 3 parciais · 10 não iniciadas** · 13 de 24 componentes previstos.
+**30 concluídas · 2 parciais · 10 não iniciadas** · 13 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -61,7 +61,7 @@ está pronto.
 
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
-| T-017 | SPIKE: medição com modelo real | 🟡 | medição feita e publicada no PRD §9; **falta o relatório R-001** e o commit das perguntas ANTES da execução — A-08 |
+| T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
 
 ## W3 — Leitura · 9 de 15 componentes
 

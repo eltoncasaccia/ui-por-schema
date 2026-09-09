@@ -46,7 +46,7 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | A-10 | O observador do LangFuse tinha três defeitos — região errada, `update_trace()` inexistente na v4, nota sem `trace_id` — todos invisíveis porque o `except` que torna a telemetria não-fatal a torna muda | execução real | [ADR-0026](../adr/0026-observabilidade.md) · **T-043** |
 | A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
 | ~~A-07b~~ | ~~Não há CI~~ | A-002 | ✅ `.github/workflows/ci.yml`, com Postgres como serviço |
-| A-08b | Spike sem relatório R-001 | A-002 | T-017 parcial |
+| A-08b | Spike sem relatório R-001, e perguntas não commitadas antes da execução | A-002 | **R-001 entregue** (2026-09-09), T-017 fechada. A parte "perguntas antes do resultado" é **não recuperável** para o spike (usou os 17 casos da T-032); a disciplina passa a valer para os casos novos da [T-032](./T-032-suite-de-avaliacao.md) — ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md) |
 | A-01 | `select` rodava no cliente — `D` atravessava a rede | [A-001](../relatorios/A-001-auditoria-pre-migracao.md) | [ADR-0020](../adr/0020-select-no-servidor.md) |
 | A-02 | Sessão em cookie sem CSRF | A-001 | [ADR-0019](../adr/0019-autenticacao-e-cadastro.md) · T-037 |
 | A-03 | `viewKey` por hash prometia revogação impossível | A-001 | [ADR-0021](../adr/0021-viewkey-e-viewid.md) |

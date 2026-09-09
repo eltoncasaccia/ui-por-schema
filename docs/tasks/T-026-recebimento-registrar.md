@@ -23,7 +23,30 @@ modelo escolhe abri-lo; nunca o monta peça por peça.
 ```
 api/src/estoque/registry/componentes/recebimento_registrar.py
 api/tests/registry/test_recebimento_registrar.py
+
+api/src/estoque/commands/recebimento.py
+api/src/estoque/commands/entradas/recebimento.py
+api/tests/commands/test_recebimento_comandos.py
 ```
+
+> **Corrigido pelo achado A-15.** Os arquivos em `commands/` não estavam na lista
+> original, e sem eles a tarefa não fecha: o componente **declara** o comando, mas
+> não pode **executá-lo** — `registry` não importa `commands.pipeline`, porque o
+> contrato 2 do import-linter proíbe `registry → sqlalchemy`, inclusive por
+> caminho indireto.
+>
+> `commands/entradas/<dominio>.py` guarda o schema de entrada, e é módulo-folha:
+> só pydantic e `domain`. O `CommandDef` do registry e o comando executável
+> apontam para **o mesmo schema** — duas declarações do mesmo formulário
+> divergiriam (achado A-11). Há teste percorrendo o grafo em
+> `tests/registry/test_quarentena_liberar.py` que reprova a folha que deixar de
+> ser folha.
+>
+> **`commands/indice.py` é GERADO** por `make gerar-indice` e não entra em lista
+> nenhuma: as cinco tarefas de escrita precisariam da mesma linha nele, que é
+> exatamente o caso do acordo de trabalho §4. Rode o gerador; não edite à mão.
+>
+> `T-027` é o exemplo pronto: `commands/lote.py` + `commands/entradas/lote.py`.
 
 **Lado cliente** — apenas o React que recebe o viewmodel:
 
@@ -39,9 +62,17 @@ web/src/views/recebimento_registrar.tsx
 ## Escopo
 
 ### Faz
+
+> **Endpoints corrigidos pelo achado A-16.** A tarefa citava rotas REST por
+> recurso; [CONTRATOS §8](./CONTRATOS.md) — normativo e congelado — define
+> `/api/comandos/{nome}` como a rota **única** de escrita, com CSRF, `Origin`,
+> `Idempotency-Key` e `If-Match` aplicados num lugar só. A hierarquia do acordo
+> de trabalho resolve: **`RN-*` > ADR > PRD > tarefa.**
+
 - Formulário multi-etapa: nota → itens (leitor de código de barras) → conferência →
   confirmação.
-- Command `POST /recebimentos`, `requires: 'recebimento.criar'`, não idempotente.
+- Command `recebimento_registrar` — `POST /api/comandos/recebimento_registrar`,
+  `requires: 'recebimento.criar'`, **não idempotente** (exige `Idempotency-Key`).
 - Lote nasce em **quarentena**, sempre (`RN-R01`).
 - Validações de domínio: validade mínima de 6 meses (`RN-L07`), temperatura
   obrigatória se termolábil (`RN-F01`), alocação válida (`RN-P02`, `RN-P03`),

@@ -25,7 +25,7 @@ from typing import Any
 
 import sqlalchemy as sa
 
-from estoque.commands.entradas import EntradaLiberacao, EntradaStatus
+from estoque.commands.entradas.lote import EntradaLiberacao, EntradaStatus
 from estoque.commands.pipeline import etag_de_valores, registrar
 from estoque.commands.tipos import Comando, ContextoComando, Efeito
 from estoque.data import modelos as m

@@ -26,6 +26,12 @@ from typing import Any, get_args, get_origin, get_type_hints
 import grimp
 import pytest
 
+# Importar o indice AQUI, e nao confiar em outro modulo de teste ter feito isso.
+# ACHADO ao rodar este arquivo isolado: sem esta linha o registro de comandos fica
+# vazio, a bijecao nao tem o que comparar e o teste passa por ausencia de dado —
+# verde por nao ter olhado nada, que e' o pior modo de falha possivel para o
+# teste que sustenta o ADR-0002.
+import estoque.commands.indice  # noqa: F401
 from estoque.commands import pipeline
 from estoque.commands.tipos import Comando
 from estoque.registry.definir import CommandDef
@@ -38,7 +44,17 @@ ESCRITA = "estoque.commands"
 
 @pytest.fixture(scope="module")
 def grafo() -> grimp.ImportGraph:
-    return grimp.build_graph(RAIZ)
+    """`cache_dir=None` — sem cache, e a razão é de segurança, não de higiene.
+
+    ACHADO ao sabotar este teste de propósito: o `.grimp_cache` continuou
+    devolvendo o grafo COM a violação depois de o import ter sido removido. Se
+    ele pode servir um grafo velho, pode servir o velho no outro sentido — o
+    import proibido é acrescentado, o cache ainda não viu, e o teste que sustenta
+    o ADR-0002 fica verde sobre uma barreira que já caiu.
+
+    Um teste de segurança não pode depender de invalidação de cache estar certa.
+    """
+    return grimp.build_graph(RAIZ, cache_dir=None)
 
 
 # ------------------------------------------------- 1. barreira por import

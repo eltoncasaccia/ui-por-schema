@@ -26,8 +26,8 @@ api/src/estoque/registry/componentes/lote_status_acao.py
 api/tests/registry/test_quarentena_liberar.py
 api/tests/registry/test_lote_status_acao.py
 
-api/src/estoque/commands/lote.py       api/src/estoque/commands/entradas.py
-api/src/estoque/commands/indice.py     api/tests/commands/test_lote_comandos.py
+api/src/estoque/commands/lote.py       api/src/estoque/commands/entradas/lote.py
+api/tests/commands/test_lote_comandos.py
 ```
 
 > **Os quatro arquivos em `commands/` não estavam na lista, e precisavam estar**
@@ -37,9 +37,12 @@ api/src/estoque/commands/indice.py     api/tests/commands/test_lote_comandos.py
 > quebrando de propósito. A execução mora em `commands/`, e o corte da tarefa não
 > previu isso para nenhuma das cinco tarefas de W4.
 >
-> `commands/entradas.py` é o módulo-folha que evita a divergência: o `CommandDef`
-> do registry e o comando executável apontam para **o mesmo schema**. Há teste
-> percorrendo o grafo para garantir que essa folha continue folha.
+> `commands/entradas/lote.py` é o módulo-folha que evita a divergência: o
+> `CommandDef` do registry e o comando executável apontam para **o mesmo
+> schema**. Há teste percorrendo o grafo para garantir que a folha continue folha.
+>
+> **`commands/indice.py` é GERADO** por `make gerar-indice`, e por isso não está
+> na lista: as cinco tarefas de escrita precisariam da mesma linha nele.
 
 ### Arquivos de outra tarefa, tocados por necessidade
 

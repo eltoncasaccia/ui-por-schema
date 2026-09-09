@@ -13,7 +13,7 @@ import pytest
 from fakes import contexto
 from pydantic import ValidationError
 
-from estoque.commands.entradas import EntradaStatus
+from estoque.commands.entradas.lote import EntradaStatus
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
 from estoque.domain.tipos import Lote

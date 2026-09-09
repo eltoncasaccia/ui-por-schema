@@ -22,7 +22,30 @@ O movimento mais frequente do sistema, e o que carrega mais regra por operação
 ```
 api/src/estoque/registry/componentes/movimento_saida.py
 api/tests/registry/test_movimento_saida.py
+
+api/src/estoque/commands/saida.py
+api/src/estoque/commands/entradas/saida.py
+api/tests/commands/test_saida_comandos.py
 ```
+
+> **Corrigido pelo achado A-15.** Os arquivos em `commands/` não estavam na lista
+> original, e sem eles a tarefa não fecha: o componente **declara** o comando, mas
+> não pode **executá-lo** — `registry` não importa `commands.pipeline`, porque o
+> contrato 2 do import-linter proíbe `registry → sqlalchemy`, inclusive por
+> caminho indireto.
+>
+> `commands/entradas/<dominio>.py` guarda o schema de entrada, e é módulo-folha:
+> só pydantic e `domain`. O `CommandDef` do registry e o comando executável
+> apontam para **o mesmo schema** — duas declarações do mesmo formulário
+> divergiriam (achado A-11). Há teste percorrendo o grafo em
+> `tests/registry/test_quarentena_liberar.py` que reprova a folha que deixar de
+> ser folha.
+>
+> **`commands/indice.py` é GERADO** por `make gerar-indice` e não entra em lista
+> nenhuma: as cinco tarefas de escrita precisariam da mesma linha nele, que é
+> exatamente o caso do acordo de trabalho §4. Rode o gerador; não edite à mão.
+>
+> `T-027` é o exemplo pronto: `commands/lote.py` + `commands/entradas/lote.py`.
 
 **Lado cliente** — apenas o React que recebe o viewmodel:
 
@@ -38,7 +61,15 @@ web/src/views/movimento_saida.tsx
 ## Escopo
 
 ### Faz
-- Command `POST /movimentos/saida`, `requires: 'movimento.criar'`.
+
+> **Endpoints corrigidos pelo achado A-16.** A tarefa citava rotas REST por
+> recurso; [CONTRATOS §8](./CONTRATOS.md) — normativo e congelado — define
+> `/api/comandos/{nome}` como a rota **única** de escrita, com CSRF, `Origin`,
+> `Idempotency-Key` e `If-Match` aplicados num lugar só. A hierarquia do acordo
+> de trabalho resolve: **`RN-*` > ADR > PRD > tarefa.**
+
+- Command `movimento_saida` — `POST /api/comandos/movimento_saida`,
+  `requires: 'movimento.criar'`, **não idempotente**.
 - Propõe o lote liberado de menor validade via `proporFefo` de T-008 (`RN-L02`).
 - Escolher outro lote exige justificativa registrada (`RN-L03`).
 - Motivo de lista fechada; texto livre é complemento (`RN-M05`).

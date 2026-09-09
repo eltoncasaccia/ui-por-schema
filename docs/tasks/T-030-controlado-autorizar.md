@@ -38,7 +38,30 @@ assim que o catálogo coube em 23 (ADR-0011).
 ```
 api/src/estoque/registry/componentes/controlado_autorizar.py
 api/tests/registry/test_controlado_autorizar.py
+
+api/src/estoque/commands/autorizacao.py
+api/src/estoque/commands/entradas/autorizacao.py
+api/tests/commands/test_autorizacao_comandos.py
 ```
+
+> **Corrigido pelo achado A-15.** Os arquivos em `commands/` não estavam na lista
+> original, e sem eles a tarefa não fecha: o componente **declara** o comando, mas
+> não pode **executá-lo** — `registry` não importa `commands.pipeline`, porque o
+> contrato 2 do import-linter proíbe `registry → sqlalchemy`, inclusive por
+> caminho indireto.
+>
+> `commands/entradas/<dominio>.py` guarda o schema de entrada, e é módulo-folha:
+> só pydantic e `domain`. O `CommandDef` do registry e o comando executável
+> apontam para **o mesmo schema** — duas declarações do mesmo formulário
+> divergiriam (achado A-11). Há teste percorrendo o grafo em
+> `tests/registry/test_quarentena_liberar.py` que reprova a folha que deixar de
+> ser folha.
+>
+> **`commands/indice.py` é GERADO** por `make gerar-indice` e não entra em lista
+> nenhuma: as cinco tarefas de escrita precisariam da mesma linha nele, que é
+> exatamente o caso do acordo de trabalho §4. Rode o gerador; não edite à mão.
+>
+> `T-027` é o exemplo pronto: `commands/lote.py` + `commands/entradas/lote.py`.
 
 **Lado cliente** — apenas o React que recebe o viewmodel:
 
@@ -54,7 +77,15 @@ web/src/views/controlado_autorizar.tsx
 ## Escopo
 
 ### Faz
-- Command `POST /movimentos/:id/autorizacao`, `requires: 'controlado.autorizar'`.
+
+> **Endpoints corrigidos pelo achado A-16.** A tarefa citava rotas REST por
+> recurso; [CONTRATOS §8](./CONTRATOS.md) — normativo e congelado — define
+> `/api/comandos/{nome}` como a rota **única** de escrita, com CSRF, `Origin`,
+> `Idempotency-Key` e `If-Match` aplicados num lugar só. A hierarquia do acordo
+> de trabalho resolve: **`RN-*` > ADR > PRD > tarefa.**
+
+- Command `controlado_autorizar` — `POST /api/comandos/controlado_autorizar`,
+  `requires: 'controlado.autorizar'`, **não idempotente**.
 - Autorizar ou recusar, com motivo.
 - Efetivação atômica: movimento passa a `efetivado` e o saldo muda **no mesmo
   instante**.

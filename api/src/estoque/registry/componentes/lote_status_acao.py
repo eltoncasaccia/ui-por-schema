@@ -19,7 +19,7 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from estoque.commands.entradas import AcaoStatus, EntradaStatus
+from estoque.commands.entradas.lote import AcaoStatus, EntradaStatus
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.identidade import PapelId
 from estoque.domain.regras.estados import EventoLote, transicao_valida

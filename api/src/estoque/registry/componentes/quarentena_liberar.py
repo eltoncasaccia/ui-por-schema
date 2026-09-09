@@ -18,7 +18,7 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from estoque.commands.entradas import EntradaLiberacao
+from estoque.commands.entradas.lote import EntradaLiberacao
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.regras.validade import (
     ClasseValidade,
@@ -198,7 +198,7 @@ COMPONENTE = registrar(
                 endpoint="/api/comandos/lote_liberar_quarentena",
                 # O MESMO schema que `commands/lote.py` usa para validar. Duas
                 # declarações do formulário divergiriam no dia em que uma mudasse
-                # — `commands/entradas.py` existe para haver uma só.
+                # — `commands/entradas/lote.py` existe para haver uma só.
                 schema=EntradaLiberacao,
                 requires="lote.liberar",
                 confirm=True,

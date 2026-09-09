@@ -1,12 +1,18 @@
-"""Importa os modulos de comando para que eles se registrem.
+"""Importa os modulos de comando, registrando-os. Ponto unico de entrada.
 
-Espelha `registry/indice.py`, e pela mesma razao: registro por efeito colateral
-de import so' acontece se alguem importar. A diferenca e' que este arquivo e'
-escrito a mao — sao poucos comandos, e cada um e' uma decisao, nao uma entrada
-de catalogo gerada.
+Este modulo e' GERADO por `make gerar-indice` varrendo `commands/*.py`.
+Nao edite a mao — achado A-15: as cinco tarefas de escrita de W4 precisariam da
+mesma linha aqui, e arquivo compartilhado por cinco tarefas e' o que o acordo
+de trabalho §4 manda gerar.
 
 Quem importa este modulo e' a borda HTTP. `assistant` nunca o alcanca, e o
-contrato 3 do import-linter e' o que garante isso.
+contrato 3 do import-linter e' o que garante isso — nao a disciplina.
 """
 
-from estoque.commands import lote as _lote  # noqa: F401  — registra os comandos do lote
+from estoque.commands import (
+    lote,
+)
+
+__all__ = [
+    "lote",
+]

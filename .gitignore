@@ -8,6 +8,10 @@ __pycache__/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+# Cache do grimp (import-linter). Fica de fora do versionamento e os testes de
+# grafo o desligam explicitamente: ele ja' serviu um grafo velho depois de o
+# import ter sido removido, e um cache que atrasa pode atrasar no outro sentido.
+.grimp_cache/
 node_modules/
 dist/
 coverage/

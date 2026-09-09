@@ -124,6 +124,7 @@ Ou individualmente:
 | Arquivo | Gerado por |
 |---|---|
 | `api/src/estoque/registry/indice.py` | `make gerar-indice` |
+| `api/src/estoque/commands/indice.py` | `make gerar-indice` |
 | `web/src/views/indice.ts` | `make gerar-indice` |
 | `web/src/generated/contrato.json` | `make types` |
 | `web/src/generated/componentes.ts` | `make types` |
@@ -131,6 +132,9 @@ Ou individualmente:
 Eles são gerados porque são os **únicos arquivos que toda tarefa de componente
 precisaria editar** — 22 componentes registrados à mão em dois arquivos seriam
 44 conflitos de merge garantidos. `make arch` falha se estiverem desatualizados.
+
+O `commands/indice.py` entrou pelo mesmo motivo, e pelo achado A-15: as **cinco**
+tarefas de escrita de W4 precisariam da mesma linha de import nele.
 
 ---
 

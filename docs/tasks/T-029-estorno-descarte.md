@@ -24,7 +24,30 @@ api/src/estoque/registry/componentes/movimento_estorno.py
 api/src/estoque/registry/componentes/movimento_descarte.py
 api/tests/registry/test_movimento_estorno.py
 api/tests/registry/test_movimento_descarte.py
+
+api/src/estoque/commands/estorno.py
+api/src/estoque/commands/entradas/estorno.py
+api/tests/commands/test_estorno_comandos.py
 ```
+
+> **Corrigido pelo achado A-15.** Os arquivos em `commands/` não estavam na lista
+> original, e sem eles a tarefa não fecha: o componente **declara** o comando, mas
+> não pode **executá-lo** — `registry` não importa `commands.pipeline`, porque o
+> contrato 2 do import-linter proíbe `registry → sqlalchemy`, inclusive por
+> caminho indireto.
+>
+> `commands/entradas/<dominio>.py` guarda o schema de entrada, e é módulo-folha:
+> só pydantic e `domain`. O `CommandDef` do registry e o comando executável
+> apontam para **o mesmo schema** — duas declarações do mesmo formulário
+> divergiriam (achado A-11). Há teste percorrendo o grafo em
+> `tests/registry/test_quarentena_liberar.py` que reprova a folha que deixar de
+> ser folha.
+>
+> **`commands/indice.py` é GERADO** por `make gerar-indice` e não entra em lista
+> nenhuma: as cinco tarefas de escrita precisariam da mesma linha nele, que é
+> exatamente o caso do acordo de trabalho §4. Rode o gerador; não edite à mão.
+>
+> `T-027` é o exemplo pronto: `commands/lote.py` + `commands/entradas/lote.py`.
 
 **Lado cliente** — apenas o React que recebe o viewmodel:
 
@@ -42,16 +65,25 @@ web/src/views/movimento_descarte.tsx
 
 ### Faz
 
+> **Endpoints corrigidos pelo achado A-16.** A tarefa citava rotas REST por
+> recurso; [CONTRATOS §8](./CONTRATOS.md) — normativo e congelado — define
+> `/api/comandos/{nome}` como a rota **única** de escrita, com CSRF, `Origin`,
+> `Idempotency-Key` e `If-Match` aplicados num lugar só. A hierarquia do acordo
+> de trabalho resolve: **`RN-*` > ADR > PRD > tarefa.**
+
+
 | Componente | Command | `requires` |
 |---|---|---|
-| `movimento_estorno` | `POST /movimentos/:id/estorno` | `movimento.estornar` |
-| `movimento_descarte` | `POST /movimentos/descarte` | `movimento.descartar` |
+| `movimento_estorno` | `POST /api/comandos/movimento_estorno` | `movimento.estornar` |
+| `movimento_descarte` | `POST /api/comandos/movimento_descarte` | `movimento.descartar` |
 
 - Estorno referencia o original, exige motivo de lista fechada, e **não modifica**
   o original (`RN-M03`).
 - Descarte é a única saída possível para lote vencido ou bloqueado (`RN-L06`), e
   leva o lote a `descartado` (§4.1). Exige Gerente **e** RT.
-- Ambos usam `confirm_action` de T-025 — são irreversíveis.
+- Ambos declaram `CommandDef.confirm = True` — são irreversíveis. **Não existe
+  componente `confirm_action`**: confirmar é decisão do motor de render diante do
+  `confirm`, não composição que o modelo escolhe (achado A-05).
 
 ### Não faz
 Exclusão. Não existe, em lugar nenhum, para ninguém.

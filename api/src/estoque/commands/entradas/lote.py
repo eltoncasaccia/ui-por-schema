@@ -1,18 +1,16 @@
-"""Schemas de entrada dos comandos. Modulo-FOLHA, e a folha e' o ponto.
+"""Schemas de entrada dos comandos do LOTE (T-027). Modulo-FOLHA.
 
 O `CommandDef` que o registry publica precisa apontar para o schema de dominio
 do comando (CONTRATOS §5), e `commands/lote.py` precisa do mesmo schema para
 validar a escrita. Duas declaracoes do mesmo formulario divergiriam — e' o
 achado A-11 outra vez, agora entre o que a tela pede e o que o servidor aceita.
 
-Uma definicao, dois lados. Para isso este modulo nao pode importar mais nada:
+Uma definicao, dois lados. Para isso este modulo nao importa mais nada:
 
-    registry -> commands.entradas          OK, so' pydantic no caminho
+    registry -> commands.entradas.lote     OK, so' pydantic no caminho
     registry -> commands.pipeline          PROIBIDO (contrato 2: sqlalchemy)
 
-Se alguem acrescentar aqui um import de `pipeline`, de `data` ou de SQLAlchemy,
-o contrato 2 do import-linter quebra na hora — e ha' teste proprio afirmando
-que este modulo nao alcanca nenhum dos tres (`test_quarentena_liberar.py`).
+Ver `entradas/__init__.py` para por que isto e' um pacote e nao um arquivo so'.
 """
 
 from typing import Literal

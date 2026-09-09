@@ -180,15 +180,22 @@ def test_o_componente_declara_o_comando_e_e_formulario_inteiro() -> None:
 
 
 def test_o_modulo_de_entradas_nao_alcanca_o_pipeline() -> None:
-    """`registry` importa `commands.entradas` para declarar o `CommandDef`, e
-    isso só é legal porque `entradas` é folha: se ela passasse a importar o
-    pipeline, `registry` alcançaria SQLAlchemy e o contrato 2 quebraria.
+    """`registry` importa `commands.entradas.*` para declarar o `CommandDef`, e
+    isso só é legal porque o pacote é folha: se um módulo dele passasse a
+    importar o pipeline, `registry` alcançaria SQLAlchemy e o contrato 2
+    quebraria.
+
+    A asserção é sobre o PACOTE inteiro, não sobre `lote.py`: as quatro tarefas
+    restantes de W4 vão acrescentar módulos aqui, e é este teste que impede o
+    quinto de ser escrito errado.
 
     O teste não confia no comentário do módulo — percorre o grafo.
     """
     import grimp
 
-    g = grimp.build_graph("estoque", include_external_packages=True)
+    # `cache_dir=None`: cache pode servir grafo velho — ver a docstring do
+    # fixture `grafo` em `tests/commands/test_ac1_barreira.py`.
+    g = grimp.build_graph("estoque", include_external_packages=True, cache_dir=None)
     for proibido in ("estoque.commands.pipeline", "estoque.data", "sqlalchemy"):
         caminho = g.find_shortest_chain(
             importer="estoque.commands.entradas", imported=proibido, as_packages=True
@@ -201,7 +208,7 @@ def test_o_grafo_enxerga_o_import_que_existe() -> None:
     caminho também sumisse, o problema seria a ferramenta."""
     import grimp
 
-    g = grimp.build_graph("estoque")
+    g = grimp.build_graph("estoque", cache_dir=None)
     assert (
         g.find_shortest_chain(
             importer="estoque.commands.lote",

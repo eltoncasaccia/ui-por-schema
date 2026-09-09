@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-"""Gera os dois indices que todo componente teria de editar. Acordo §4.
+"""Gera os tres indices que toda tarefa de componente ou comando teria de editar.
+
+Acordo de trabalho §4.
 
 O `indice.py` ja' se declarava GERADO por `make gerar-indice` — e o alvo nunca
 existiu. O `views/indice.ts` era escrito a mao. Sao os dois unicos arquivos que
 as sete tarefas de componente precisariam tocar ao mesmo tempo: 22 componentes
 registrados a mao em dois arquivos so' sao 44 conflitos de merge garantidos.
 
-Varre `api/src/estoque/registry/componentes/*.py` e `web/src/views/*.tsx`, em
-ordem, e reescreve os dois indices. Deterministico: rodar duas vezes produz o
+O terceiro indice — `commands/indice.py` — entrou pelo achado A-15: as CINCO
+tarefas de escrita de W4 registram comando, e todas precisariam da mesma linha
+de import no mesmo arquivo. E' o mesmo problema, e merece a mesma solucao.
+
+Varre `registry/componentes/*.py`, `commands/*.py` e `web/src/views/*.tsx`, em
+ordem, e reescreve os tres indices. Deterministico: rodar duas vezes produz o
 mesmo byte, que e' o que permite ao CI conferir se alguem editou a mao.
 
 Uso:
@@ -23,6 +29,8 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 COMPONENTES = RAIZ / "api" / "src" / "estoque" / "registry" / "componentes"
 INDICE_PY = RAIZ / "api" / "src" / "estoque" / "registry" / "indice.py"
+COMANDOS = RAIZ / "api" / "src" / "estoque" / "commands"
+INDICE_CMD = COMANDOS / "indice.py"
 VIEWS = RAIZ / "web" / "src" / "views"
 INDICE_TS = VIEWS / "indice.ts"
 
@@ -31,10 +39,23 @@ INDICE_TS = VIEWS / "indice.ts"
 # que alguem criar um utilitario `.tsx` ali.
 NAO_SAO_VIEW: frozenset[str] = frozenset()
 
+# Modulos de `commands/` que NAO sao comando: o pipeline, os tipos, o proprio
+# indice. O pacote `entradas/` fica de fora por ser diretorio — sao schemas,
+# nao registros.
+NAO_SAO_COMANDO: frozenset[str] = frozenset({"pipeline", "tipos", "indice"})
+
 
 def modulos() -> list[str]:
     return sorted(
         p.stem for p in COMPONENTES.glob("*.py") if not p.stem.startswith("__")
+    )
+
+
+def comandos() -> list[str]:
+    return sorted(
+        p.stem
+        for p in COMANDOS.glob("*.py")
+        if not p.stem.startswith("__") and p.stem not in NAO_SAO_COMANDO
     )
 
 
@@ -68,6 +89,32 @@ verificar_teto()  # RNF-08: falha a inicializacao acima de 25 componentes
 '''
 
 
+def texto_cmd(nomes: list[str]) -> str:
+    if not nomes:
+        importacoes = ""
+        todos = "[]"
+    else:
+        # Mesma forma do `registry/indice.py`: o `__all__` e' o que satisfaz o
+        # F401 do ruff sem `noqa` — o import existe pelo efeito colateral.
+        corpo = "".join(f"    {n},\n" for n in nomes)
+        importacoes = f"from estoque.commands import (\n{corpo})\n"
+        todos = "[\n" + "".join(f'    "{n}",\n' for n in nomes) + "]"
+    return f'''"""Importa os modulos de comando, registrando-os. Ponto unico de entrada.
+
+Este modulo e' GERADO por `make gerar-indice` varrendo `commands/*.py`.
+Nao edite a mao — achado A-15: as cinco tarefas de escrita de W4 precisariam da
+mesma linha aqui, e arquivo compartilhado por cinco tarefas e' o que o acordo
+de trabalho §4 manda gerar.
+
+Quem importa este modulo e' a borda HTTP. `assistant` nunca o alcanca, e o
+contrato 3 do import-linter e' o que garante isso — nao a disciplina.
+"""
+
+{importacoes}
+__all__ = {todos}
+'''
+
+
 def texto_ts(nomes: list[str]) -> str:
     importacoes = "".join(f"import {{ view as {n} }} from './{n}'\n" for n in nomes)
     mapa = "".join(f"  {n},\n" for n in nomes)
@@ -96,7 +143,11 @@ export const IDS_DAS_VIEWS = Object.keys(VIEWS).sort()
 
 def main() -> int:
     conferir = "--conferir" in sys.argv
-    alvos = [(INDICE_PY, texto_py(modulos())), (INDICE_TS, texto_ts(views()))]
+    alvos = [
+        (INDICE_PY, texto_py(modulos())),
+        (INDICE_CMD, texto_cmd(comandos())),
+        (INDICE_TS, texto_ts(views())),
+    ]
 
     if conferir:
         sujos = [
@@ -107,12 +158,18 @@ def main() -> int:
         if sujos:
             print("rode `make gerar-indice`")
             return 1
-        print(f"indices em dia — {len(modulos())} componentes, {len(views())} views")
+        print(
+            f"indices em dia — {len(modulos())} componentes, "
+            f"{len(comandos())} modulos de comando, {len(views())} views"
+        )
         return 0
 
     for p, novo in alvos:
         p.write_text(novo, "utf8")
-    print(f"gerado indice.py ({len(modulos())}) e views/indice.ts ({len(views())})")
+    print(
+        f"gerado registry/indice.py ({len(modulos())}), "
+        f"commands/indice.py ({len(comandos())}) e views/indice.ts ({len(views())})"
+    )
     return 0
 
 

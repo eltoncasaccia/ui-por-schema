@@ -194,6 +194,19 @@ def test_variante_de_custo_da_ficha_some_do_enum_de_quem_nao_pode(
         assert "com_custo" in entrada["params"]["variante"]["valores"], nome
 
 
+# --- T-021: rastreabilidade ----------------------------------------------
+def test_rastreabilidade_segue_auditoria_rastrear(personas: dict[str, Ator]) -> None:
+    """RN-D03/D04 são "[R]" e a permissão é de controle: só Marco, Helena e
+    Sandra rastreiam. Odair, Ivo, Cleide e Rafael não veem o componente — é a
+    negativa de CA-06 na camada do catálogo (ADR-0003)."""
+    for nome in TODAS_AS_PERSONAS:
+        ator = personas[nome]
+        esperado = "auditoria.rastrear" in ator.permissoes
+        assert ("rastreabilidade" in ids_permitidos(ator)) is esperado, nome
+    for nome in ("odair", "ivo", "cleide", "rafael"):
+        assert "rastreabilidade" not in ids_permitidos(personas[nome]), nome
+
+
 # --- ADR-0011 / RNF-08 -------------------------------------------------------
 def test_orcamento_de_tokens_abaixo_do_alerta(personas: dict[str, Ator]) -> None:
     for nome, ator in personas.items():

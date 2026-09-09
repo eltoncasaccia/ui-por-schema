@@ -67,11 +67,15 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 | [T-018](./T-018-componentes-lote.md) | Lote | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` | G | ✅ |
 | [T-019](./T-019-componentes-produto.md) | Produto e custo restrito | `produto_ficha` `produto_saldo_por_unidade` | M | ✅ |
 | [T-020](./T-020-vencimento-indicador.md) | Vencimento, indicador e curva | `fila_vencimento` `estoque_indicador` `vencimento_grafico` | G | ✅ |
-| [T-021](./T-021-rastreabilidade.md) | Rastreabilidade `CA-01` | `rastreabilidade` | M | ⬜ |
+| [T-021](./T-021-rastreabilidade.md) | Rastreabilidade `CA-01` | `rastreabilidade` | M | ✅ |
 
 > **T-019 fechou com AC-7 em branco:** `RN-P06` (mín/máx por unidade) não tem
 > armazenamento no sistema. Achado [A-30](./ACHADOS.md), tarefa
 > [T-046](./T-046-minimo-maximo-por-unidade.md).
+>
+> **T-021 fechou:** o recorte de período do `RN-D04` foi feito no `load` porque
+> `RepoMovimento.por_cliente` ignora `de`/`ate` (achado [A-31](./ACHADOS.md),
+> conserto em T-007/T-042). `RNF-01` medido de verdade fica para T-034.
 | [T-022](./T-022-recebimento-leitura.md) | Recebimento | `recebimento_lista` `recebimento_detalhe` | M | ⬜ |
 | [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | ⬜ |
 | [T-024](./T-024-movimento-auditoria.md) | Movimento e trilha | `movimento_lista` `auditoria_trilha` | M | ✅ |
@@ -129,11 +133,11 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 15** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 16** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
 `quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028),
-`controlado_autorizar` (T-030), `movimento_lista` `auditoria_trilha` (T-024) e
-`produto_ficha` `produto_saldo_por_unidade` (T-019).
+`controlado_autorizar` (T-030), `movimento_lista` `auditoria_trilha` (T-024),
+`produto_ficha` `produto_saldo_por_unidade` (T-019) e `rastreabilidade` (T-021).
 **4 de escrita, teto 25.**
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no

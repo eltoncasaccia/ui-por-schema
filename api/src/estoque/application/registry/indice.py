@@ -20,6 +20,7 @@ from estoque.application.registry.componentes import (
     produto_saldo_por_unidade,
     quarentena_fila,
     quarentena_liberar,
+    rastreabilidade,
     vencimento_grafico,
 )
 from estoque.application.registry.orcamento import verificar_teto
@@ -39,6 +40,7 @@ __all__ = [
     "produto_saldo_por_unidade",
     "quarentena_fila",
     "quarentena_liberar",
+    "rastreabilidade",
     "vencimento_grafico",
 ]
 

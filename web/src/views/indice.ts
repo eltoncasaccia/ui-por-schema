@@ -19,6 +19,7 @@ import { view as produto_ficha } from './produto_ficha'
 import { view as produto_saldo_por_unidade } from './produto_saldo_por_unidade'
 import { view as quarentena_fila } from './quarentena_fila'
 import { view as quarentena_liberar } from './quarentena_liberar'
+import { view as rastreabilidade } from './rastreabilidade'
 import { view as vencimento_grafico } from './vencimento_grafico'
 
 /**
@@ -44,6 +45,7 @@ export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   produto_saldo_por_unidade,
   quarentena_fila,
   quarentena_liberar,
+  rastreabilidade,
   vencimento_grafico,
 }
 

@@ -1757,6 +1757,126 @@
       }
     },
     {
+      "id": "rastreabilidade",
+      "label": "Rastreabilidade",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "RastreabilidadeLoteDeCliente": {
+            "properties": {
+              "lote_id": {
+                "type": "string"
+              },
+              "numero": {
+                "type": "string"
+              },
+              "primeira": {
+                "format": "date",
+                "type": "string"
+              },
+              "produto": {
+                "type": "string"
+              },
+              "quantidade_total": {
+                "type": "integer"
+              },
+              "ultima": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "lote_id",
+              "numero",
+              "produto",
+              "quantidade_total",
+              "primeira",
+              "ultima"
+            ],
+            "title": "RastreabilidadeLoteDeCliente",
+            "type": "object"
+          },
+          "RastreabilidadeSaidaParaCliente": {
+            "properties": {
+              "cliente": {
+                "type": "string"
+              },
+              "data": {
+                "format": "date",
+                "type": "string"
+              },
+              "nota_fiscal": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "quantidade": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "cliente",
+              "nota_fiscal",
+              "data",
+              "quantidade"
+            ],
+            "title": "RastreabilidadeSaidaParaCliente",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo nem margem (CA-05): `Movimento` nao os carrega, e nada aqui os\nbusca. So' uma das duas listas vem preenchida, conforme `direcao`.",
+        "properties": {
+          "alvo": {
+            "type": "string"
+          },
+          "clientes": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/RastreabilidadeSaidaParaCliente"
+            },
+            "type": "array"
+          },
+          "direcao": {
+            "enum": [
+              "lote_para_clientes",
+              "cliente_para_lotes"
+            ],
+            "type": "string"
+          },
+          "lotes": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/RastreabilidadeLoteDeCliente"
+            },
+            "type": "array"
+          },
+          "recorte": {
+            "type": "string"
+          },
+          "total_quantidade": {
+            "type": "integer"
+          },
+          "total_saidas": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "direcao",
+          "alvo",
+          "recorte",
+          "total_saidas",
+          "total_quantidade"
+        ],
+        "title": "VMRastreabilidade",
+        "type": "object"
+      }
+    },
+    {
       "id": "vencimento_grafico",
       "label": "Curva de vencimento",
       "tamanho": "inteira",

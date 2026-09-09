@@ -398,6 +398,34 @@ export interface QuarentenaLiberarItemConferencia {
   rotulo: string
 }
 
+/**
+ * Sem custo nem margem (CA-05): `Movimento` nao os carrega, e nada aqui os
+ * busca. So' uma das duas listas vem preenchida, conforme `direcao`.
+ */
+export interface VMRastreabilidade {
+  alvo: string
+  clientes?: RastreabilidadeSaidaParaCliente[]
+  direcao: 'lote_para_clientes' | 'cliente_para_lotes'
+  lotes?: RastreabilidadeLoteDeCliente[]
+  recorte: string
+  total_quantidade: number
+  total_saidas: number
+}
+export interface RastreabilidadeSaidaParaCliente {
+  cliente: string
+  data: string
+  nota_fiscal: string | null
+  quantidade: number
+}
+export interface RastreabilidadeLoteDeCliente {
+  lote_id: string
+  numero: string
+  primeira: string
+  produto: string
+  quantidade_total: number
+  ultima: string
+}
+
 export interface VMVencimentoGrafico {
   baldes: VencimentoGraficoBalde[]
   escopo: string
@@ -433,6 +461,7 @@ export type ComponentId =
   | 'produto_saldo_por_unidade'
   | 'quarentena_fila'
   | 'quarentena_liberar'
+  | 'rastreabilidade'
   | 'vencimento_grafico'
 
 /** Usado pelo teste de bijeção: toda view precisa corresponder a um destes. */
@@ -451,6 +480,7 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'produto_saldo_por_unidade',
   'quarentena_fila',
   'quarentena_liberar',
+  'rastreabilidade',
   'vencimento_grafico',
 ] as const
 
@@ -470,6 +500,7 @@ export interface ViewModels {
   produto_saldo_por_unidade: VMProdutoSaldoPorUnidade
   quarentena_fila: VMQuarentenaFila
   quarentena_liberar: VMQuarentenaLiberar
+  rastreabilidade: VMRastreabilidade
   vencimento_grafico: VMVencimentoGrafico
 }
 
@@ -491,5 +522,6 @@ export const TAMANHOS: Record<ComponentId, string> = {
   produto_saldo_por_unidade: 'meia',
   quarentena_fila: 'inteira',
   quarentena_liberar: 'inteira',
+  rastreabilidade: 'inteira',
   vencimento_grafico: 'inteira',
 }

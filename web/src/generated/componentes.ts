@@ -150,6 +150,36 @@ export interface LoteMovimentosLinhaMovimento {
 /**
  * Sem custo, para papel nenhum (CA-05, ADR-0020).
  */
+export interface VMLoteStatusAcao {
+  acoes: LoteStatusAcaoAcaoDisponivel[]
+  dias_restantes: number
+  lote_id: string
+  numero: string
+  produto: string
+  saldo: number
+  situacao: 'ok' | 'alerta_90' | 'bloqueio_30' | 'vencido'
+  status: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado'
+  status_efetivo: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado' | 'vencido' | 'esgotado'
+  unidade: string
+  validade: string
+}
+/**
+ * Uma linha da tabela §4.1, já avaliada contra este lote.
+ *
+ * `motivo` é preenchido quando a ação não cabe. Dizer *por que* não cabe é o
+ * que impede a leitura errada de que o sistema está quebrado — e o texto fala
+ * do estado do lote, nunca de quem poderia fazer.
+ */
+export interface LoteStatusAcaoAcaoDisponivel {
+  acao: 'bloquear' | 'desbloquear' | 'liberar_vencimento'
+  disponivel: boolean
+  motivo?: string | null
+  rotulo: string
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
 export interface VMQuarentenaFila {
   cursor?: string | null
   escopo: string
@@ -179,6 +209,41 @@ export interface QuarentenaFilaFaixa {
   valor: number
 }
 
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
+export interface VMQuarentenaLiberar {
+  aviso_validade?: string | null
+  classe: 'comum' | 'controlado' | 'termolabil' | 'antimicrobiano'
+  conferencia: QuarentenaLiberarItemConferencia[]
+  dias_restantes: number
+  fabricacao: string
+  lote_id: string
+  motivo?: string | null
+  numero: string
+  pode_decidir: boolean
+  produto: string
+  saldo: number
+  situacao: 'ok' | 'alerta_90' | 'bloqueio_30' | 'vencido'
+  status: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado'
+  status_efetivo: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado' | 'vencido' | 'esgotado'
+  unidade: string
+  validade: string
+}
+/**
+ * Um item do checklist de `RN-R03`.
+ *
+ * `obrigatorio` é calculado no servidor, a partir da classe do produto. Se
+ * fosse decidido no cliente, um formulário adulterado marcaria a temperatura
+ * como dispensável e o termolábil passaria sem conferência — e a interface é
+ * payload não-confiável como qualquer outro (ADR-0004).
+ */
+export interface QuarentenaLiberarItemConferencia {
+  campo: string
+  obrigatorio: boolean
+  rotulo: string
+}
+
 export interface VMVencimentoGrafico {
   baldes: VencimentoGraficoBalde[]
   escopo: string
@@ -205,7 +270,9 @@ export type ComponentId =
   | 'lote_detalhe'
   | 'lote_lista'
   | 'lote_movimentos'
+  | 'lote_status_acao'
   | 'quarentena_fila'
+  | 'quarentena_liberar'
   | 'vencimento_grafico'
 
 /** Usado pelo teste de bijeção: toda view precisa corresponder a um destes. */
@@ -215,7 +282,9 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'lote_detalhe',
   'lote_lista',
   'lote_movimentos',
+  'lote_status_acao',
   'quarentena_fila',
+  'quarentena_liberar',
   'vencimento_grafico',
 ] as const
 
@@ -226,7 +295,9 @@ export interface ViewModels {
   lote_detalhe: VMLoteDetalhe
   lote_lista: VMLoteLista
   lote_movimentos: VMLoteMovimentos
+  lote_status_acao: VMLoteStatusAcao
   quarentena_fila: VMQuarentenaFila
+  quarentena_liberar: VMQuarentenaLiberar
   vencimento_grafico: VMVencimentoGrafico
 }
 
@@ -239,6 +310,8 @@ export const TAMANHOS: Record<ComponentId, string> = {
   lote_detalhe: 'meia',
   lote_lista: 'inteira',
   lote_movimentos: 'inteira',
+  lote_status_acao: 'inteira',
   quarentena_fila: 'inteira',
+  quarentena_liberar: 'inteira',
   vencimento_grafico: 'inteira',
 }

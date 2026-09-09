@@ -32,7 +32,7 @@ do ciclo 1** — nenhum caiu com o corte do [ADR-0010](./adr/0010-corte-de-escop
 |---|---|---|
 | `RN-P` Produto | P01–P06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-019](./tasks/T-019-componentes-produto.md) · [T-026](./tasks/T-026-recebimento-registrar.md) |
 | `RN-L` Lote e validade | L01–L08 | [T-008](./tasks/T-008-regras-puras.md) · [T-018](./tasks/T-018-componentes-lote.md) · [T-020](./tasks/T-020-vencimento-indicador.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) · [T-028](./tasks/T-028-saida-fefo.md) |
-| `RN-R` Recebimento | R01–R05 | [T-022](./tasks/T-022-recebimento-leitura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) |
+| `RN-R` Recebimento | R01–R05 | [T-022](./tasks/T-022-recebimento-leitura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) **R02, R03 ✅** |
 | `RN-M` Movimentação | M01–M06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) **M04** · [T-028](./tasks/T-028-saida-fefo.md) · [T-029](./tasks/T-029-estorno-descarte.md) |
 | `RN-C` Controlados | C01–C05 | [T-026](./tasks/T-026-recebimento-registrar.md) · [T-028](./tasks/T-028-saida-fefo.md) · [T-030](./tasks/T-030-controlado-autorizar.md) — **C04 fora** (depende de contagem) |
 | `RN-F` Cadeia fria | F01–F04 | [T-023](./tasks/T-023-temperatura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) |
@@ -81,8 +81,8 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 14 | `movimento_lista` | `movimento.ler` | [T-024](./tasks/T-024-movimento-auditoria.md) |
 | 15 | `auditoria_trilha` | `auditoria.ler` | T-024 |
 | 17 | `recebimento_registrar` | `recebimento.criar` | [T-026](./tasks/T-026-recebimento-registrar.md) |
-| 18 | `quarentena_liberar` | `lote.liberar` | [T-027](./tasks/T-027-quarentena-e-status.md) |
-| 19 | `lote_status_acao` | `lote.status` | T-027 |
+| 18 | `quarentena_liberar` ✅ | `lote.liberar` | [T-027](./tasks/T-027-quarentena-e-status.md) |
+| 19 | `lote_status_acao` ✅ | `lote.status` | T-027 |
 | 20 | `movimento_saida` | `movimento.criar` | [T-028](./tasks/T-028-saida-fefo.md) |
 | 21 | `movimento_estorno` | `movimento.estornar` | [T-029](./tasks/T-029-estorno-descarte.md) |
 | 22 | `movimento_descarte` | `movimento.descartar` | T-029 |

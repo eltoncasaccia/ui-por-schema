@@ -53,6 +53,41 @@ def test_ator_inativo_tem_catalogo_vazio(personas: dict[str, Ator]) -> None:
     assert ids_permitidos(inativo) == frozenset()
 
 
+# --- ADR-0003: as acoes privativas do RT (T-027) -----------------------------
+# `lote.liberar` e `lote.status` existem num papel so' (documento 02 §6). Este
+# par de testes e' o ADR-0003 na forma mais limpa que o projeto tem: o
+# vocabulario do modelo E' o do ator, e para seis dos sete papeis estes dois ids
+# simplesmente nao existem.
+SO_DO_RT = ("quarentena_liberar", "lote_status_acao")
+
+
+def test_so_o_rt_ve_as_acoes_privativas(personas: dict[str, Ator]) -> None:
+    catalogo = ids_permitidos(personas["helena"])
+    for componente in SO_DO_RT:
+        assert componente in catalogo, componente
+
+
+def test_os_outros_seis_papeis_nao_veem_as_acoes_do_rt(
+    personas: dict[str, Ator],
+) -> None:
+    """RN-R02: "nenhum outro papel, em nenhuma circunstancia".
+
+    Enumerado papel a papel de proposito. Um laco que so' afirmasse sobre
+    Helena ficaria verde com o catalogo aberto para todo mundo.
+    """
+    for nome in ("marco", "ivo", "odair", "cleide", "rafael", "sandra"):
+        catalogo = ids_permitidos(personas[nome])
+        for componente in SO_DO_RT:
+            assert componente not in catalogo, f"{nome} ve {componente}"
+
+
+def test_nem_o_diretor_ve(personas: dict[str, Ator]) -> None:
+    """Papel nao e' nivel, e' conjunto: Marco tem mais permissoes que Helena e
+    nenhuma delas e' estas duas."""
+    assert "lote.liberar" not in personas["marco"].permissoes
+    assert "lote.status" not in personas["marco"].permissoes
+
+
 # --- CS-02 / CA-05: o vazamento de custo, por todos os caminhos --------------
 SEM_CUSTO = ("cleide", "helena", "ivo", "odair")
 COM_CUSTO = ("marco", "rafael", "sandra")

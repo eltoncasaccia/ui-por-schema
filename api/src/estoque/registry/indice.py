@@ -11,7 +11,9 @@ from estoque.registry.componentes import (
     lote_detalhe,
     lote_lista,
     lote_movimentos,
+    lote_status_acao,
     quarentena_fila,
+    quarentena_liberar,
     vencimento_grafico,
 )
 from estoque.registry.orcamento import verificar_teto
@@ -22,7 +24,9 @@ __all__ = [
     "lote_detalhe",
     "lote_lista",
     "lote_movimentos",
+    "lote_status_acao",
     "quarentena_fila",
+    "quarentena_liberar",
     "vencimento_grafico",
 ]
 

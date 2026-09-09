@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**23 concluídas · 4 parciais · 15 não iniciadas** · 7 de 24 componentes previstos.
+**24 concluídas · 4 parciais · 14 não iniciadas** · 9 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -81,7 +81,7 @@ está pronto.
 |---|---|---|
 | T-025 | Pipeline de comando | ✅ |
 | T-026 | Registrar recebimento | ⬜ |
-| T-027 | Quarentena e status | ⬜ |
+| T-027 | Quarentena e status | ✅ |
 | T-028 | Saída com FEFO | ⬜ |
 | T-029 | Estorno e descarte | ⬜ |
 | T-030 | Dupla identificação `CA-04` | ⬜ |

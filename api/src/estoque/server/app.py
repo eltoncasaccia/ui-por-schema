@@ -26,6 +26,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
+import estoque.commands.indice  # registra os comandos de escrita
 import estoque.registry.indice  # noqa: F401  — registra os componentes
 from estoque.assistant.adapter import AdaptadorModelo, ErroDeModelo, extrair_json
 from estoque.assistant.fabrica import criar_adaptador

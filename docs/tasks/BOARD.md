@@ -174,7 +174,7 @@ graph TD
 |---|---|---|---|---|---|
 | [T-025](./T-025-pipeline-de-comando.md) | Pipeline de comando e confirmação | *(nenhum — ver nota)* | G | T-011, T-015 | ✅ |
 | [T-026](./T-026-recebimento-registrar.md) | Registrar recebimento | `recebimento_registrar` | G | T-025, T-022 | ⬜ |
-| [T-027](./T-027-quarentena-e-status.md) | Quarentena e status | `quarentena_liberar` `lote_status_acao` | G | T-025, T-018 | ⬜ |
+| [T-027](./T-027-quarentena-e-status.md) | Quarentena e status | `quarentena_liberar` `lote_status_acao` | G | T-025, T-018 | ✅ |
 | [T-028](./T-028-saida-fefo.md) | Saída com FEFO | `movimento_saida` | G | T-025, T-008 | ⬜ |
 | [T-029](./T-029-estorno-descarte.md) | Estorno e descarte | `movimento_estorno` `movimento_descarte` | M | T-025, T-024 | ⬜ |
 | [T-030](./T-030-controlado-autorizar.md) | Dupla identificação `CA-04` | `controlado_autorizar` | G | T-028, T-024 | ⬜ |
@@ -217,8 +217,9 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 7** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
-(T-020) e `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018).
+**Registrados hoje: 9** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+(T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018) e
+`quarentena_liberar` `lote_status_acao` (T-027, **os dois primeiros de escrita**).
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no
 mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.
@@ -234,6 +235,9 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
+| A-15 | **O corte de W4 não previu onde a execução do comando mora.** Nenhuma das cinco tarefas de escrita declara arquivo em `commands/` — mas o componente só pode DECLARAR o comando: `registry` não importa `commands.pipeline`, porque o contrato 2 proíbe `registry → sqlalchemy` por caminho indireto. T-026, T-028, T-029 e T-030 vão bater no mesmo | execução da T-027 | 4 arquivos em `commands/` acrescentados à T-027; **as outras quatro tarefas de W4 precisam da mesma correção antes de começarem** |
+| A-14 | **Onde persiste a autorização de RN-L05 não está em documento nenhum.** "Só o RT libera, com justificativa" — mas o bloqueio por validade é derivado da data (ADR-0022) e não há coluna para desfazê-lo. Implementado como fato da trilha de auditoria | execução da T-027 | **T-028** precisa consultar a trilha ao decidir a saída; se não couber, vira ADR e coluna |
+| A-16 | Duas convenções de endpoint de escrita convivem nos documentos: a tarefa T-027 dizia `POST /lotes/:id/liberacao`, CONTRATOS §8 diz `/api/comandos/{nome}`. Resolvido pela hierarquia (CONTRATOS é normativo), mas T-026 e T-028 a T-030 têm a mesma linha errada | execução da T-027 | endpoints das 4 tarefas restantes de W4 a corrigir |
 | A-12 | **T-025 não cabia nos arquivos que declarava.** A lista de propriedade exclusiva citava `confirm_action.py` — arquivo que o escopo da própria tarefa manda não criar (A-05) — e `commands/*.test.py`, caminho inexistente. E os AC-3/AC-4/AC-7 exigem tabela (T-036) e rota HTTP (T-011) para serem verificáveis | execução da T-025 | lista corrigida; 3 arquivos de outra tarefa tocados, registrados no arquivo da tarefa |
 | A-13 | **`make check` nunca pôde passar.** `web/eslint.config.js` e `web/scripts/arch-check.ts` são invocados pelo Makefile e **nunca existiram** em commit nenhum; `eslint` não é dependência de `web/package.json`. O comando que o CLAUDE.md chama de "o que o CI roda" para na primeira etapa | execução da T-025 | **T-041** (CI) e **T-005** (arch do TS) |
 | A-04b | `arch:check` só do lado Python, 4 de 6 regras | A-002 | T-005 parcial |

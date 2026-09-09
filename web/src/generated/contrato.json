@@ -641,6 +641,127 @@
       }
     },
     {
+      "id": "lote_status_acao",
+      "label": "Situação do lote",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "LoteStatusAcaoAcaoDisponivel": {
+            "description": "Uma linha da tabela §4.1, já avaliada contra este lote.\n\n`motivo` é preenchido quando a ação não cabe. Dizer *por que* não cabe é o\nque impede a leitura errada de que o sistema está quebrado — e o texto fala\ndo estado do lote, nunca de quem poderia fazer.",
+            "properties": {
+              "acao": {
+                "enum": [
+                  "bloquear",
+                  "desbloquear",
+                  "liberar_vencimento"
+                ],
+                "type": "string"
+              },
+              "disponivel": {
+                "type": "boolean"
+              },
+              "motivo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "rotulo": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "acao",
+              "rotulo",
+              "disponivel"
+            ],
+            "title": "LoteStatusAcaoAcaoDisponivel",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "acoes": {
+            "items": {
+              "$ref": "#/$defs/LoteStatusAcaoAcaoDisponivel"
+            },
+            "type": "array"
+          },
+          "dias_restantes": {
+            "type": "integer"
+          },
+          "lote_id": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "produto": {
+            "type": "string"
+          },
+          "saldo": {
+            "type": "integer"
+          },
+          "situacao": {
+            "enum": [
+              "ok",
+              "alerta_90",
+              "bloqueio_30",
+              "vencido"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "quarentena",
+              "liberado",
+              "bloqueado",
+              "descartado"
+            ],
+            "type": "string"
+          },
+          "status_efetivo": {
+            "enum": [
+              "quarentena",
+              "liberado",
+              "bloqueado",
+              "descartado",
+              "vencido",
+              "esgotado"
+            ],
+            "type": "string"
+          },
+          "unidade": {
+            "type": "string"
+          },
+          "validade": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lote_id",
+          "produto",
+          "numero",
+          "unidade",
+          "validade",
+          "dias_restantes",
+          "saldo",
+          "situacao",
+          "status",
+          "status_efetivo",
+          "acoes"
+        ],
+        "title": "VMLoteStatusAcao",
+        "type": "object"
+      }
+    },
+    {
       "id": "quarentena_fila",
       "label": "Quarentena",
       "tamanho": "inteira",
@@ -792,6 +913,152 @@
           "linhas"
         ],
         "title": "VMQuarentenaFila",
+        "type": "object"
+      }
+    },
+    {
+      "id": "quarentena_liberar",
+      "label": "Liberar quarentena",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "QuarentenaLiberarItemConferencia": {
+            "description": "Um item do checklist de `RN-R03`.\n\n`obrigatorio` é calculado no servidor, a partir da classe do produto. Se\nfosse decidido no cliente, um formulário adulterado marcaria a temperatura\ncomo dispensável e o termolábil passaria sem conferência — e a interface é\npayload não-confiável como qualquer outro (ADR-0004).",
+            "properties": {
+              "campo": {
+                "type": "string"
+              },
+              "obrigatorio": {
+                "type": "boolean"
+              },
+              "rotulo": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "campo",
+              "rotulo",
+              "obrigatorio"
+            ],
+            "title": "QuarentenaLiberarItemConferencia",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "aviso_validade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "classe": {
+            "enum": [
+              "comum",
+              "controlado",
+              "termolabil",
+              "antimicrobiano"
+            ],
+            "type": "string"
+          },
+          "conferencia": {
+            "items": {
+              "$ref": "#/$defs/QuarentenaLiberarItemConferencia"
+            },
+            "type": "array"
+          },
+          "dias_restantes": {
+            "type": "integer"
+          },
+          "fabricacao": {
+            "format": "date",
+            "type": "string"
+          },
+          "lote_id": {
+            "type": "string"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "numero": {
+            "type": "string"
+          },
+          "pode_decidir": {
+            "type": "boolean"
+          },
+          "produto": {
+            "type": "string"
+          },
+          "saldo": {
+            "type": "integer"
+          },
+          "situacao": {
+            "enum": [
+              "ok",
+              "alerta_90",
+              "bloqueio_30",
+              "vencido"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "quarentena",
+              "liberado",
+              "bloqueado",
+              "descartado"
+            ],
+            "type": "string"
+          },
+          "status_efetivo": {
+            "enum": [
+              "quarentena",
+              "liberado",
+              "bloqueado",
+              "descartado",
+              "vencido",
+              "esgotado"
+            ],
+            "type": "string"
+          },
+          "unidade": {
+            "type": "string"
+          },
+          "validade": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lote_id",
+          "produto",
+          "classe",
+          "numero",
+          "unidade",
+          "fabricacao",
+          "validade",
+          "dias_restantes",
+          "saldo",
+          "situacao",
+          "status",
+          "status_efetivo",
+          "pode_decidir",
+          "conferencia"
+        ],
+        "title": "VMQuarentenaLiberar",
         "type": "object"
       }
     },

@@ -10,7 +10,9 @@ import { view as fila_vencimento } from './fila_vencimento'
 import { view as lote_detalhe } from './lote_detalhe'
 import { view as lote_lista } from './lote_lista'
 import { view as lote_movimentos } from './lote_movimentos'
+import { view as lote_status_acao } from './lote_status_acao'
 import { view as quarentena_fila } from './quarentena_fila'
+import { view as quarentena_liberar } from './quarentena_liberar'
 import { view as vencimento_grafico } from './vencimento_grafico'
 
 /**
@@ -27,7 +29,9 @@ export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   lote_detalhe,
   lote_lista,
   lote_movimentos,
+  lote_status_acao,
   quarentena_fila,
+  quarentena_liberar,
   vencimento_grafico,
 }
 

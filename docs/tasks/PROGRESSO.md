@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**25 concluídas · 4 parciais · 13 não iniciadas** · 10 de 24 componentes previstos.
+**26 concluídas · 4 parciais · 12 não iniciadas** · 11 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -84,7 +84,7 @@ está pronto.
 | T-027 | Quarentena e status | ✅ |
 | T-028 | Saída com FEFO | ✅ |
 | T-029 | Estorno e descarte | ⬜ |
-| T-030 | Dupla identificação `CA-04` | ⬜ |
+| T-030 | Dupla identificação `CA-04` | ✅ |
 
 > **O ADR-0002 deixou de ser promessa.** Até a T-025, *"a saída do modelo
 > autoriza renderizar, nunca autoriza escrever"* não era falsificável: não havia
@@ -94,7 +94,9 @@ está pronto.
 > (`api/tests/commands/test_ac1_barreira.py`). Cada um foi confirmado vermelho
 > com a violação introduzida de propósito.
 >
-> O que ainda falta da metade: os 7 comandos concretos, T-026 a T-030.
+> O que ainda falta: **3 dos 7 comandos** — T-026 (recebimento), T-029 (estorno e
+> descarte). Quatro estão prontos: liberar quarentena, mudar status, dar saída e
+> autorizar controlado.
 
 ## W5 — Garantias
 
@@ -129,7 +131,7 @@ movem estoque, com auditoria e recusa negativa testadas.
 | CA-01 recall < 60 s | T-021 | ⬜ |
 | CA-02 saldo auditável | T-025, T-028, T-029 | 🟡 razão imutável, saída e liberação prontas, com trilha de valor anterior e novo; falta estorno (T-029) |
 | CA-03 fila de vencimento | T-020 | ✅ **único completo** |
-| CA-04 dupla identificação | T-030 | 🟡 **a metade que importa está pronta**: saída de controlado nasce `aguardando_autorizacao` e NÃO muda o saldo (T-028 AC-6). Falta o ato de autorizar |
+| CA-04 dupla identificação | T-030 | ✅ **completo**: submissão não muda saldo, autorização grava as duas identidades distintas, e a mesma pessoa é recusada em três camadas — permissão, domínio e CHECK do banco |
 | CA-05 custo invisível | T-019 | 🟡 provado no indicador e no catálogo; falta `produto_ficha` |
 | CA-06 escopo de unidade | T-018 | 🟡 provado na fila e nos quatro de lote; falta cobrir os demais |
 | CA-07 cadeia fria | T-023 | ⬜ |

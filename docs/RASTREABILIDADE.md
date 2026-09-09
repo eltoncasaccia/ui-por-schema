@@ -18,7 +18,7 @@ do ciclo 1** — nenhum caiu com o corte do [ADR-0010](./adr/0010-corte-de-escop
 | **CA-01** | Recall da losartana, 9 dias | US-01 | [T-021](./tasks/T-021-rastreabilidade.md) · [T-006](./tasks/T-006-fixtures.md) · [T-010](./tasks/T-010-auditoria.md) | `T-021 AC-1` (< 60 s, com volume real) |
 | **CA-02** | Divergência de 3,8% | US-02, US-05, US-07 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) · [T-028](./tasks/T-028-saida-fefo.md) | `T-002 AC-1` (sem campo saldo) · `T-025 AC-5` |
 | **CA-03** | R$ 183 mil vencidos | US-04 | [T-020](./tasks/T-020-vencimento-indicador.md) | `T-020 AC-1`, `AC-2` (fronteiras 89/90/91) |
-| **CA-04** | Blister de clonazepam | US-06 | [T-028](./tasks/T-028-saida-fefo.md) · [T-030](./tasks/T-030-controlado-autorizar.md) · [T-024](./tasks/T-024-movimento-auditoria.md) | `T-030 AC-3` (mesma pessoa é recusada) |
+| **CA-04** ✅ | Blister de clonazepam | US-06 | [T-028](./tasks/T-028-saida-fefo.md) · [T-030](./tasks/T-030-controlado-autorizar.md) · [T-024](./tasks/T-024-movimento-auditoria.md) | `T-030 AC-3` (mesma pessoa é recusada, em três camadas) |
 | **CA-05** | Vazamento de margem | US-08 | [T-007](./tasks/T-007-repositorios.md) · [T-012](./tasks/T-012-catalogo.md) · [T-019](./tasks/T-019-componentes-produto.md) · [T-020](./tasks/T-020-vencimento-indicador.md) · [T-024](./tasks/T-024-movimento-auditoria.md) | `T-019 AC-4` (agregado derivado) · `T-024 AC-5` (trilha) |
 | **CA-06** | Pedido do cliente | US-09 | [T-007](./tasks/T-007-repositorios.md) · [T-009](./tasks/T-009-motor-de-permissao.md) · [T-018](./tasks/T-018-componentes-lote.md) · [T-023](./tasks/T-023-temperatura.md) | `T-011 AC-7` (resposta byte a byte idêntica) |
 | **CA-07** | Auto de infração da ANVISA | US-10 | [T-023](./tasks/T-023-temperatura.md) | `T-023 AC-3`, `AC-4` (vínculo por janela) |
@@ -34,7 +34,7 @@ do ciclo 1** — nenhum caiu com o corte do [ADR-0010](./adr/0010-corte-de-escop
 | `RN-L` Lote e validade | L01–L08 | [T-008](./tasks/T-008-regras-puras.md) · [T-018](./tasks/T-018-componentes-lote.md) · [T-020](./tasks/T-020-vencimento-indicador.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) · [T-028](./tasks/T-028-saida-fefo.md) |
 | `RN-R` Recebimento | R01–R05 | [T-022](./tasks/T-022-recebimento-leitura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) **R02, R03 ✅** |
 | `RN-M` Movimentação | M01–M06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) **M04** · [T-028](./tasks/T-028-saida-fefo.md) · [T-029](./tasks/T-029-estorno-descarte.md) |
-| `RN-C` Controlados | C01–C05 | [T-026](./tasks/T-026-recebimento-registrar.md) · [T-028](./tasks/T-028-saida-fefo.md) · [T-030](./tasks/T-030-controlado-autorizar.md) — **C04 fora** (depende de contagem) |
+| `RN-C` Controlados | C01–C05 | [T-026](./tasks/T-026-recebimento-registrar.md) · [T-028](./tasks/T-028-saida-fefo.md) · [T-030](./tasks/T-030-controlado-autorizar.md) **C01 ✅, C05 imutável ✅** — **C02 e C04 fora** (dependem de ajuste e contagem, ADR-0010) |
 | `RN-F` Cadeia fria | F01–F04 | [T-023](./tasks/T-023-temperatura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) |
 | `RN-I` Inventário | I01–I08 | **Fora do ciclo 1** — [ADR-0010](./adr/0010-corte-de-escopo-ciclo-1.md) |
 | `RN-T` Transferência | T01–T05 | **Fora do ciclo 1** — ADR-0010 |
@@ -86,7 +86,7 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 20 | `movimento_saida` ✅ | `movimento.criar` | [T-028](./tasks/T-028-saida-fefo.md) |
 | 21 | `movimento_estorno` | `movimento.estornar` | [T-029](./tasks/T-029-estorno-descarte.md) |
 | 22 | `movimento_descarte` | `movimento.descartar` | T-029 |
-| 23 | `controlado_autorizar` | `controlado.autorizar` | [T-030](./tasks/T-030-controlado-autorizar.md) |
+| 23 | `controlado_autorizar` ✅ | `controlado.autorizar` | [T-030](./tasks/T-030-controlado-autorizar.md) |
 
 **Não são componentes de catálogo**, e a razão é a mesma nos dois: são decisões
 do motor de render diante do que o servidor devolveu, nunca composição que o

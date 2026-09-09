@@ -177,7 +177,7 @@ graph TD
 | [T-027](./T-027-quarentena-e-status.md) | Quarentena e status | `quarentena_liberar` `lote_status_acao` | G | T-025, T-018 | ✅ |
 | [T-028](./T-028-saida-fefo.md) | Saída com FEFO | `movimento_saida` | G | T-025, T-008 | ✅ |
 | [T-029](./T-029-estorno-descarte.md) | Estorno e descarte | `movimento_estorno` `movimento_descarte` | M | T-025, T-024 | ⬜ |
-| [T-030](./T-030-controlado-autorizar.md) | Dupla identificação `CA-04` | `controlado_autorizar` | G | T-028, T-024 | ⬜ |
+| [T-030](./T-030-controlado-autorizar.md) | Dupla identificação `CA-04` | `controlado_autorizar` | G | T-028, T-024 | ✅ |
 
 > **`confirm_action` saiu do catálogo** (achado A-05). Confirmação é decisão do
 > motor de render diante de `CommandDef.confirm`, não composição que o modelo
@@ -217,9 +217,10 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 10** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 11** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
-`quarentena_liberar` `lote_status_acao` (T-027) e `movimento_saida` (T-028).
+`quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028) e
+`controlado_autorizar` (T-030). **4 de escrita, teto 25.**
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no
 mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.
@@ -235,6 +236,9 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
+| A-24 | **`RN-M02` e `RN-C01` eram incompatíveis no schema.** O `REVOKE UPDATE ON movimento` da migração 0001 tornava impossível a transição `aguardando_autorizacao → efetivado` que `RN-C01` exige e `CONTRATOS §3` documenta — conferido no banco: `permission denied` | execução da T-030 | migração 0004: `GRANT` por COLUNA (`status`, `autorizador_id`) mais gatilho que só aceita a transição documentada, com as demais colunas conferidas inalteradas. Decidido com o cliente. ✅ resolvido |
+| A-23 | **`RN-C05` promete livro de controlados "exportável"** e não há componente, comando nem endpoint de exportação em lugar nenhum do ciclo 1 | execução da T-030 | metade imutável entregue e testada; exportação **não entregue**. Precisa de tarefa — e de +1 no catálogo, que hoje tem folga |
+| A-22 | **O AC-6 da T-030 pedia recusa num fluxo que o ADR-0010 cortou.** `RN-C02` é sobre ajuste de saldo, e ajuste está fora do ciclo 1. A própria seção "Não faz" da tarefa excluía `RN-C04` pelo mesmo motivo e esqueceu este | execução da T-030 | AC-6 fica em branco, com a razão registrada. Volta quando inventário entrar |
 | A-21 | **O FEFO propunha o que o próprio sistema recusa.** `propor_fefo` implementa `RN-L02` e não conhece `RN-L05`: propõe o lote de menor validade, que costuma ser o que está na janela de 30 dias e depende de liberação do RT. Pior: quem escolhesse o lote certo pagava justificativa por isso | execução da T-028 | proposta calculada entre os que podem sair de fato, nos dois lados. ✅ corrigido |
 | A-20 | **A view materializada `saldo_lote` nunca é atualizada pela aplicação.** Só `REFRESH MATERIALIZED VIEW` a atualiza, e `estoque_app` não tem o privilégio — conferido no banco. Depois da primeira escrita, todo saldo LIDO fica para trás e não se recupera | execução da T-028 | o comando de saída usa a soma dos movimentos; a leitura continua parada. Precisa de dono ou gatilho — **T-036** |
 | A-19 | Não há lista fechada de motivos de **saída** em documento nenhum. `RN-M05` exige uma "por tipo de movimento", e o documento 02 só define a de ajuste (`RN-I06`) | execução da T-028 | quatro motivos derivados do enum do domínio, com o corte justificado no arquivo da tarefa. **Confirmar com o cliente** |

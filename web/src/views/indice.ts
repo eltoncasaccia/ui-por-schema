@@ -5,6 +5,7 @@
  * os dois únicos que ninguém edita.
  */
 import type { ComponentId } from '../generated/componentes'
+import { view as controlado_autorizar } from './controlado_autorizar'
 import { view as estoque_indicador } from './estoque_indicador'
 import { view as fila_vencimento } from './fila_vencimento'
 import { view as lote_detalhe } from './lote_detalhe'
@@ -25,6 +26,7 @@ import { view as vencimento_grafico } from './vencimento_grafico'
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
+  controlado_autorizar,
   estoque_indicador,
   fila_vencimento,
   lote_detalhe,

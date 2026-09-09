@@ -1,6 +1,108 @@
 {
   "componentes": [
     {
+      "id": "controlado_autorizar",
+      "label": "Autorizar controlado",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "ControladoAutorizarPendente": {
+            "properties": {
+              "autor": {
+                "type": "string"
+              },
+              "lote_id": {
+                "type": "string"
+              },
+              "motivo": {
+                "type": "string"
+              },
+              "movimento_id": {
+                "type": "string"
+              },
+              "parado_ha_dias": {
+                "type": "integer"
+              },
+              "produto": {
+                "type": "string"
+              },
+              "quantidade": {
+                "type": "integer"
+              },
+              "submetido_em": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "unidade": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "movimento_id",
+              "lote_id",
+              "produto",
+              "unidade",
+              "quantidade",
+              "motivo",
+              "autor",
+              "submetido_em",
+              "parado_ha_dias"
+            ],
+            "title": "ControladoAutorizarPendente",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "alvo": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ControladoAutorizarPendente"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "escopo": {
+            "type": "string"
+          },
+          "fila": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ControladoAutorizarPendente"
+            },
+            "type": "array"
+          },
+          "motivo_impedimento": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "pode_decidir": {
+            "default": true,
+            "type": "boolean"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "escopo"
+        ],
+        "title": "VMControladoAutorizar",
+        "type": "object"
+      }
+    },
+    {
       "id": "estoque_indicador",
       "label": "Indicador",
       "tamanho": "linha",

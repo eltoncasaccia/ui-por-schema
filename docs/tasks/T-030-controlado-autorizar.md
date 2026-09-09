@@ -89,35 +89,72 @@ web/src/views/controlado_autorizar.tsx
 - Autorizar ou recusar, com motivo.
 - Efetivação atômica: movimento passa a `efetivado` e o saldo muda **no mesmo
   instante**.
-- Ajuste de controlado exige motivo **e documento anexo** (`RN-C02`).
-- Livro de registro eletrônico exportável e imutável (`RN-C05`).
+- ~~Ajuste de controlado exige motivo e documento anexo (`RN-C02`)~~ — o fluxo de
+  ajuste está fora do ciclo 1 (ADR-0010). Ver "Não faz".
+- Livro de registro eletrônico **imutável** (`RN-C05`), pelo `GRANT` por coluna e
+  pelo gatilho da migração 0004. **Exportável fica para depois** — achado A-23.
 
 ### Não faz
 Divergência de controlado escalando para RT e Diretor (`RN-C04`) — depende de
-contagem, fora do ciclo 1 (ADR-0010).
+contagem, fora do ciclo 1 (ADR-0010). **E, pelo mesmo motivo, `RN-C02`**: ajuste
+de saldo também foi cortado pelo ADR-0010, e o AC-6 pedia uma recusa num fluxo
+que não existe (achado A-22).
+
+### Decidido na execução
+
+**A migração 0004 existe porque duas regras estavam em tensão.** `RN-M02` diz que
+movimento é imutável, e a migração 0001 aplicou isso com `REVOKE UPDATE, DELETE ON
+movimento` — o que torna `RN-C01` impossível: conferido no banco, a aplicação
+recebia `permission denied` ao tentar efetivar o pendente. A resolução não foi
+devolver o UPDATE, e sim:
+
+1. `GRANT UPDATE (status, autorizador_id)` — **por coluna**. Mexer em quantidade,
+   lote, autor ou data continua sendo recusado pelo mesmo `permission denied`.
+2. Um **gatilho** que só deixa passar `aguardando_autorizacao → efetivado|recusado`,
+   com todas as outras colunas conferidas inalteradas e `autorizador_id` presente.
+   Sem ele, o GRANT por coluna permitiria virar um `efetivado` em `recusado` — e
+   apagar o efeito de um movimento é reescrever história com outro nome.
+
+O que `RN-M02` protege continua protegido: ninguém muda o que aconteceu.
+
+**Sem `movimento_id`, o componente mostra a fila.** A descoberta pelo
+`movimento_lista` é T-024 e não existe; um formulário que só funciona com um id
+que ninguém consegue obter seria entrega pela metade. Não é componente novo — o
+catálogo continua com +1.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Movimento de controlado pendente **não altera o saldo**. Teste
+- [x] **AC-1** Movimento de controlado pendente **não altera o saldo**. Teste
       compara o saldo antes e depois da submissão. *(`CA-04`, `AC-06.1`)*
-- [ ] **AC-2** Após autorização, o movimento grava `autorId` **e** `autorizadorId`,
+- [x] **AC-2** Após autorização, o movimento grava `autorId` **e** `autorizadorId`,
       distintos. *(`RN-C01`)*
-- [ ] **AC-3** A mesma pessoa submetendo e autorizando é recusada — no servidor,
+- [x] **AC-3** A mesma pessoa submetendo e autorizando é recusada — no servidor,
       mesmo com requisição forjada. *(negativo — `RN-A04`, o critério central)*
-- [ ] **AC-4** Apenas Helena tem `controlado.autorizar`. Nem Marco consegue.
+- [x] **AC-4** Apenas Helena tem `controlado.autorizar`. Nem Marco consegue.
       *(negativo — matriz)*
-- [ ] **AC-5** Movimento recusado não altera saldo e fica registrado como
+- [x] **AC-5** Movimento recusado não altera saldo e fica registrado como
       `recusado`, com motivo. *(`RN-M02` — nada é apagado)*
-- [ ] **AC-6** Ajuste de controlado sem documento anexo é recusado. *(negativo —
-      `RN-C02`)*
-- [ ] **AC-7** O livro de controlados exporta e não permite alteração. *(negativo —
-      `RN-C05`)*
-- [ ] **AC-8** Nenhum caminho a partir do assistente conclui a autorização — só o
+- [ ] **AC-6** ~~Ajuste de controlado sem documento anexo é recusado~~ *(`RN-C02`)*
+      — **fora do ciclo 1, e o critério estava errado.** `RN-C02` fala de
+      **ajuste de saldo**, e o [ADR-0010](../adr/0010-corte-de-escopo-ciclo-1.md)
+      cortou contagem, inventário, **ajuste** e transferência. Não existe fluxo de
+      ajuste para recusar. A própria seção "Não faz" desta tarefa já excluía
+      `RN-C04` pelo mesmo motivo e esqueceu este. Achado A-22 — fica em branco.
+- [~] **AC-7** O livro de controlados exporta e não permite alteração
+      *(`RN-C05`)* — **metade verificada.**
+      *Não permite alteração:* provado, e em duas camadas — `GRANT` por coluna e
+      gatilho (`test_a_autorizacao_nao_abriu_a_porta_para_editar_o_movimento`,
+      `test_ac5_o_gatilho_do_banco_recusa_desfazer_um_efetivado`).
+      *Exporta:* **não entregue.** Exportação não tem componente, comando nem
+      endpoint em lugar nenhum do ciclo 1, e criar um aqui seria +1 no catálogo
+      sem tarefa que o preveja. Achado A-23.
+- [x] **AC-8** Nenhum caminho a partir do assistente conclui a autorização — só o
       submit humano. *(negativo — ADR-0002)*
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+1** — **acumulado fecha em 23**.
-- [ ] Teste de teto `RNF-08` verde com 23.
+- [x] Contagem de catálogo no BOARD: **+1**. Registrados hoje: **11**. O
+      acumulado de 23 depende das tarefas que faltam — não fecha aqui.
+- [x] Teste de teto `RNF-08` verde (11 de 25).
 
 ## Armadilhas
 

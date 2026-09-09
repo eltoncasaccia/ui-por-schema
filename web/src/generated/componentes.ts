@@ -5,6 +5,29 @@
  * confia no tipo errado. Para mudar, mude o componente na API.
  */
 
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
+export interface VMControladoAutorizar {
+  alvo?: ControladoAutorizarPendente | null
+  escopo: string
+  fila?: ControladoAutorizarPendente[]
+  motivo_impedimento?: string | null
+  pode_decidir?: boolean
+  total: number
+}
+export interface ControladoAutorizarPendente {
+  autor: string
+  lote_id: string
+  motivo: string
+  movimento_id: string
+  parado_ha_dias: number
+  produto: string
+  quantidade: number
+  submetido_em: string
+  unidade: string
+}
+
 export interface VMEstoqueIndicador {
   detalhe?: string | null
   escopo: string
@@ -298,6 +321,7 @@ export interface VencimentoGraficoBalde {
 
 /** Os ids que a API registra. O cliente não inventa id. */
 export type ComponentId =
+  | 'controlado_autorizar'
   | 'estoque_indicador'
   | 'fila_vencimento'
   | 'lote_detalhe'
@@ -311,6 +335,7 @@ export type ComponentId =
 
 /** Usado pelo teste de bijeção: toda view precisa corresponder a um destes. */
 export const IDS_DA_API: readonly ComponentId[] = [
+  'controlado_autorizar',
   'estoque_indicador',
   'fila_vencimento',
   'lote_detalhe',
@@ -325,6 +350,7 @@ export const IDS_DA_API: readonly ComponentId[] = [
 
 /** O viewmodel de cada componente — o que de fato atravessa a rede. */
 export interface ViewModels {
+  controlado_autorizar: VMControladoAutorizar
   estoque_indicador: VMEstoqueIndicador
   fila_vencimento: VMFilaVencimento
   lote_detalhe: VMLoteDetalhe
@@ -341,6 +367,7 @@ export type ViewModel<Id extends ComponentId> = ViewModels[Id]
 
 /** O layout obedece ao componente, nunca ao modelo. */
 export const TAMANHOS: Record<ComponentId, string> = {
+  controlado_autorizar: 'inteira',
   estoque_indicador: 'linha',
   fila_vencimento: 'inteira',
   lote_detalhe: 'meia',

@@ -166,6 +166,34 @@ def test_descricao_nunca_enumera_valor_de_enum_filtrado(
                     assert frase not in texto, f"{nome}/{entrada['id']}: vaza {valor!r}"
 
 
+# --- T-019: produto e custo restrito ---------------------------------------
+def test_produto_ficha_e_saldo_por_unidade_para_todos_os_papeis(
+    personas: dict[str, Ator],
+) -> None:
+    """`produto_ficha` (produto.ler) e `produto_saldo_por_unidade` (lote.ler)
+    estao no catalogo dos sete: nenhum dos dois E' o componente de custo."""
+    for nome in TODAS_AS_PERSONAS:
+        catalogo = ids_permitidos(personas[nome])
+        assert "produto_ficha" in catalogo, nome
+        assert "produto_saldo_por_unidade" in catalogo, nome
+
+
+def test_variante_de_custo_da_ficha_some_do_enum_de_quem_nao_pode(
+    personas: dict[str, Ator],
+) -> None:
+    """A-05 outra vez: nao se esconde a ficha, remove-se o VALOR `com_custo`.
+    Cleide ve `produto_ficha`; nao ve a opcao de trazer o custo."""
+    from estoque.application.registry.registry import catalogo_de
+
+    for nome in SEM_CUSTO:
+        entrada = next(e for e in catalogo_de(personas[nome]) if e["id"] == "produto_ficha")
+        assert "com_custo" not in entrada["params"]["variante"]["valores"], nome
+        assert "padrao" in entrada["params"]["variante"]["valores"], nome
+    for nome in COM_CUSTO:
+        entrada = next(e for e in catalogo_de(personas[nome]) if e["id"] == "produto_ficha")
+        assert "com_custo" in entrada["params"]["variante"]["valores"], nome
+
+
 # --- ADR-0011 / RNF-08 -------------------------------------------------------
 def test_orcamento_de_tokens_abaixo_do_alerta(personas: dict[str, Ator]) -> None:
     for nome, ator in personas.items():

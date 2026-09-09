@@ -65,9 +65,13 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 | Id | Tarefa | Componentes | Tam. | Status |
 |---|---|---|---|---|
 | [T-018](./T-018-componentes-lote.md) | Lote | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` | G | ✅ |
-| [T-019](./T-019-componentes-produto.md) | Produto e custo restrito | `produto_ficha` `produto_saldo_por_unidade` | M | ⬜ |
+| [T-019](./T-019-componentes-produto.md) | Produto e custo restrito | `produto_ficha` `produto_saldo_por_unidade` | M | ✅ |
 | [T-020](./T-020-vencimento-indicador.md) | Vencimento, indicador e curva | `fila_vencimento` `estoque_indicador` `vencimento_grafico` | G | ✅ |
 | [T-021](./T-021-rastreabilidade.md) | Rastreabilidade `CA-01` | `rastreabilidade` | M | ⬜ |
+
+> **T-019 fechou com AC-7 em branco:** `RN-P06` (mín/máx por unidade) não tem
+> armazenamento no sistema. Achado [A-30](./ACHADOS.md), tarefa
+> [T-046](./T-046-minimo-maximo-por-unidade.md).
 | [T-022](./T-022-recebimento-leitura.md) | Recebimento | `recebimento_lista` `recebimento_detalhe` | M | ⬜ |
 | [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | ⬜ |
 | [T-024](./T-024-movimento-auditoria.md) | Movimento e trilha | `movimento_lista` `auditoria_trilha` | M | ✅ |
@@ -99,6 +103,8 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 
 | [T-045](./T-045-borda-http-por-router.md) | **Borda HTTP por router** — `app.py` tinha 817 linhas e 4 tarefas escreviam nele ([ADR-0032](../adr/0032-borda-http-por-router.md)) | E | M | — | ✅ |
 
+| [T-046](./T-046-minimo-maximo-por-unidade.md) | **Mín/máx por produto e unidade** (`RN-P06`) — sem armazenamento no sistema; é também tarefa de contrato (CONTRATOS §4). Aberta pela T-019 ([A-30](./ACHADOS.md)) | A | M | T-002, T-007, T-036, T-006 | ⬜ |
+
 ### W5 — Garantias e fechamento · até 4 sessões
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
@@ -123,10 +129,11 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 13** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 15** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
 `quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028),
-`controlado_autorizar` (T-030) e `movimento_lista` `auditoria_trilha` (T-024).
+`controlado_autorizar` (T-030), `movimento_lista` `auditoria_trilha` (T-024) e
+`produto_ficha` `produto_saldo_por_unidade` (T-019).
 **4 de escrita, teto 25.**
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no

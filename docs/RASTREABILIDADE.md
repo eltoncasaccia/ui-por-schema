@@ -30,7 +30,7 @@ do ciclo 1** — nenhum caiu com o corte do [ADR-0010](./adr/0010-corte-de-escop
 
 | Família | Regras | Onde é implementada |
 |---|---|---|
-| `RN-P` Produto | P01–P06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-019](./tasks/T-019-componentes-produto.md) · [T-026](./tasks/T-026-recebimento-registrar.md) |
+| `RN-P` Produto | P01–P06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-019](./tasks/T-019-componentes-produto.md) · [T-026](./tasks/T-026-recebimento-registrar.md) — **P06 (mín/máx por unidade) sem armazenamento: [T-046](./tasks/T-046-minimo-maximo-por-unidade.md)** |
 | `RN-L` Lote e validade | L01–L08 | [T-008](./tasks/T-008-regras-puras.md) · [T-018](./tasks/T-018-componentes-lote.md) · [T-020](./tasks/T-020-vencimento-indicador.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) · [T-028](./tasks/T-028-saida-fefo.md) |
 | `RN-R` Recebimento | R01–R05 | [T-022](./tasks/T-022-recebimento-leitura.md) · [T-026](./tasks/T-026-recebimento-registrar.md) · [T-027](./tasks/T-027-quarentena-e-status.md) **R02, R03 ✅** |
 | `RN-M` Movimentação | M01–M06 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-008](./tasks/T-008-regras-puras.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) **M04** · [T-028](./tasks/T-028-saida-fefo.md) · [T-029](./tasks/T-029-estorno-descarte.md) |

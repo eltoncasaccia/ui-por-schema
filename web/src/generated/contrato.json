@@ -1322,6 +1322,140 @@
       }
     },
     {
+      "id": "produto_ficha",
+      "label": "Ficha do produto",
+      "tamanho": "meia",
+      "viewmodel": {
+        "description": "E' EXATAMENTE isto que atravessa a rede.\n\n`custo_unitario_centavos` so' aparece quando pedido E permitido — nos demais\ncasos a chave fica AUSENTE (CA-05, AC-1), nunca `null`: `null` ainda\nrevelaria que o campo existe.",
+        "properties": {
+          "ativo": {
+            "type": "boolean"
+          },
+          "classe": {
+            "enum": [
+              "comum",
+              "controlado",
+              "termolabil",
+              "antimicrobiano"
+            ],
+            "type": "string"
+          },
+          "curva_abc": {
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "type": "string"
+          },
+          "custo_unitario_centavos": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "ean": {
+            "type": "string"
+          },
+          "fabricante": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "principio_ativo": {
+            "type": "string"
+          },
+          "produto_id": {
+            "type": "string"
+          },
+          "saldo_total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "produto_id",
+          "nome",
+          "ean",
+          "fabricante",
+          "principio_ativo",
+          "classe",
+          "curva_abc",
+          "ativo",
+          "saldo_total"
+        ],
+        "title": "VMProdutoFicha",
+        "type": "object"
+      }
+    },
+    {
+      "id": "produto_saldo_por_unidade",
+      "label": "Saldo por unidade",
+      "tamanho": "meia",
+      "viewmodel": {
+        "$defs": {
+          "ProdutoSaldoPorUnidadeLinhaUnidade": {
+            "properties": {
+              "lotes": {
+                "type": "integer"
+              },
+              "saldo": {
+                "type": "integer"
+              },
+              "unidade": {
+                "type": "string"
+              },
+              "unidade_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "unidade_id",
+              "unidade",
+              "saldo",
+              "lotes"
+            ],
+            "title": "ProdutoSaldoPorUnidadeLinhaUnidade",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "ativo": {
+            "type": "boolean"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/ProdutoSaldoPorUnidadeLinhaUnidade"
+            },
+            "type": "array"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "produto_id": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "produto_id",
+          "nome",
+          "ativo",
+          "total",
+          "linhas"
+        ],
+        "title": "VMProdutoSaldoPorUnidade",
+        "type": "object"
+      }
+    },
+    {
       "id": "quarentena_fila",
       "label": "Quarentena",
       "tamanho": "inteira",

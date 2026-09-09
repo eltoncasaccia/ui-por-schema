@@ -18,6 +18,7 @@ Registro vivo. Achado é dado do projeto, não ruído.
 
 | # | Achado | Origem | Consequência |
 |---|---|---|---|
+| A-30 | **`RN-P06` (estoque mínimo e máximo por produto e por unidade) não tem armazenamento nenhum.** Não há coluna em `produto`, não há tabela `produto_unidade`, não há campo no `Produto` do domínio, não há método na `RepoProduto` (CONTRATOS §4, congelado) e não há dado no seed. A regra existe no documento 02 e a camada de dados nunca a implementou | execução da T-019 | **AC-7 da T-019 fica em branco** (produto e o componente entregues cobrindo AC-1..AC-6). Abre a **T-046**: tabela + migração (T-036), campo de domínio (T-002), método de porta — que é mudança de contrato congelado —, seed (T-006), e então min/máx no `produto_ficha` / `produto_saldo_por_unidade` |
 | ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |

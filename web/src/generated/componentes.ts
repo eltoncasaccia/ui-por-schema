@@ -298,6 +298,40 @@ export interface MovimentoSaidaOpcaoMotivo {
 }
 
 /**
+ * E' EXATAMENTE isto que atravessa a rede.
+ *
+ * `custo_unitario_centavos` so' aparece quando pedido E permitido — nos demais
+ * casos a chave fica AUSENTE (CA-05, AC-1), nunca `null`: `null` ainda
+ * revelaria que o campo existe.
+ */
+export interface VMProdutoFicha {
+  ativo: boolean
+  classe: 'comum' | 'controlado' | 'termolabil' | 'antimicrobiano'
+  curva_abc: 'A' | 'B' | 'C'
+  custo_unitario_centavos?: number | null
+  ean: string
+  fabricante: string
+  nome: string
+  principio_ativo: string
+  produto_id: string
+  saldo_total: number
+}
+
+export interface VMProdutoSaldoPorUnidade {
+  ativo: boolean
+  linhas: ProdutoSaldoPorUnidadeLinhaUnidade[]
+  nome: string
+  produto_id: string
+  total: number
+}
+export interface ProdutoSaldoPorUnidadeLinhaUnidade {
+  lotes: number
+  saldo: number
+  unidade: string
+  unidade_id: string
+}
+
+/**
  * Sem custo, para papel nenhum (CA-05, ADR-0020).
  */
 export interface VMQuarentenaFila {
@@ -395,6 +429,8 @@ export type ComponentId =
   | 'lote_status_acao'
   | 'movimento_lista'
   | 'movimento_saida'
+  | 'produto_ficha'
+  | 'produto_saldo_por_unidade'
   | 'quarentena_fila'
   | 'quarentena_liberar'
   | 'vencimento_grafico'
@@ -411,6 +447,8 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'lote_status_acao',
   'movimento_lista',
   'movimento_saida',
+  'produto_ficha',
+  'produto_saldo_por_unidade',
   'quarentena_fila',
   'quarentena_liberar',
   'vencimento_grafico',
@@ -428,6 +466,8 @@ export interface ViewModels {
   lote_status_acao: VMLoteStatusAcao
   movimento_lista: VMMovimentoLista
   movimento_saida: VMMovimentoSaida
+  produto_ficha: VMProdutoFicha
+  produto_saldo_por_unidade: VMProdutoSaldoPorUnidade
   quarentena_fila: VMQuarentenaFila
   quarentena_liberar: VMQuarentenaLiberar
   vencimento_grafico: VMVencimentoGrafico
@@ -447,6 +487,8 @@ export const TAMANHOS: Record<ComponentId, string> = {
   lote_status_acao: 'inteira',
   movimento_lista: 'inteira',
   movimento_saida: 'inteira',
+  produto_ficha: 'meia',
+  produto_saldo_por_unidade: 'meia',
   quarentena_fila: 'inteira',
   quarentena_liberar: 'inteira',
   vencimento_grafico: 'inteira',

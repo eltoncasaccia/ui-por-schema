@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**30 concluídas · 2 parciais · 10 não iniciadas** · 13 de 24 componentes previstos.
+**31 concluídas · 2 parciais · 11 não iniciadas** · 15 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -63,13 +63,13 @@ está pronto.
 |---|---|---|---|
 | T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
 
-## W3 — Leitura · 9 de 15 componentes
+## W3 — Leitura · 11 de 15 componentes
 
 | | Tarefa | Estado | Componentes |
 |---|---|---|---|
 | T-020 | Vencimento, indicador e curva | ✅ | `fila_vencimento` `estoque_indicador` `vencimento_grafico` |
 | T-018 | Lote | ✅ | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` |
-| T-019 | Produto e custo restrito | ⬜ | 2 |
+| T-019 | Produto e custo restrito | ✅ | `produto_ficha` `produto_saldo_por_unidade` (AC-7 em branco — `RN-P06` sem armazenamento: [A-30](./ACHADOS.md), [T-046](./T-046-minimo-maximo-por-unidade.md)) |
 | T-021 | Rastreabilidade `CA-01` | ⬜ | 1 |
 | T-022 | Recebimento — leitura | ⬜ | 2 |
 | T-023 | Cadeia fria `CA-07` | ⬜ | 2 |
@@ -133,7 +133,7 @@ movem estoque, com auditoria e recusa negativa testadas.
 | CA-02 saldo auditável | T-025, T-028, T-029 | 🟡 razão imutável, saída e liberação prontas, com trilha de valor anterior e novo; falta estorno (T-029) |
 | CA-03 fila de vencimento | T-020 | ✅ **único completo** |
 | CA-04 dupla identificação | T-030 | ✅ **completo**: submissão não muda saldo, autorização grava as duas identidades distintas, e a mesma pessoa é recusada em três camadas — permissão, domínio e CHECK do banco |
-| CA-05 custo invisível | T-019 | 🟡 provado no indicador e no catálogo; falta `produto_ficha` |
+| CA-05 custo invisível | T-019 | ✅ `produto_ficha` entregue: chave de custo ausente para os 4 papéis sem `custo.ler` (não `null`), presente e só sob pedido para os 3 que podem, schema forjado recusado no servidor, exportação herda a omissão |
 | CA-06 escopo de unidade | T-018 | 🟡 provado na fila e nos quatro de lote; falta cobrir os demais |
 | CA-07 cadeia fria | T-023 | ⬜ |
 | CA-08 excluir recusado | T-029 + banco | 🟡 banco recusa, e agora há movimento criado pela aplicação para provar contra (T-028 AC-7); falta o caminho de estorno |

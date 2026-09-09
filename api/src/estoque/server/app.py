@@ -47,7 +47,12 @@ from estoque.autorizacao.motor import (
 )
 from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados, Repositorios
-from estoque.data.repositorios import RepoLoteSQL, RepoMovimentoSQL, RepoProdutoSQL
+from estoque.data.repositorios import (
+    RepoAuditoriaSQL,
+    RepoLoteSQL,
+    RepoMovimentoSQL,
+    RepoProdutoSQL,
+)
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import PERMISSOES_POR_PAPEL, Ator
 from estoque.server import sessao as ses
@@ -161,6 +166,7 @@ def _repos(conn: AsyncConnection) -> Repositorios:
         lote=RepoLoteSQL(conn),
         produto=RepoProdutoSQL(conn),
         movimento=RepoMovimentoSQL(conn),
+        auditoria=RepoAuditoriaSQL(conn),
         recebimento=None,  # type: ignore[arg-type]  # ciclo 1: T-022
         temperatura=None,  # type: ignore[arg-type]  # ciclo 1: T-023
     )

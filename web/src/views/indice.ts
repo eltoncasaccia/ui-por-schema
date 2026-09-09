@@ -5,6 +5,7 @@
  * os dois únicos que ninguém edita.
  */
 import type { ComponentId } from '../generated/componentes'
+import { view as auditoria_trilha } from './auditoria_trilha'
 import { view as controlado_autorizar } from './controlado_autorizar'
 import { view as estoque_indicador } from './estoque_indicador'
 import { view as fila_vencimento } from './fila_vencimento'
@@ -12,6 +13,7 @@ import { view as lote_detalhe } from './lote_detalhe'
 import { view as lote_lista } from './lote_lista'
 import { view as lote_movimentos } from './lote_movimentos'
 import { view as lote_status_acao } from './lote_status_acao'
+import { view as movimento_lista } from './movimento_lista'
 import { view as movimento_saida } from './movimento_saida'
 import { view as quarentena_fila } from './quarentena_fila'
 import { view as quarentena_liberar } from './quarentena_liberar'
@@ -26,6 +28,7 @@ import { view as vencimento_grafico } from './vencimento_grafico'
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
+  auditoria_trilha,
   controlado_autorizar,
   estoque_indicador,
   fila_vencimento,
@@ -33,6 +36,7 @@ export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   lote_lista,
   lote_movimentos,
   lote_status_acao,
+  movimento_lista,
   movimento_saida,
   quarentena_fila,
   quarentena_liberar,

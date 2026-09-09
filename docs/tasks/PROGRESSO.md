@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**28 concluídas · 3 parciais · 11 não iniciadas** · 11 de 24 componentes previstos.
+**29 concluídas · 3 parciais · 10 não iniciadas** · 13 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -63,7 +63,7 @@ está pronto.
 |---|---|---|---|
 | T-017 | SPIKE: medição com modelo real | 🟡 | medição feita e publicada no PRD §9; **falta o relatório R-001** e o commit das perguntas ANTES da execução — A-08 |
 
-## W3 — Leitura · 7 de 15 componentes
+## W3 — Leitura · 9 de 15 componentes
 
 | | Tarefa | Estado | Componentes |
 |---|---|---|---|
@@ -73,7 +73,7 @@ está pronto.
 | T-021 | Rastreabilidade `CA-01` | ⬜ | 1 |
 | T-022 | Recebimento — leitura | ⬜ | 2 |
 | T-023 | Cadeia fria `CA-07` | ⬜ | 2 |
-| T-024 | Movimento e trilha | ⬜ | 2 |
+| T-024 | Movimento e trilha | ✅ | 2 |
 
 ## W4 — Escrita · pipeline pronto, comandos por fazer
 

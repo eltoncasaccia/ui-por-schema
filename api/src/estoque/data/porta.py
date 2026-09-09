@@ -86,6 +86,55 @@ class RepoRecebimento(Protocol):
     async def listar(self, ctx: ContextoDados) -> Sequence[Recebimento]: ...
 
 
+@dataclass(frozen=True, slots=True)
+class LinhaAuditoria:
+    """Uma linha da trilha.
+
+    Mora aqui, e nao em `domain/tipos.py`, por dois motivos. CONTRATOS §3 congela
+    SETE entidades de dominio, e trilha nao e' uma delas — e' registro de que algo
+    aconteceu com as outras. E `valor_anterior`/`valor_novo` sao JSON livre: nao
+    ha tipo de dominio a dar a eles, porque a forma depende de qual comando
+    escreveu.
+    """
+
+    id: int
+    ator_id: str | None
+    acao: str
+    entidade: str | None
+    entidade_id: str | None
+    valor_anterior: dict[str, object] | None
+    valor_novo: dict[str, object] | None
+    origem: str
+    criado_em: datetime
+
+
+class RepoAuditoria(Protocol):
+    """A trilha, so' de leitura.
+
+    NAO existe `inserir` aqui de proposito: quem escreve na trilha e'
+    `auditoria/registro.py`, chamado pelo servidor e pelo pipeline. Um caminho de
+    escrita exposto pela porta de dados seria um segundo lugar por onde gravar
+    auditoria, e o segundo lugar e' o que esquece um campo.
+
+    **Sem escopo de unidade**, e a razao e' que a tabela nao tem `unidade_id`: a
+    trilha registra acao, nao mercadoria. Quem le e' governado por
+    `auditoria.ler`, que hoje so' o Diretor e a Auditoria tem — e os dois
+    alcancam todas as unidades. Se um dia um papel de escopo restrito ganhar essa
+    permissao, este comentario vira um problema a resolver.
+    """
+
+    async def listar(
+        self,
+        ctx: ContextoDados,
+        *,
+        ator_id: str | None = None,
+        entidade: str | None = None,
+        de: datetime | None = None,
+        ate: datetime | None = None,
+        limite: int = 50,
+    ) -> Sequence[LinhaAuditoria]: ...
+
+
 class RepoTemperatura(Protocol):
     async def serie(
         self, unidade_id: UnidadeId, de: datetime, ate: datetime, ctx: ContextoDados
@@ -101,3 +150,4 @@ class Repositorios:
     movimento: RepoMovimento
     recebimento: RepoRecebimento
     temperatura: RepoTemperatura
+    auditoria: RepoAuditoria

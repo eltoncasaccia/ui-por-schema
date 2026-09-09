@@ -6,6 +6,32 @@
  */
 
 /**
+ * Sem custo, para papel nenhum (CA-05) — inclusive em `valor_novo`.
+ */
+export interface VMAuditoriaTrilha {
+  linhas: AuditoriaTrilhaLinhaTrilha[]
+  recorte: string
+  total: number
+  truncada: boolean
+}
+export interface AuditoriaTrilhaLinhaTrilha {
+  acao: string
+  ator: string | null
+  criado_em: string
+  entidade: string | null
+  entidade_id: string | null
+  filtrada?: boolean
+  id: number
+  origem: string
+  valor_anterior: {
+    [k: string]: unknown
+  } | null
+  valor_novo: {
+    [k: string]: unknown
+  } | null
+}
+
+/**
  * Sem custo, para papel nenhum (CA-05, ADR-0020).
  */
 export interface VMControladoAutorizar {
@@ -203,6 +229,44 @@ export interface LoteStatusAcaoAcaoDisponivel {
 /**
  * Sem custo, para papel nenhum (CA-05, ADR-0020).
  */
+export interface VMMovimentoLista {
+  escopo: string
+  linhas: MovimentoListaLinhaMovimento[]
+  pendentes: number
+  recorte: string
+  total: number
+}
+export interface MovimentoListaLinhaMovimento {
+  autor: string
+  autorizador: string | null
+  complemento: string | null
+  criado_em: string
+  estorna: string | null
+  estornado_por: string | null
+  lote_id: string
+  motivo:
+    | 'recebimento'
+    | 'venda'
+    | 'transferencia'
+    | 'avaria'
+    | 'furto'
+    | 'erro_de_separacao'
+    | 'erro_de_recebimento'
+    | 'vencimento'
+    | 'erro_de_contagem_anterior'
+    | 'estorno'
+  movimento_id: string
+  parado_ha_dias?: number | null
+  quantidade: number
+  status: 'efetivado' | 'aguardando_autorizacao' | 'recusado'
+  status_rotulo: string
+  tipo: 'entrada' | 'saida' | 'descarte' | 'estorno'
+  unidade: string
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
 export interface VMMovimentoSaida {
   alternativas?: MovimentoSaidaLoteCandidato[]
   classe: 'comum' | 'controlado' | 'termolabil' | 'antimicrobiano'
@@ -321,6 +385,7 @@ export interface VencimentoGraficoBalde {
 
 /** Os ids que a API registra. O cliente não inventa id. */
 export type ComponentId =
+  | 'auditoria_trilha'
   | 'controlado_autorizar'
   | 'estoque_indicador'
   | 'fila_vencimento'
@@ -328,6 +393,7 @@ export type ComponentId =
   | 'lote_lista'
   | 'lote_movimentos'
   | 'lote_status_acao'
+  | 'movimento_lista'
   | 'movimento_saida'
   | 'quarentena_fila'
   | 'quarentena_liberar'
@@ -335,6 +401,7 @@ export type ComponentId =
 
 /** Usado pelo teste de bijeção: toda view precisa corresponder a um destes. */
 export const IDS_DA_API: readonly ComponentId[] = [
+  'auditoria_trilha',
   'controlado_autorizar',
   'estoque_indicador',
   'fila_vencimento',
@@ -342,6 +409,7 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'lote_lista',
   'lote_movimentos',
   'lote_status_acao',
+  'movimento_lista',
   'movimento_saida',
   'quarentena_fila',
   'quarentena_liberar',
@@ -350,6 +418,7 @@ export const IDS_DA_API: readonly ComponentId[] = [
 
 /** O viewmodel de cada componente — o que de fato atravessa a rede. */
 export interface ViewModels {
+  auditoria_trilha: VMAuditoriaTrilha
   controlado_autorizar: VMControladoAutorizar
   estoque_indicador: VMEstoqueIndicador
   fila_vencimento: VMFilaVencimento
@@ -357,6 +426,7 @@ export interface ViewModels {
   lote_lista: VMLoteLista
   lote_movimentos: VMLoteMovimentos
   lote_status_acao: VMLoteStatusAcao
+  movimento_lista: VMMovimentoLista
   movimento_saida: VMMovimentoSaida
   quarentena_fila: VMQuarentenaFila
   quarentena_liberar: VMQuarentenaLiberar
@@ -367,6 +437,7 @@ export type ViewModel<Id extends ComponentId> = ViewModels[Id]
 
 /** O layout obedece ao componente, nunca ao modelo. */
 export const TAMANHOS: Record<ComponentId, string> = {
+  auditoria_trilha: 'inteira',
   controlado_autorizar: 'inteira',
   estoque_indicador: 'linha',
   fila_vencimento: 'inteira',
@@ -374,6 +445,7 @@ export const TAMANHOS: Record<ComponentId, string> = {
   lote_lista: 'inteira',
   lote_movimentos: 'inteira',
   lote_status_acao: 'inteira',
+  movimento_lista: 'inteira',
   movimento_saida: 'inteira',
   quarentena_fila: 'inteira',
   quarentena_liberar: 'inteira',

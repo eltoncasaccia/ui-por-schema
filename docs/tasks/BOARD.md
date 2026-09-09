@@ -166,7 +166,7 @@ graph TD
 | [T-021](./T-021-rastreabilidade.md) | Rastreabilidade `CA-01` | `rastreabilidade` | M | ⬜ |
 | [T-022](./T-022-recebimento-leitura.md) | Recebimento | `recebimento_lista` `recebimento_detalhe` | M | ⬜ |
 | [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | ⬜ |
-| [T-024](./T-024-movimento-auditoria.md) | Movimento e trilha | `movimento_lista` `auditoria_trilha` | M | ⬜ |
+| [T-024](./T-024-movimento-auditoria.md) | Movimento e trilha | `movimento_lista` `auditoria_trilha` | M | ✅ |
 
 ### W4 — Escrita · até 5 sessões · 7 componentes
 
@@ -217,10 +217,11 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 11** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 13** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
-`quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028) e
-`controlado_autorizar` (T-030). **4 de escrita, teto 25.**
+`quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028),
+`controlado_autorizar` (T-030) e `movimento_lista` `auditoria_trilha` (T-024).
+**4 de escrita, teto 25.**
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no
 mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.
@@ -237,6 +238,7 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
 | ~~A-13~~ | ~~**`make check` nunca pôde passar.**~~ `web/eslint.config.js` e `web/scripts/arch-check.ts` eram invocados pelo Makefile e nunca existiram; `eslint` não era nem dependência | execução da T-025 | os dois escritos; `make check` passa em **21 s**, exit 0. ✅ resolvido |
+| A-29 | **`fakes.AGORA` era `datetime` ingênuo**, e a coluna real é `timestamptz`. `lote_movimentos` não percebia porque compara `.date()`; `movimento_lista` passa o corte como `datetime` e o falso quebrava onde o real funciona — achado A-11 outra vez, agora no tipo e não no escopo | execução da T-024 | corrigido na raiz: `AGORA` com fuso, e o `_mov` passou a aceitar `status` e `estorna`. ✅ resolvido |
 | A-28 | `react-hooks/rules-of-hooks` desligada em `src/views/**`: a regra identifica componente pelo NOME em maiúscula, e CONTRATOS §6 (congelado) exporta `view` minúsculo. Hook dentro de `if` numa view deixa de ser pego por qualquer verificador | execução da T-005 | anotado em `web/eslint.config.js`; volta se o contrato mudar, ou vira 7ª regra do `arch-check` |
 | ~~A-27~~ | ~~**A aplicação conectava como DONO do banco.**~~ O dono ignora `REVOKE`: com ele na `DATABASE_URL`, `RN-M02` ("movimento não pode ser excluído por ninguém") e `RN-D02` (auditoria append-only) eram verdade **só nos testes**, que usavam `estoque_app`. Provado numa transação revertida: o dono apagou 992 movimentos e 3510 linhas de auditoria | pergunta do usuário | `DATABASE_URL` passa a usar `estoque_app`; migração e seed usam `DATABASE_URL_ADMIN`, que o `env.py` já lia. `tests/data/test_papel_da_aplicacao.py` lê a URL **da configuração** e prova as recusas. ✅ resolvido |
 | ~~A-20~~ | ~~**A view `saldo_lote` nunca era atualizada.**~~ Medido: após um movimento de saída de 7, a view dizia 762 e o real era 755. Ficava em sincronia só porque o seed roda no boot do container | execução da T-028 | migração 0005: deixa de ser materializada e passa a ser calculada — a T-036 prometia "atualizada na mesma transação do movimento", e view comum entrega isso por construção. ✅ resolvido |

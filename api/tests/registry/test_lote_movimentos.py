@@ -118,7 +118,10 @@ async def test_os_dois_ids_do_controlado_vem_na_mesma_linha(
     """Autor e autorizador separados em telas diferentes tornam impossivel
     provar, numa auditoria, que houve duas pessoas."""
     vm = await _vm(personas["marco"], "l-rital-bloq")
-    linha = vm.linhas[0]
+    # Pelo id, e nao por posicao: o extrato ordena do mais recente para o mais
+    # antigo, e um movimento novo no fixture mudava qual linha era a primeira.
+    # Teste que depende de ordem de fixture quebra por motivo errado.
+    linha = next(x for x in vm.linhas if x.movimento_id == "m-09")
     assert linha.autor_id == "u-cleide"
     assert linha.autorizador_id == "u-helena"
     assert linha.autor_id != linha.autorizador_id

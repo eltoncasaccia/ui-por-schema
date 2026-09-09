@@ -53,6 +53,28 @@ def test_ator_inativo_tem_catalogo_vazio(personas: dict[str, Ator]) -> None:
     assert ids_permitidos(inativo) == frozenset()
 
 
+# --- T-024: leitura de movimento e de trilha ---------------------------------
+def test_movimento_lista_segue_movimento_ler(personas: dict[str, Ator]) -> None:
+    """Rafael (comprador) e' o contraexemplo: tem `lote.ler`, nao tem
+    `movimento.ler`. Extrato de movimentacao nao lhe diz respeito."""
+    for nome in TODAS_AS_PERSONAS:
+        ator = personas[nome]
+        esperado = "movimento.ler" in ator.permissoes
+        assert ("movimento_lista" in ids_permitidos(ator)) is esperado, nome
+    assert "movimento_lista" not in ids_permitidos(personas["rafael"])
+
+
+def test_auditoria_trilha_so_para_quem_tem_auditoria_ler(
+    personas: dict[str, Ator],
+) -> None:
+    """T-024 AC-4, enumerado. Ivo, Odair e Cleide movimentam estoque e nao leem
+    a trilha de quem fez o que — sao papeis operacionais, nao de controle."""
+    assert "auditoria_trilha" in ids_permitidos(personas["marco"])
+    assert "auditoria_trilha" in ids_permitidos(personas["sandra"])
+    for nome in ("ivo", "odair", "cleide", "rafael"):
+        assert "auditoria_trilha" not in ids_permitidos(personas[nome]), nome
+
+
 # --- ADR-0003: as acoes privativas do RT (T-027) -----------------------------
 # `lote.liberar` e `lote.status` existem num papel so' (documento 02 §6). Este
 # par de testes e' o ADR-0003 na forma mais limpa que o projeto tem: o

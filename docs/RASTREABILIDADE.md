@@ -78,8 +78,8 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 11 | `recebimento_detalhe` | `recebimento.ler` | T-022 |
 | 12 | `temperatura_historico` | `temperatura.ler` | [T-023](./tasks/T-023-temperatura.md) |
 | 13 | `temperatura_excursoes` | `temperatura.ler` | T-023 |
-| 14 | `movimento_lista` | `movimento.ler` | [T-024](./tasks/T-024-movimento-auditoria.md) |
-| 15 | `auditoria_trilha` | `auditoria.ler` | T-024 |
+| 14 | `movimento_lista` ✅ | `movimento.ler` | [T-024](./tasks/T-024-movimento-auditoria.md) |
+| 15 | `auditoria_trilha` ✅ | `auditoria.ler` | T-024 |
 | 17 | `recebimento_registrar` | `recebimento.criar` | [T-026](./tasks/T-026-recebimento-registrar.md) |
 | 18 | `quarentena_liberar` ✅ | `lote.liberar` | [T-027](./tasks/T-027-quarentena-e-status.md) |
 | 19 | `lote_status_acao` ✅ | `lote.status` | T-027 |

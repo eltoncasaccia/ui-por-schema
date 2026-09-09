@@ -13,12 +13,13 @@ DUAS coisas acontecem aqui e nao no chamador:
 
 from collections.abc import Sequence
 from datetime import date, datetime
+from typing import Any
 
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from estoque.data import modelos as m
-from estoque.data.porta import ContextoDados
+from estoque.data.porta import ContextoDados, LinhaAuditoria
 from estoque.domain.identidade import UnidadeId
 from estoque.domain.tipos import (
     Lote,
@@ -201,4 +202,53 @@ def _para_movimento(r: dict[str, object]) -> Movimento:
         estorna_movimento_id=_txt(r["estorna_movimento_id"]),
         cliente_id=_txt(r["cliente_id"]),
         nota_fiscal=_txt(r["nota_fiscal"]),
+    )
+
+
+class RepoAuditoriaSQL:
+    """Leitura da trilha. Sem `_escopo`: a tabela nao tem `unidade_id`.
+
+    Ver a docstring de `RepoAuditoria` em `porta.py` para por que isso e' uma
+    decisao e nao um esquecimento.
+    """
+
+    def __init__(self, conn: AsyncConnection) -> None:
+        self._c = conn
+
+    async def listar(
+        self,
+        ctx: ContextoDados,
+        *,
+        ator_id: str | None = None,
+        entidade: str | None = None,
+        de: datetime | None = None,
+        ate: datetime | None = None,
+        limite: int = 50,
+    ) -> Sequence[LinhaAuditoria]:
+        q = sa.select(m.auditoria)
+        if ator_id:
+            q = q.where(m.auditoria.c.ator_id == ator_id)
+        if entidade:
+            q = q.where(m.auditoria.c.entidade == entidade)
+        if de:
+            q = q.where(m.auditoria.c.criado_em >= de)
+        if ate:
+            q = q.where(m.auditoria.c.criado_em <= ate)
+        # Mais recente primeiro: quem abre a trilha esta' investigando o que
+        # acabou de acontecer, nao lendo a historia desde o comeco.
+        q = q.order_by(m.auditoria.c.criado_em.desc(), m.auditoria.c.id.desc()).limit(limite)
+        return [_para_auditoria(dict(r)) for r in (await self._c.execute(q)).mappings()]
+
+
+def _para_auditoria(r: dict[str, Any]) -> LinhaAuditoria:
+    return LinhaAuditoria(
+        id=int(r["id"]),
+        ator_id=r["ator_id"],
+        acao=r["acao"],
+        entidade=r["entidade"],
+        entidade_id=r["entidade_id"],
+        valor_anterior=r["valor_anterior"],
+        valor_novo=r["valor_novo"],
+        origem=r["origem"],
+        criado_em=r["criado_em"],
     )

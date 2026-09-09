@@ -6,6 +6,7 @@ Nao edite a mao: 22 componentes registrados manualmente num arquivo so' seriam
 """
 
 from estoque.application.registry.componentes import (
+    auditoria_trilha,
     controlado_autorizar,
     estoque_indicador,
     fila_vencimento,
@@ -13,6 +14,7 @@ from estoque.application.registry.componentes import (
     lote_lista,
     lote_movimentos,
     lote_status_acao,
+    movimento_lista,
     movimento_saida,
     quarentena_fila,
     quarentena_liberar,
@@ -21,6 +23,7 @@ from estoque.application.registry.componentes import (
 from estoque.application.registry.orcamento import verificar_teto
 
 __all__ = [
+    "auditoria_trilha",
     "controlado_autorizar",
     "estoque_indicador",
     "fila_vencimento",
@@ -28,6 +31,7 @@ __all__ = [
     "lote_lista",
     "lote_movimentos",
     "lote_status_acao",
+    "movimento_lista",
     "movimento_saida",
     "quarentena_fila",
     "quarentena_liberar",

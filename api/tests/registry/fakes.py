@@ -22,11 +22,11 @@ O estoque foi montado para os casos dificeis, nao para parecer real:
 
 from collections.abc import Sequence
 from dataclasses import replace
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 from estoque.application.registry.definir import LoadContext, Pagina
-from estoque.data.porta import ContextoDados, Repositorios
+from estoque.data.porta import ContextoDados, LinhaAuditoria, Repositorios
 from estoque.domain.identidade import Ator, UnidadeId
 from estoque.domain.tipos import (
     Lote,
@@ -36,7 +36,14 @@ from estoque.domain.tipos import (
 )
 
 HOJE = date.today()
-AGORA = datetime(2026, 9, 1, 10, 0, 0)
+# COM fuso, porque a coluna real e' `timestamptz` e CONTRATOS §10 manda
+# "datetime com timezone, sempre do servidor".
+#
+# ACHADO (familia do A-11): estava ingenuo. `lote_movimentos` nao percebia
+# porque compara `.date()`, mas `movimento_lista` passa o corte como `datetime`
+# ao repositorio — e ai o falso quebra onde o real funciona. Fake que diverge do
+# adaptador e' o achado A-11 outra vez, agora no tipo do dado e nao no escopo.
+AGORA = datetime(2026, 9, 1, 10, 0, 0, tzinfo=UTC)
 
 
 def _lote(
@@ -120,6 +127,8 @@ def _mov(
     *,
     autorizador: str | None = None,
     dias_atras: int = 0,
+    status: str = "efetivado",
+    estorna: str | None = None,
 ) -> Movimento:
     return Movimento(
         id=mid,
@@ -131,9 +140,9 @@ def _mov(
         complemento=None,
         autor_id="u-cleide",
         autorizador_id=autorizador,
-        status="efetivado",
+        status=status,  # type: ignore[arg-type]
         criado_em=AGORA - timedelta(days=dias_atras),
-        estorna_movimento_id=None,
+        estorna_movimento_id=estorna,
         cliente_id=None,
         nota_fiscal=None,
     )
@@ -161,6 +170,31 @@ MOVIMENTOS: list[Movimento] = [
         dias_atras=20,
     ),
     _mov("m-10", _POR_ID["l-vac-uber-quar"], "entrada", 90, "recebimento", dias_atras=8),
+    # --- os dois casos que T-024 precisa, e que faltavam ---------------------
+    # Saida de CONTROLADO esperando a segunda identificacao (RN-C01). E' o que
+    # `movimento_lista(status=aguardando_autorizacao)` encontra, e a base do
+    # CA-04: nao mexe no saldo enquanto pendente.
+    _mov(
+        "m-11",
+        _POR_ID["l-rital-bloq"],
+        "saida",
+        5,
+        "venda",
+        dias_atras=4,
+        status="aguardando_autorizacao",
+    ),
+    # Par estorno/original (RN-M03): os DOIS ficam visiveis. `m-02` foi uma saida
+    # de 120 que `m-12` corrige — e a lista tem de mostrar o erro E a correcao,
+    # nao um estado limpo que finge que o erro nunca existiu.
+    _mov(
+        "m-12",
+        _POR_ID["l-amox-mtz"],
+        "estorno",
+        120,
+        "estorno",
+        dias_atras=9,
+        estorna="m-02",
+    ),
 ]
 
 SINAL = {"entrada": 1, "estorno": 1, "saida": -1, "descarte": -1}
@@ -274,6 +308,78 @@ class FakeRepoMovimento:
         return [m for m in self._visiveis(ctx) if m.cliente_id == cliente_id]
 
 
+# Trilha de auditoria montada para o caso dificil do AC-5: uma linha COM custo.
+#
+# Se a trilha do fixture nao tivesse custo, o teste de vazamento passaria por
+# ausencia de dado — o mesmo motivo de `PRODUTOS` ter custo de proposito.
+TRILHA: list[LinhaAuditoria] = [
+    LinhaAuditoria(
+        id=3,
+        ator_id="u-helena",
+        acao="lote_liberar_quarentena",
+        entidade="lote",
+        entidade_id="l-vac-quar",
+        valor_anterior={"status": "quarentena"},
+        valor_novo={"status": "liberado", "justificativa": "conferencia completa"},
+        origem="tela",
+        criado_em=AGORA,
+    ),
+    LinhaAuditoria(
+        id=2,
+        ator_id="u-ivo",
+        acao="movimento_saida",
+        entidade="movimento",
+        entidade_id="m-99",
+        valor_anterior={"lote_id": "l-amox-mtz", "saldo": 500},
+        # O custo NAO deveria estar aqui, e por isso esta': o AC-5 e' sobre a
+        # trilha continuar segura mesmo quando um comando futuro escrever demais.
+        valor_novo={
+            "quantidade": 10,
+            "custo_unitario_centavos": 1250,
+            "total_centavos": 12500,
+        },
+        origem="assistente",
+        criado_em=AGORA,
+    ),
+    LinhaAuditoria(
+        id=1,
+        ator_id="u-sandra",
+        acao="ler",
+        entidade="auditoria_trilha",
+        entidade_id=None,
+        valor_anterior=None,
+        valor_novo={"params": {}},
+        origem="assistente",
+        criado_em=AGORA,
+    ),
+]
+
+
+class FakeRepoAuditoria:
+    """Sem escopo de unidade — a tabela real nao tem `unidade_id`. Ver `porta.py`."""
+
+    async def listar(
+        self,
+        ctx: ContextoDados,
+        *,
+        ator_id: str | None = None,
+        entidade: str | None = None,
+        de: datetime | None = None,
+        ate: datetime | None = None,
+        limite: int = 50,
+    ) -> Sequence[LinhaAuditoria]:
+        linhas = list(TRILHA)
+        if ator_id:
+            linhas = [x for x in linhas if x.ator_id == ator_id]
+        if entidade:
+            linhas = [x for x in linhas if x.entidade == entidade]
+        if de:
+            linhas = [x for x in linhas if x.criado_em >= de]
+        if ate:
+            linhas = [x for x in linhas if x.criado_em <= ate]
+        return sorted(linhas, key=lambda x: (x.criado_em, x.id), reverse=True)[:limite]
+
+
 class _NaoUsado:
     """Recebimento e temperatura nao pertencem a nenhum componente de lote.
 
@@ -295,6 +401,7 @@ def contexto(ator: Ator, *, limite: int = 20, cursor: str | None = None) -> Load
             lote=FakeRepoLote(),
             produto=FakeRepoProduto(),
             movimento=FakeRepoMovimento(),
+            auditoria=FakeRepoAuditoria(),
             recebimento=_NaoUsado(),
             temperatura=_NaoUsado(),
         ),

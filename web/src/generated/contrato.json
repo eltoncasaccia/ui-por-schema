@@ -1,6 +1,127 @@
 {
   "componentes": [
     {
+      "id": "auditoria_trilha",
+      "label": "Trilha de auditoria",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "AuditoriaTrilhaLinhaTrilha": {
+            "properties": {
+              "acao": {
+                "type": "string"
+              },
+              "ator": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "criado_em": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "entidade": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "entidade_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "filtrada": {
+                "default": false,
+                "type": "boolean"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "origem": {
+                "type": "string"
+              },
+              "valor_anterior": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "valor_novo": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "criado_em",
+              "ator",
+              "acao",
+              "entidade",
+              "entidade_id",
+              "origem",
+              "valor_anterior",
+              "valor_novo"
+            ],
+            "title": "AuditoriaTrilhaLinhaTrilha",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05) — inclusive em `valor_novo`.",
+        "properties": {
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/AuditoriaTrilhaLinhaTrilha"
+            },
+            "type": "array"
+          },
+          "recorte": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "truncada": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "total",
+          "recorte",
+          "truncada",
+          "linhas"
+        ],
+        "title": "VMAuditoriaTrilha",
+        "type": "object"
+      }
+    },
+    {
       "id": "controlado_autorizar",
       "label": "Autorizar controlado",
       "tamanho": "inteira",
@@ -860,6 +981,172 @@
           "acoes"
         ],
         "title": "VMLoteStatusAcao",
+        "type": "object"
+      }
+    },
+    {
+      "id": "movimento_lista",
+      "label": "Movimentos",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "MovimentoListaLinhaMovimento": {
+            "properties": {
+              "autor": {
+                "type": "string"
+              },
+              "autorizador": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "complemento": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "criado_em": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "estorna": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "estornado_por": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "lote_id": {
+                "type": "string"
+              },
+              "motivo": {
+                "enum": [
+                  "recebimento",
+                  "venda",
+                  "transferencia",
+                  "avaria",
+                  "furto",
+                  "erro_de_separacao",
+                  "erro_de_recebimento",
+                  "vencimento",
+                  "erro_de_contagem_anterior",
+                  "estorno"
+                ],
+                "type": "string"
+              },
+              "movimento_id": {
+                "type": "string"
+              },
+              "parado_ha_dias": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "quantidade": {
+                "type": "integer"
+              },
+              "status": {
+                "enum": [
+                  "efetivado",
+                  "aguardando_autorizacao",
+                  "recusado"
+                ],
+                "type": "string"
+              },
+              "status_rotulo": {
+                "type": "string"
+              },
+              "tipo": {
+                "enum": [
+                  "entrada",
+                  "saida",
+                  "descarte",
+                  "estorno"
+                ],
+                "type": "string"
+              },
+              "unidade": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "movimento_id",
+              "criado_em",
+              "tipo",
+              "quantidade",
+              "motivo",
+              "complemento",
+              "lote_id",
+              "unidade",
+              "autor",
+              "autorizador",
+              "status",
+              "status_rotulo",
+              "estorna",
+              "estornado_por"
+            ],
+            "title": "MovimentoListaLinhaMovimento",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "escopo": {
+            "type": "string"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/MovimentoListaLinhaMovimento"
+            },
+            "type": "array"
+          },
+          "pendentes": {
+            "type": "integer"
+          },
+          "recorte": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "escopo",
+          "recorte",
+          "pendentes",
+          "linhas"
+        ],
+        "title": "VMMovimentoLista",
         "type": "object"
       }
     },

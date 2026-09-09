@@ -55,25 +55,45 @@ web/src/views/auditoria_trilha.tsx
 ### Não faz
 Criar movimento, estornar, autorizar — W4.
 
+### Arquivos de outra tarefa, tocados por necessidade
+
+| Arquivo | Dono | Por quê |
+|---|---|---|
+| `api/src/estoque/data/porta.py` · `repositorios.py` | T-007 | **não havia `RepoAuditoria`** — o registry não alcançava a trilha, lacuna que a T-030 já tinha registrado. `LinhaAuditoria` mora na porta e não em `domain/tipos.py`: CONTRATOS §3 congela sete entidades, e trilha não é uma delas |
+| `api/src/estoque/server/app.py` | T-011 | injetar o repositório novo no `LoadContext` |
+| `api/tests/registry/fakes.py` | — | o fake correspondente, mais o pendente e o par de estorno que o fixture não tinha |
+| `api/tests/registry/test_catalogo_por_ator.py` | T-012 | os dois ids novos, como manda a skill `componente-novo` |
+| `api/tests/registry/test_lote_movimentos.py` | T-018 | um teste pegava `linhas[0]` e presumia a ordem do fixture; passou a buscar pelo id |
+
+### Achado durante a execução
+
+**`fakes.AGORA` era `datetime` ingênuo**, e a coluna real é `timestamptz`
+(CONTRATOS §10: *"datetime com timezone, sempre do servidor"*). `lote_movimentos`
+não percebia porque compara `.date()`; `movimento_lista` passa o corte como
+`datetime` ao repositório, e aí o falso quebrava onde o real funciona. É o achado
+A-11 outra vez — fake divergindo do adaptador —, agora no tipo do dado e não no
+escopo. Corrigido na raiz. Achado **A-29**.
+
 ## Critérios de aceite
 
-- [ ] **AC-1** `status: aguardando_autorizacao` devolve exatamente os movimentos
+- [x] **AC-1** `status: aguardando_autorizacao` devolve exatamente os movimentos
       pendentes das unidades do ator. *(base do `CA-04`)*
-- [ ] **AC-2** Movimento estornado e seu estorno aparecem **ambos**, ligados.
+- [x] **AC-2** Movimento estornado e seu estorno aparecem **ambos**, ligados.
       *(`RN-M03`)*
-- [ ] **AC-3** Nenhuma ação de edição ou exclusão é oferecida na interface, para
+- [x] **AC-3** Nenhuma ação de edição ou exclusão é oferecida na interface, para
       nenhum papel. *(negativo — `RN-M02`, `CA-08`)*
-- [ ] **AC-4** `auditoria_trilha` está no catálogo de Marco e Sandra; **não** está
+- [x] **AC-4** `auditoria_trilha` está no catálogo de Marco e Sandra; **não** está
       no de Ivo, Odair nem Cleide. *(negativo — matriz do documento 02)*
-- [ ] **AC-5** A trilha lida por quem não tem `custo.ler` não contém valores de
+- [x] **AC-5** A trilha lida por quem não tem `custo.ler` não contém valores de
       custo em `valor anterior`/`valor novo`. *(negativo — `CA-05`, o vazamento por
       log)*
-- [ ] **AC-6** Consultar a trilha gera evento de auditoria. *(`RN-D05` — a consulta
+- [x] **AC-6** Consultar a trilha gera evento de auditoria. *(`RN-D05` — a consulta
       de auditoria é auditada)*
-- [ ] **AC-7** `tipo` e `status` são enums fechados. *(negativo — risco R-5)*
+- [x] **AC-7** `tipo` e `status` são enums fechados. *(negativo — risco R-5)*
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+2** — acumulado de W3 fecha em **15**.
+- [x] Contagem de catálogo no BOARD: **+2**. Registrados: **13**. O acumulado
+      de 15 em W3 depende de T-019, T-021, T-022 e T-023 — não fecha aqui.
 
 ## Armadilhas
 

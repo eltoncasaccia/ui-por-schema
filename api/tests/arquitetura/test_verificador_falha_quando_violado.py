@@ -4,8 +4,9 @@ Estes testes introduzem as violacoes DE PROPOSITO e afirmam que o verificador
 quebra. Sem eles, `lint-imports` verde nao prova nada — pode estar verde porque
 nao esta verificando.
 
-O contrato testado e' o do ADR-0002, que sustenta a tese do projeto: o pipeline
-do assistente nunca alcanca um comando de escrita.
+Os contratos testados sao o do ADR-0002 — o pipeline do assistente nunca alcanca
+um comando de escrita, que e' a tese do projeto — e o do ADR-0032: os routers da
+borda nao se importam.
 """
 
 import subprocess
@@ -67,7 +68,19 @@ def test_violacao_indireta_em_dois_saltos_quebra() -> None:
     assert "indireta.utils" in r.stdout, "o caminho de dois saltos precisa aparecer"
 
 
+def test_router_importando_router_quebra_o_verificador() -> None:
+    """ADR-0032, contrato 5.
+
+    Um router que importa outro reconstroi o monolito por dentro: os oito
+    arquivos continuariam existindo, e continuariam so' rodando juntos. O que
+    eles compartilham mora em `server/deps.py`, e e' de la' que vem.
+    """
+    r = rodar(VIOLACOES, "rotas.cfg")
+    assert _falhou_por_contrato(r)
+    assert "rotas.rotas.auth -> rotas.rotas.comandos" in r.stdout
+
+
 def test_o_projeto_real_esta_limpo() -> None:
     r = rodar(RAIZ)
     assert r.returncode == 0, r.stdout
-    assert "Contracts: 4 kept, 0 broken" in r.stdout
+    assert "Contracts: 5 kept, 0 broken" in r.stdout

@@ -43,3 +43,21 @@ name = prompt nao importa dados
 type = forbidden
 source_modules = estoque.assistant.prompt
 forbidden_modules = estoque.data
+
+# --- ADR-0032: a borda HTTP quebrada por area ---
+# Um router que importa outro reconstroi o monolito por dentro: a rota de auth
+# passaria a arrastar a de comandos, e o arquivo de 817 linhas voltaria dividido
+# em oito pedacos que so' rodam juntos. O que os routers compartilham mora em
+# `server/deps.py`, e e' de la' que vem — nunca do vizinho.
+[importlinter:contract:5]
+name = os routers da borda nao se importam
+type = independence
+modules =
+    estoque.server.rotas.saude
+    estoque.server.rotas.auth
+    estoque.server.rotas.catalogo
+    estoque.server.rotas.assistente
+    estoque.server.rotas.views
+    estoque.server.rotas.compartilhamento
+    estoque.server.rotas.dados
+    estoque.server.rotas.comandos

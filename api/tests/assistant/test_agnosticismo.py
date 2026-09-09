@@ -17,11 +17,11 @@ from estoque.assistant.adapter import (
 )
 from estoque.assistant.fabrica import PADRAO_POR_PROVEDOR, criar_adaptador
 from estoque.domain.identidade import Ator
-from estoque.server import app
+from estoque.server.rotas import assistente
 
 
 def test_o_servidor_nao_amarra_um_provedor() -> None:
-    fonte = inspect.getsource(app._adaptador)
+    fonte = inspect.getsource(assistente._adaptador)
     assert "criar_adaptador" in fonte
     assert "AdaptadorOpenRouter" not in fonte, "instanciar direto anula a porta"
 
@@ -67,8 +67,6 @@ def test_ferramenta_usa_o_mesmo_schema_do_modo_restrito(personas: dict[str, Ator
 
 
 def test_a_ferramenta_e_forcada_e_nomeada() -> None:
-    fonte = inspect.getsource(app)
-    del fonte  # o corpo é montado no adaptador
     from estoque.assistant.adapter import AdaptadorOpenRouter
 
     corpo = inspect.getsource(AdaptadorOpenRouter._corpo)

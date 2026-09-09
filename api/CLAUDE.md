@@ -81,7 +81,9 @@ O que este projeto faz e a maioria não: **a regra é CI, não revisão**
 | `data/porta.py` | **portas** (6 `Protocol`) | O que a aplicação precisa, sem dizer de onde vem |
 | `data/repositorios.py` | **adapter** Postgres | Aplica escopo (`RN-A01`) e some com campo restrito (`RN-A02`) — num lugar só |
 | `assistant/` | **porta + adapter** do LLM | `adapter.py` é a porta; `fabrica.py` escolhe OpenRouter, Ollama ou Anthropic |
-| `server/` | **adapter primário** | A borda HTTP, e o único módulo que conhece os dois planos |
+| `server/app.py` | **raiz de composição** | Monta a aplicação e registra o que vale para TODA rota: middleware de CSRF, os três handlers de erro, o ciclo de vida. Nenhuma regra de negócio |
+| `server/deps.py` | núcleo compartilhado | `motor`, `CFG`, `OBS`, `ok`, `ator_ou_falhar`, `repos`, `Tx`. Existe para que os routers **não** importem `app.py` — importariam de volta e o ciclo só se resolveria com import tardio |
+| `server/rotas/` | **adapter primário**, uma área por arquivo | A borda HTTP, e o único módulo que conhece os dois planos. Um router **nunca** importa outro — contrato 5 ([ADR-0032](../docs/adr/0032-borda-http-por-router.md)) |
 | `auth/`, `autorizacao/`, `auditoria/` | serviços transversais | Fora de `server/` de propósito: `autorizacao/motor.py` é chamado pela borda **e** pelo pipeline. Dentro de `server/`, `commands` teria que importar a borda para autorizar |
 
 > **Ambiguidade honesta:** `auth/` é meio adapter (sessão em cookie, CSRF) e meio
@@ -92,7 +94,7 @@ O que este projeto faz e a maioria não: **a regra é CI, não revisão**
 
 ## Camadas — verificadas, não combinadas
 
-`api/.importlinter` transforma o desenho em CI. Os contratos:
+`api/.importlinter` transforma o desenho em CI. Os cinco contratos:
 
 | # | Contrato | Por quê |
 |---|---|---|
@@ -100,6 +102,7 @@ O que este projeto faz e a maioria não: **a regra é CI, não revisão**
 | 2 | `application.registry` não importa `server` nem `sqlalchemy` | componente descreve **o quê**, não **como buscar** |
 | 3 | **`assistant` não importa `application.commands`** | a tese em forma de teste: se existe caminho do assistente até a escrita, "o modelo nunca autoriza escrever" deixa de ser verificável |
 | 4 | `assistant.prompt` não importa `data` | prompt não pode conter dado do estoque ([ADR-0012](../docs/adr/0012-injecao-de-prompt-via-dado.md)) |
+| 5 | os oito routers de `server.rotas` **não se importam** | router que importa router reconstrói o monolito por dentro: oito arquivos que só rodam juntos é pior que um de 817 linhas, porque parece resolvido ([ADR-0032](../docs/adr/0032-borda-http-por-router.md)) |
 
 **E o verificador tem testes que provam que ele quebra.**
 `tests/arquitetura/test_verificador_falha_quando_violado.py` introduz cada

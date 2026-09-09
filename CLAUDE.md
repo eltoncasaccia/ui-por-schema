@@ -159,7 +159,7 @@ verificável.
 
 > **As camadas de cada lado ficam no `CLAUDE.md` do projeto**, porque são
 > convenções diferentes de linguagens diferentes:
-> **[`api/CLAUDE.md`](api/CLAUDE.md)** — o hexágono, os quatro contratos do
+> **[`api/CLAUDE.md`](api/CLAUDE.md)** — o hexágono, os cinco contratos do
 > `import-linter`, a anatomia de um componente.
 > **[`web/CLAUDE.md`](web/CLAUDE.md)** — as camadas do cliente, o sistema visual,
 > a bijeção com o registry.

@@ -23,7 +23,7 @@ async def test_limite_da_pagina_e_respeitado() -> None:
     vez: o servidor construía o contexto sem passá-la, e a fila voltava inteira."""
     import inspect
 
-    from estoque.server import app
+    from estoque.server.rotas import dados
 
-    fonte = inspect.getsource(app.dados)
+    fonte = inspect.getsource(dados.dados)
     assert "pagina=Pagina(" in fonte, "o servidor precisa repassar a página ao load"

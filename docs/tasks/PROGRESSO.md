@@ -117,6 +117,7 @@ está pronto.
 | T-042 | Contract test fake ↔ repositório real | ⬜ | A-11 |
 | T-043 | Instrumentação ao vivo do LangFuse | ⬜ | A-10 |
 | T-044 | `relatorio_movimentacao` | ⬜ | ADR-0029 |
+| T-045 | Borda HTTP por router | ✅ | ADR-0032 — `app.py` de 817 → 134 linhas; contrato 5 do import-linter, com teste negativo; 467 testes, mesma contagem |
 
 ---
 

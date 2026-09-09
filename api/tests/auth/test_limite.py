@@ -100,9 +100,9 @@ def test_ac7_recusa_por_limite_e_auditada() -> None:
     """Tentativa bloqueada é sinal, não ruído: é o que denuncia força bruta."""
     import inspect
 
-    from estoque.server import app
+    from estoque.server.rotas import auth
 
-    fonte = inspect.getsource(app.entrar)
+    fonte = inspect.getsource(auth.entrar)
     assert "login_bloqueado" in fonte
     assert "aud.registrar" in fonte
     # a auditoria acontece ANTES do raise, senão nunca chega a gravar
@@ -114,7 +114,7 @@ def test_ac7_a_conta_bloqueada_nao_gasta_hash() -> None:
     atacante: argon2 é caro de propósito."""
     import inspect
 
-    from estoque.server import app
+    from estoque.server.rotas import auth
 
-    fonte = inspect.getsource(app.entrar)
+    fonte = inspect.getsource(auth.entrar)
     assert fonte.index("LIMITE.bloqueado") < fonte.index("PH.hash")

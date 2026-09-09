@@ -12,7 +12,7 @@ import inspect
 
 from estoque.application.schema.validar import validar_schema
 from estoque.domain.identidade import Ator
-from estoque.server import app
+from estoque.server.rotas import compartilhamento
 
 
 def esquema(tipo: str, **params: object) -> dict[str, object]:
@@ -51,7 +51,7 @@ def test_meia_composicao_nao_conta_como_abrivel(personas: dict[str, Ator]) -> No
 
 def test_endpoint_filtra_pelo_schema_e_nao_lista_todo_mundo() -> None:
     """O endpoint recebe o schema e valida contra o ator de CADA candidato."""
-    fonte = inspect.getsource(app.destinatarios)
+    fonte = inspect.getsource(compartilhamento.destinatarios)
     assert "validar_schema" in fonte, "precisa usar a mesma validação da abertura"
     assert "_ator_de" in fonte, "precisa montar o Ator de cada candidato"
     assert "not r.rejeitados" in fonte, "rejeição parcial exclui o candidato"

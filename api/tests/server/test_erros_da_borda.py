@@ -11,6 +11,7 @@ estava escrito e não implementado.
 import inspect
 
 from estoque.server import app
+from estoque.server.rotas import auth
 
 
 def test_existe_handler_para_entrada_invalida() -> None:
@@ -67,16 +68,16 @@ def test_cadastro_nao_concede_papel() -> None:
     Se deixasse escolher, `RN-R02` (liberação privativa do RT) e `CA-04` (dupla
     identificação) virariam enfeite — escalação de privilégio por formulário.
     """
-    fonte = inspect.getsource(app.registrar)
+    fonte = inspect.getsource(auth.registrar)
     assert "papel=None" in fonte
     # o corpo do pedido não tem campo de papel nem de unidade
-    campos = set(app.Cadastro.model_fields)
+    campos = set(auth.Cadastro.model_fields)
     assert campos == {"nome", "email", "senha"}, campos
 
 
 def test_cadastro_nao_vira_verificador_de_contas() -> None:
     """Resposta idêntica para e-mail novo e já cadastrado — senão o formulário
     de cadastro passa a responder 'esta pessoa tem conta aqui?'."""
-    fonte = inspect.getsource(app.registrar)
-    assert fonte.count("return _ok(") == 1, "um único retorno, para os dois casos"
+    fonte = inspect.getsource(auth.registrar)
+    assert fonte.count("return ok(") == 1, "um único retorno, para os dois casos"
     assert "PH.hash(corpo.senha)" in fonte, "gasta o mesmo tempo nos dois caminhos"

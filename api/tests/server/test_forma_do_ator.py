@@ -11,7 +11,7 @@ valer: existe UMA funcao que serializa o ator, e os dois endpoints usam ela.
 import ast
 from pathlib import Path
 
-APP = Path(__file__).parents[2] / "src" / "estoque" / "server" / "app.py"
+APP = Path(__file__).parents[2] / "src" / "estoque" / "server" / "rotas" / "auth.py"
 
 
 def test_login_e_eu_usam_a_mesma_serializacao() -> None:

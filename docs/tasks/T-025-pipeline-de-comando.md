@@ -38,7 +38,7 @@ api/tests/commands/*.py
 | `api/src/estoque/server/app.py` | T-011 | sem a rota `/api/comandos/{nome}` os AC-2 a AC-7 não são alcançáveis de fora |
 
 Nenhuma sessão estava em andamento nessas tarefas. A decisão foi tomada com o
-cliente antes de escrever — ver A-12 na seção 6 do BOARD.
+cliente antes de escrever — ver A-12 em [ACHADOS](./ACHADOS.md).
 
 ## Escopo
 

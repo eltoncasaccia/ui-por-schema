@@ -16,7 +16,7 @@ Paralelismo não vem de dividir tarefas. Vem de eliminar as três causas de coli
 |---|---|
 | Duas tarefas decidem a mesma interface de formas diferentes | **[Contratos congelados](./CONTRATOS.md)** — decididos antes, alteráveis só por tarefa própria |
 | Duas tarefas editam o mesmo arquivo | **Propriedade exclusiva de arquivo** — cada tarefa declara os arquivos que só ela escreve |
-| Uma tarefa espera por algo que ninguém sabia que ela esperava | **Grafo de dependências explícito** no [BOARD](./BOARD.md) |
+| Uma tarefa espera por algo que ninguém sabia que ela esperava | **Grafo de dependências explícito** no [PLANO](./PLANO.md) |
 
 Se os três estiverem respeitados, duas sessões podem trabalhar na mesma onda sem
 nunca se falarem.
@@ -30,7 +30,8 @@ Uma sessão que assume uma tarefa lê, **nesta ordem, e nada além disto**:
 1. O arquivo da própria tarefa — `T-0NN-*.md`
 2. [`CONTRATOS.md`](./CONTRATOS.md)
 3. Os ADRs que a tarefa cita — **só esses**
-4. As regras `RN-*` que a tarefa cita, no [documento 02](../02-regras-de-negocio.md)
+4. As regras `RN-*` que a tarefa cita — `make rn RN-L05 RN-R02`, que recorta o
+   [documento 02](../02-regras-de-negocio.md) nas regras pedidas
 
 **Não é necessário ler o PRD inteiro, nem os quatro documentos narrativos.** Se uma
 tarefa não puder ser executada com essa leitura, a tarefa está mal escrita — e
@@ -187,7 +188,7 @@ Uma sessão para e sinaliza — não improvisa — quando:
 - Descobre conflito entre duas regras `RN-*`
 - Uma decisão de negócio não está em lugar nenhum dos documentos
 
-Os dois últimos casos produzem **um achado**, registrado no BOARD. Achado que
+Os dois últimos casos produzem **um achado**, registrado em [ACHADOS](./ACHADOS.md). Achado que
 muda regra vira pergunta ao cliente; achado que muda decisão técnica vira ADR.
 
 **Nenhum desses casos se resolve com uma suposição registrada em comentário de

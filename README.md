@@ -193,7 +193,7 @@ Este repositório é tanto o sistema quanto o registro de como ele foi decidido.
 | [**PRD-001**](./docs/prd/PRD-001-ciclo-1.md) | requisitos, 11 histórias com critérios de aceite, métricas, riscos |
 | [**22 ADRs**](./docs/adr/) | cada decisão com alternativas descartadas, **consequências negativas** e como é verificada em código |
 | [**Contratos**](./docs/tasks/CONTRATOS.md) | interfaces congeladas — o que permite trabalho paralelo |
-| [**39 tarefas**](./docs/tasks/BOARD.md) | grafo de dependências, caminho crítico, propriedade exclusiva de arquivo |
+| [**39 tarefas**](./docs/tasks/BOARD.md) | status por tarefa; [grafo e caminho crítico](./docs/tasks/PLANO.md); propriedade exclusiva de arquivo |
 | [**Auditoria A-001**](./docs/relatorios/A-001-auditoria-pre-migracao.md) | 11 achados encontrados **antes** da primeira linha de código |
 
 **Por onde começar a ler:** [ADR-0002](./docs/adr/0002-plano-render-plano-escrita.md)

@@ -28,12 +28,28 @@ não como verdade — confirme no código.
 1. `docs/tasks/T-0NN-*.md`
 2. `docs/tasks/CONTRATOS.md`
 3. **só** os ADRs que a tarefa citar
-4. **só** as regras `RN-*` citadas, em `docs/02-regras-de-negocio.md`
+4. **só** as regras `RN-*` citadas: `make rn RN-L05 RN-R02` — o script
+   imprime a regra com a seção dela e a legenda de `[R]`/`[S]`/`[C]`.
+   Abrir `docs/02-regras-de-negocio.md` inteiro lê 59 regras para usar duas.
 
 Não leia o PRD inteiro nem os quatro documentos narrativos. Se a tarefa não puder
 ser executada com essa leitura, **a tarefa está mal escrita** — corrija a tarefa.
 
 Depois, leia o `CLAUDE.md` do subprojeto que você vai tocar (`api/` ou `web/`).
+
+## 2b. Modelo — o padrão do projeto é Sonnet
+
+`.claude/settings.json` fixa **Sonnet** neste repositório: tarefa de componente
+(W3) é repetição de um padrão que a skill `componente-novo` já descreve, e
+Sonnet a executa igual por uma fração do orçamento de sessão.
+
+**Suba para Opus com `/model opus`** quando a tarefa decidir quem pode o quê:
+
+| Sobe para Opus | Fica em Sonnet |
+|---|---|
+| tarefa de **escrita** (W4) — pipeline, comando, autorização | componente de leitura (W3) |
+| segurança (T-033, T-040) e teste negativo de autorização | view React, viewmodel |
+| as duas skills de auditoria | correção de bug, teste que faltou |
 
 ## 3. Ambiente
 
@@ -83,8 +99,12 @@ Detalhes por linguagem: skills `testes-python` (em `api/`) e `testes-web` (em
 ## 6. Definition of Done
 
 ```bash
-make check      # lint + typecheck + test + arch, nos dois lados
+make check-api   # ou check-web — rode SÓ o lado que você tocou, a cada iteração
+make check       # os dois + a bijeção — UMA vez, no fim, antes do commit
 ```
+
+Rodar `make check` inteiro a cada iteração paga `tsc`, `eslint` e `vitest` num
+laço de correção de Python, e a saída dos três não ajuda a consertar um pytest.
 
 E mais, item a item:
 
@@ -120,7 +140,7 @@ Não improvise. Pare se:
 - duas regras `RN-*` se contradizem
 - uma decisão de negócio não está em documento nenhum
 
-Os dois últimos viram **achado**, registrado na seção 6 do BOARD. Achado que
+Os dois últimos viram **achado**, registrado em `docs/tasks/ACHADOS.md`. Achado que
 muda regra vira pergunta ao cliente; achado que muda decisão técnica vira ADR.
 
 **Nenhum desses casos se resolve com uma suposição registrada em comentário de

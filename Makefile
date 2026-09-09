@@ -2,7 +2,7 @@
 SHELL := /bin/bash
 
 help:  ## mostra os comandos
-	@grep -E '^[a-z-]+:.*?##' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-12s\033[0m %s\n",$$1,$$2}'
+	@grep -E '^[a-z-]+:.*?##' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-15s\033[0m %s\n",$$1,$$2}'
 
 .env:
 	@cp -n .env.example .env && echo "criado .env a partir de .env.example — revise os segredos"
@@ -44,24 +44,63 @@ types: gerar-indice  ## gera os tipos do cliente a partir do registry da API
 	cd api && uv run python -m estoque.application.registry.exportar > ../web/src/generated/contrato.json
 	cd web && npx tsx scripts/gerar-tipos.ts
 
-test:  ## testes dos dois lados
-	cd api && uv run pytest -q
-	cd web && npx vitest run
+# Um alvo por lado, e os dois lados juntos. Motivo: quem escreve Python pagava
+# `tsc`, `eslint` e `vitest` a CADA iteracao do laco de correcao — e a saida
+# desses tres nao ajuda quem esta consertando um teste de pytest. Durante a
+# implementacao rode so' o `check-` do seu lado; `make check` inteiro uma vez, no
+# fim, antes do commit.
+#
+# A excecao e' `indice`: a bijecao registry <-> view e' cross-side por desenho
+# (ADR-0017), entao nao se divide, e fica fora de `check-api` e `check-web`.
 
-typecheck:  ## mypy --strict + tsc
-	# `src` E `tests`: o achado A-09 nasceu de `tests` ficar de fora, e dez erros
-	# de tipo viverem lá, invisíveis ao DoD e ao CI, visíveis a quem abre o arquivo.
+rn:  ## imprime só as regras citadas — `make rn RN-L05 RN-R02`
+	@python3 scripts/rn.py $(filter-out rn,$(MAKECMDGOALS))
+
+# Deixa `RN-L05` ser argumento de `make rn` sem virar alvo desconhecido. O padrao
+# e' `RN-%` e nao `%` de proposito: um alvo digitado errado continua falhando
+# alto, que e' o que se quer.
+RN-%:
+	@:
+
+test-api:  ## pytest
+	cd api && uv run pytest -q
+
+test-web:  ## vitest — reporter `dot`: uma linha por arquivo, a falha inteira
+	cd web && npx vitest run --reporter=dot
+
+test: test-api test-web  ## testes dos dois lados
+
+# `src` E `tests`: o achado A-09 nasceu de `tests` ficar de fora, e dez erros
+# de tipo viverem lá, invisíveis ao DoD e ao CI, visíveis a quem abre o arquivo.
+typecheck-api:  ## mypy --strict em src e tests
 	cd api && uv run mypy --strict src tests
+
+typecheck-web:  ## tsc --noEmit
 	cd web && npx tsc --noEmit
 
-lint:  ## ruff + eslint
+typecheck: typecheck-api typecheck-web  ## mypy --strict + tsc
+
+lint-api:  ## ruff check + ruff format --check
 	cd api && uv run ruff check src tests && uv run ruff format --check src tests
+
+lint-web:  ## eslint — o formatador padrão não imprime nada quando está limpo
 	cd web && npx eslint src scripts
 
-arch:  ## verificadores de arquitetura dos dois lados
+lint: lint-api lint-web  ## ruff + eslint
+
+indice:  ## confere a bijeção registry ↔ view (ADR-0017) — cross-side, não divide
 	@python3 scripts/gerar_indice.py --conferir
+
+arch-api:  ## os quatro contratos do import-linter
 	cd api && uv run lint-imports
+
+arch-web:  ## camadas do cliente
 	cd web && npx tsx scripts/arch-check.ts
+
+arch: indice arch-api arch-web  ## verificadores de arquitetura dos dois lados
+
+check-api: lint-api typecheck-api test-api arch-api  ## só o backend — use durante a implementação
+check-web: lint-web typecheck-web test-web arch-web  ## só o cliente — use durante a implementação
 
 eval:  ## suíte de avaliação: mede os dois modos e publica no LangFuse
 	docker compose run --rm api python -m estoque.eval
@@ -71,4 +110,8 @@ eval-livre:  ## só o modo livre — a pergunta original da v1
 
 check: lint typecheck test arch  ## tudo que o CI roda
 
-.PHONY: help up down reset logs db-local env env-completar modelo eval-livre migrate seed gerar-indice types test typecheck lint arch eval check
+.PHONY: help up down reset logs db-local env env-completar modelo eval-livre migrate seed \
+	gerar-indice types indice rn \
+	test test-api test-web typecheck typecheck-api typecheck-web \
+	lint lint-api lint-web arch arch-api arch-web \
+	check check-api check-web eval

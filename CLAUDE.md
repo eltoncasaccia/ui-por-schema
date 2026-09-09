@@ -33,7 +33,8 @@ O [acordo de trabalho](docs/tasks/README.md) §2 define o que ler, e nada além:
 1. o arquivo da tarefa — `docs/tasks/T-0NN-*.md`
 2. [`docs/tasks/CONTRATOS.md`](docs/tasks/CONTRATOS.md) — interfaces congeladas
 3. **só** os ADRs que a tarefa citar
-4. **só** as regras `RN-*` que a tarefa citar, em `docs/02-regras-de-negocio.md`
+4. **só** as regras `RN-*` que a tarefa citar — `make rn RN-L05 RN-R02`.
+   Não abra `docs/02-regras-de-negocio.md`: são 59 regras para usar duas.
 
 Cada arquivo de tarefa é auto-contido. Se uma tarefa não pode ser executada com
 essa leitura, **a tarefa está mal escrita** — corrigir a tarefa é a ação certa,
@@ -53,74 +54,47 @@ ficou prometido em três documentos e implementado em nenhum
 
 ## 3. Subir, derrubar, e a armadilha do meio
 
-```bash
-make up          # sobe tudo: db + api + web, via docker compose
-make down        # derruba os serviços
-make reset       # derruba e APAGA os dados (volumes)
-make logs        # acompanha
-```
+| Comando | O que faz |
+|---|---|
+| `make up` · `down` · `reset` · `logs` | sobe tudo · derruba · derruba **e APAGA os dados** · acompanha |
+| `make db-local` | publica o Postgres em `localhost:15432` — sem isso, teste local não roda |
+| `make migrate` · `make seed` | `alembic upgrade head` · dados da Bertoni, idempotente |
+| `make env` · `make env-completar` | o `.env` está completo? · acrescenta o que falta |
+| `make modelo` | provedor, modelo e modo em uso |
 
-**Para desenvolver e rodar teste localmente**, o banco precisa estar publicado
-em `localhost:15432`:
+> ⚠️ **A armadilha:** `make migrate` recria o container do banco **sem** o
+> mapeamento de porta. Rode `make db-local` **de novo** depois de migrar. Sem a
+> porta, nove testes de imutabilidade **pulam** — e teste que pula é teste que
+> não existe.
 
-```bash
-make db-local    # publica o Postgres na porta local (exige -f explícito)
-make migrate     # alembic upgrade head
-make seed        # dados da Bertoni, idempotente
-```
+**Dois papéis de banco, e a diferença é regulatória:** `DATABASE_URL` usa o papel
+restrito; `DATABASE_URL_ADMIN`, o dono — e **só** migração e seed o usam.
 
-> ⚠️ **A armadilha:** `make migrate` roda com o `docker-compose.yml` sozinho, e
-> isso **recria o container do banco sem o mapeamento de porta**. Depois de
-> migrar, rode `make db-local` de novo. Sem a porta, nove testes de
-> imutabilidade **pulam** — e teste que pula é teste que não existe.
-
-**Ambiente:**
-
-```bash
-make env             # compara .env com .env.example e aponta o que falta
-make env-completar   # acrescenta as variáveis novas
-make modelo          # mostra provedor, modelo e modo em uso
-```
-
-**Dois papéis de banco, e a diferença é regulatória.** `DATABASE_URL` usa
-`estoque_app` — o papel restrito, sem `UPDATE`/`DELETE` em `movimento` e
-`auditoria`. `DATABASE_URL_ADMIN` usa o dono, e **só a migração e o seed** o
-usam. O dono ignora `REVOKE`: com ele na aplicação, `RN-M02` e `RN-D02` valiam
-só nos testes (achado A-27).
-
-`make env` existe por um motivo concreto ([ADR-0027](docs/adr/0027-ambiente-verificado.md)):
-acrescentar variável ao `.env.example` **não** atualiza o `.env` de quem já
-rodou, e a variável ausente cai num padrão que funciona — e é por funcionar que
-passa despercebida. Foi exatamente assim que o LangFuse ficou apontando para a
-região errada por semanas.
-
-**Derrubar processo preso:**
-
-```bash
-docker compose ps                 # o que está de pé
-docker compose down              # encerra tudo
-docker compose down -v           # ...e apaga os volumes
-lsof -ti:15432 | xargs kill      # se a porta ficou órfã
-```
+O porquê de cada um, o achado A-27, a história do LangFuse na região errada e como
+derrubar processo preso: [`docs/AMBIENTE.md`](docs/AMBIENTE.md). Leia quando o
+ambiente brigar, não antes.
 
 ---
 
 ## 4. O ciclo de verificação
 
-```bash
-make check       # lint + typecheck + test + arch — é o que o CI roda
-```
-
-Ou individualmente:
+**Durante a implementação, rode só o lado que você está tocando.** `make check`
+inteiro **uma vez**, no fim, antes do commit. Quem escreve Python não precisa da
+saída do `tsc` e do `vitest`, e pagava por ela a cada iteração do laço.
 
 | Comando | O que faz |
 |---|---|
-| `make lint` | `ruff check` + `ruff format --check` no Python; `eslint` no TS |
-| `make typecheck` | `mypy --strict src` no Python; `tsc --noEmit` no TS |
-| `make test` | `pytest` no Python; `vitest run` no TS |
-| `make arch` | índices em dia + `import-linter` + `arch-check.ts` |
+| `make check-api` | lint + typecheck + test + arch — **só** o backend |
+| `make check-web` | idem — **só** o cliente |
+| `make check` | os dois, mais a bijeção registry ↔ view — é o que o CI roda |
+| `make rn RN-L05 RN-R02` | imprime **só** as regras citadas, com seção e legenda |
 | `make types` | regenera `contrato.json` e `componentes.ts` a partir do registry |
 | `make gerar-indice` | regenera `registry/indice.py` e `views/indice.ts` |
+
+Todo verificador tem par por lado — `lint-api`/`lint-web`, `test-api`/`test-web`,
+`typecheck-*`, `arch-*`. A exceção é `make indice`: a bijeção é cross-side por
+desenho ([ADR-0017](docs/adr/0017-registry-servidor-views-cliente.md)) e não se
+divide. `make help` lista todos.
 
 **Nunca rode `make eval` sem intenção** — ele gasta token a cada execução
 ([ADR-0013](docs/adr/0013-suite-de-avaliacao.md)).
@@ -135,12 +109,10 @@ Ou individualmente:
 | `web/src/generated/contrato.json` | `make types` |
 | `web/src/generated/componentes.ts` | `make types` |
 
-Eles são gerados porque são os **únicos arquivos que toda tarefa de componente
-precisaria editar** — 22 componentes registrados à mão em dois arquivos seriam
-44 conflitos de merge garantidos. `make arch` falha se estiverem desatualizados.
-
-O `commands/indice.py` entrou pelo mesmo motivo, e pelo achado A-15: as **cinco**
-tarefas de escrita de W4 precisariam da mesma linha de import nele.
+São gerados porque seriam os únicos arquivos que **toda** tarefa de componente
+editaria — 44 conflitos de merge garantidos. `make arch` falha se estiverem
+desatualizados. O porquê completo, e o achado A-15, em
+[`docs/AMBIENTE.md`](docs/AMBIENTE.md).
 
 ---
 
@@ -237,7 +209,7 @@ Antes de implementar, **uma linha com a recomendação** ([ADR-0028](docs/adr/00
 **Pare e sinalize** — não improvise — se precisar mudar contrato congelado,
 escrever em arquivo de outra tarefa, ou se achar critério de aceite ambíguo,
 conflito entre regras `RN-*`, ou decisão de negócio que não está em documento
-nenhum. Os dois últimos viram **achado**, registrado no BOARD.
+nenhum. Os dois últimos viram **achado**, registrado em `docs/tasks/ACHADOS.md`.
 
 ### Commits
 `T-0NN: <o que mudou>` — o id no começo, sempre. A mensagem explica **por quê**,

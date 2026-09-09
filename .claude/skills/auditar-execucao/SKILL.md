@@ -120,7 +120,7 @@ Escreva em `docs/relatorios/A-0NN-<assunto>.md`, seguindo o formato do
 3. **Estado real apurado**, para substituir o `PROGRESSO.md`
 4. **O que NÃO foi auditado**, e por quê ← seção obrigatória
 
-Registre os achados também na seção 6 do `BOARD.md`, e abra as tarefas que os
+Registre os achados também em `docs/tasks/ACHADOS.md`, e abra as tarefas que os
 fecham. Classificação: muda regra → pergunta ao cliente; muda decisão técnica →
 ADR; muda escopo → revisão do PRD.
 

@@ -15,6 +15,28 @@
 
 ---
 
+## Índice — leia só a sua seção
+
+São 14 KB. **Ler o documento inteiro para escrever um componente é o desperdício
+que o protocolo de leitura tenta evitar.** Ache a linha, leia a seção.
+
+| Se você vai... | Leia |
+|---|---|
+| entender o corte api/web | §0 Onde cada coisa mora |
+| escrever `requires`, ou mexer em papel/permissão | §1 Identidade e permissão |
+| levantar erro de domínio | §2 Erros |
+| tocar produto, lote, movimento | §3 Entidades |
+| escrever um `load` | §4 Porta de dados |
+| **registrar um componente** | §5 Contrato de componente **+** §6 Contrato de view |
+| escrever a view React | §6 Contrato de view |
+| mexer na composição do modelo | §7 Schema do assistente |
+| tocar rota HTTP | §8 Borda HTTP |
+| conferir o teto de 25 componentes | §9 Catálogo |
+| nomear coisas | §10 Convenções |
+| **mudar um contrato** | §11 O que muda este documento — e pare antes |
+
+---
+
 ## 0. Onde cada coisa mora
 
 ```

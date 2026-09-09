@@ -2,6 +2,7 @@
 
 **39 tarefas · 6 ondas · 5 trilhas · 2 linguagens.**
 Regras: [Acordo de Trabalho](./README.md) · Interfaces: [CONTRATOS](./CONTRATOS.md)
+Ondas, trilhas e grafo: [PLANO](./PLANO.md) · Achados: [ACHADOS](./ACHADOS.md)
 
 Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 em revisão` · `✅ concluída`
 
@@ -15,107 +16,7 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 
 ---
 
-## 1. Ondas
-
-Uma onda não é prazo, é **barreira de dependência**. Tarefas da mesma onda são
-paralelizáveis; a seguinte abre quando as dependências declaradas fecham.
-
-| Onda | O que é | Paralelismo | Abre com |
-|---|---|---|---|
-| **W0** | Ambiente e contratos congelados | **Serial** | — |
-| **W1** | Núcleo: banco, dados, permissão, auth, registry, render | até 13 sessões | T-039 ✅ |
-| **W2** | Furo de risco: medição com modelo real | 1 sessão | W1 ✅ |
-| **W3** | 15 componentes de leitura | até 7 sessões | T-017 revisado |
-| **W4** | 7 componentes de escrita | até 5 sessões | T-025 ✅ — **aberta** |
-| **W5** | Garantias e fechamento | até 4 sessões | W4 ✅ |
-
-**W0 é serial de propósito.** Sete tarefas em sequência compram treze simultâneas.
-
----
-
-## 2. Trilhas
-
-| Trilha | Domínio | Onde |
-|---|---|---|
-| **A** | Domínio e dados | `api/src/estoque/{domain,data}` · `api/migrations` |
-| **B** | Servidor, permissão, auth, auditoria | `api/src/estoque/{server,autorizacao,auditoria,auth,commands}` |
-| **C** | Registry e assistente | `api/src/estoque/{registry,schema,assistant}` |
-| **D** | Render e interface | `web/src/**` |
-| **E** | Ambiente e qualidade | raiz · `web/scripts` · `api/tests` · `eval/` |
-
-**Tarefas de W3 e W4 atravessam A/C e D** — registro em Python, view em TypeScript
-([ADR-0017](../adr/0017-registry-servidor-views-cliente.md)). O teste de bijeção
-recusa meia entrega.
-
----
-
-## 3. Grafo de dependências
-
-```mermaid
-graph TD
-  T035[T-035 Docker Compose] --> T001[T-001 Bootstrap api+web]
-  T001 --> T002[T-002 Domínio]
-  T002 --> T003[T-003 Contrato registry]
-  T003 --> T004[T-004 Borda: schema, viewId]
-  T004 --> T039[T-039 Codegen + bijeção]
-  T002 --> T005[T-005 Verificadores]
-
-  T039 --> W1{{W1 · núcleo}}
-  T002 --> T036[T-036 Schema Postgres]
-  T036 --> T006[T-006 Dados Bertoni]
-  T036 --> T007[T-007 Repositórios]
-  T002 --> T008[T-008 Regras puras]
-  T004 --> T009[T-009 Permissão]
-  T004 --> T010[T-010 Auditoria]
-  T036 --> T037[T-037 Auth + CSRF]
-  T009 --> T011[T-011 Servidor]
-  T010 --> T011
-  T037 --> T011
-  T009 --> T012[T-012 Catálogo]
-  T012 --> T013[T-013 Validador]
-  T004 --> T014[T-014 Adapter Claude]
-  T039 --> T015[T-015 Motor de render]
-  T013 --> T016[T-016 Query + viewId]
-  T015 --> T016
-
-  T011 --> T017[T-017 SPIKE medição]
-  T014 --> T017
-  T016 --> T017
-
-  T017 --> W3{{W3 · 15 componentes de leitura}}
-  W3 --> T018[T-018 Lote]
-  W3 --> T019[T-019 Produto]
-  W3 --> T020[T-020 Vencimento]
-  W3 --> T021[T-021 Rastreabilidade]
-  W3 --> T022[T-022 Recebimento]
-  W3 --> T023[T-023 Temperatura]
-  W3 --> T024[T-024 Movimento]
-
-  T011 --> T025[T-025 Pipeline de comando]
-  T015 --> T025
-  T025 --> T026[T-026 Receber]
-  T025 --> T027[T-027 Quarentena]
-  T025 --> T028[T-028 Saída FEFO]
-  T025 --> T029[T-029 Estorno]
-  T028 --> T030[T-030 Controlado]
-
-  T026 --> T031[T-031 Telas com rota]
-  T027 --> T031
-  T028 --> T031
-  T031 --> T038[T-038 Gestão de usuários]
-  T017 --> T032[T-032 Avaliação]
-  T030 --> T033[T-033 Segurança]
-  T031 --> T034[T-034 Fechamento]
-  T032 --> T034
-  T033 --> T034
-```
-
-**Caminho crítico** (12 tarefas):
-`T-035 → T-001 → T-002 → T-003 → T-004 → T-039 → T-012 → T-015 → T-016 → T-017 → T-018 → T-027 → T-031 → T-034`
-
----
-
-## 4. Tarefas
+## 1. Tarefas
 
 ### W0 — Ambiente e contratos · serial
 
@@ -205,7 +106,7 @@ graph TD
 
 ---
 
-## 5. Contagem de catálogo
+## 2. Contagem de catálogo
 
 Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08`.
 
@@ -227,49 +128,3 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.
 
 ---
-
-## 6. Achados
-
-Registro vivo. Achado é dado do projeto, não ruído.
-
-| # | Achado | Origem | Consequência |
-|---|---|---|---|
-| ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
-| ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
-| ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
-| ~~A-13~~ | ~~**`make check` nunca pôde passar.**~~ `web/eslint.config.js` e `web/scripts/arch-check.ts` eram invocados pelo Makefile e nunca existiram; `eslint` não era nem dependência | execução da T-025 | os dois escritos; `make check` passa em **21 s**, exit 0. ✅ resolvido |
-| A-29 | **`fakes.AGORA` era `datetime` ingênuo**, e a coluna real é `timestamptz`. `lote_movimentos` não percebia porque compara `.date()`; `movimento_lista` passa o corte como `datetime` e o falso quebrava onde o real funciona — achado A-11 outra vez, agora no tipo e não no escopo | execução da T-024 | corrigido na raiz: `AGORA` com fuso, e o `_mov` passou a aceitar `status` e `estorna`. ✅ resolvido |
-| A-28 | `react-hooks/rules-of-hooks` desligada em `src/views/**`: a regra identifica componente pelo NOME em maiúscula, e CONTRATOS §6 (congelado) exporta `view` minúsculo. Hook dentro de `if` numa view deixa de ser pego por qualquer verificador | execução da T-005 | anotado em `web/eslint.config.js`; volta se o contrato mudar, ou vira 7ª regra do `arch-check` |
-| ~~A-27~~ | ~~**A aplicação conectava como DONO do banco.**~~ O dono ignora `REVOKE`: com ele na `DATABASE_URL`, `RN-M02` ("movimento não pode ser excluído por ninguém") e `RN-D02` (auditoria append-only) eram verdade **só nos testes**, que usavam `estoque_app`. Provado numa transação revertida: o dono apagou 992 movimentos e 3510 linhas de auditoria | pergunta do usuário | `DATABASE_URL` passa a usar `estoque_app`; migração e seed usam `DATABASE_URL_ADMIN`, que o `env.py` já lia. `tests/data/test_papel_da_aplicacao.py` lê a URL **da configuração** e prova as recusas. ✅ resolvido |
-| ~~A-20~~ | ~~**A view `saldo_lote` nunca era atualizada.**~~ Medido: após um movimento de saída de 7, a view dizia 762 e o real era 755. Ficava em sincronia só porque o seed roda no boot do container | execução da T-028 | migração 0005: deixa de ser materializada e passa a ser calculada — a T-036 prometia "atualizada na mesma transação do movimento", e view comum entrega isso por construção. ✅ resolvido |
-| A-26 | **O padrão tinha nome e o projeto não o usava.** O código é Ports & Adapters desde sempre — `data/porta.py` tem 6 `Protocol`, `assistant/adapter.py` é a porta do LLM, `repositorios.py` é o adapter de Postgres —, mas nenhum documento dizia "hexagonal". O ADR-0030 chegou a descrever o mecanismo e inventou vocabulário em vez de usar o da indústria. Consequência real: não dá para explicar o desenho em conversa técnica | pergunta do usuário | [ADR-0031](../adr/0031-ports-and-adapters.md) nomeia o padrão; `registry/`, `commands/` e `schema/` agrupados sob `application/`; camadas movidas dos documentos genéricos para o `CLAUDE.md` de cada projeto. ✅ resolvido |
-| A-25 | **O layout de diretórios nunca foi decisão registrada.** ADR-0007 e `03-arquitetura-v2.md` §9 descrevem as camadas da **v1** — `application/`, `state/`, `render/`, `viewmodels/`, `components/` —, das quais cinco não existem no `api/` desde o ADR-0016. E `src/estoque` não era explicado em lugar nenhum. Descoberto por pergunta, não por auditoria | leitura do repositório | [ADR-0031](../adr/0031-ports-and-adapters.md) (que substituiu o 0030); 0007 e o doc 03 marcados como emendados; nomes do `web/` corrigidos em T-001; ADR-0029 acrescentado ao índice, de onde faltava. ✅ resolvido |
-| A-24 | **`RN-M02` e `RN-C01` eram incompatíveis no schema.** O `REVOKE UPDATE ON movimento` da migração 0001 tornava impossível a transição `aguardando_autorizacao → efetivado` que `RN-C01` exige e `CONTRATOS §3` documenta — conferido no banco: `permission denied` | execução da T-030 | migração 0004: `GRANT` por COLUNA (`status`, `autorizador_id`) mais gatilho que só aceita a transição documentada, com as demais colunas conferidas inalteradas. Decidido com o cliente. ✅ resolvido |
-| A-23 | **`RN-C05` promete livro de controlados "exportável"** e não há componente, comando nem endpoint de exportação em lugar nenhum do ciclo 1 | execução da T-030 | metade imutável entregue e testada; exportação **não entregue**. Precisa de tarefa — e de +1 no catálogo, que hoje tem folga |
-| A-22 | **O AC-6 da T-030 pedia recusa num fluxo que o ADR-0010 cortou.** `RN-C02` é sobre ajuste de saldo, e ajuste está fora do ciclo 1. A própria seção "Não faz" da tarefa excluía `RN-C04` pelo mesmo motivo e esqueceu este | execução da T-030 | AC-6 fica em branco, com a razão registrada. Volta quando inventário entrar |
-| A-21 | **O FEFO propunha o que o próprio sistema recusa.** `propor_fefo` implementa `RN-L02` e não conhece `RN-L05`: propõe o lote de menor validade, que costuma ser o que está na janela de 30 dias e depende de liberação do RT. Pior: quem escolhesse o lote certo pagava justificativa por isso | execução da T-028 | proposta calculada entre os que podem sair de fato, nos dois lados. ✅ corrigido |
-| A-19 | Não há lista fechada de motivos de **saída** em documento nenhum. `RN-M05` exige uma "por tipo de movimento", e o documento 02 só define a de ajuste (`RN-I06`) | execução da T-028 | quatro motivos derivados do enum do domínio, com o corte justificado no arquivo da tarefa. **Confirmar com o cliente** |
-| A-17 | **O cache do grimp serviu um grafo velho.** Ao sabotar o teste de barreira de propósito, `.grimp_cache` continuou reportando a violação depois de o import ter sido removido. Um cache que atrasa num sentido atrasa no outro: o import proibido entra, o cache ainda não viu, e o teste que sustenta o ADR-0002 fica **verde sobre uma barreira já caída** | execução da T-027 | `cache_dir=None` nos três testes de grafo; `.grimp_cache/` no `.gitignore`. ✅ corrigido |
-| A-18 | `test_ac1_todo_comando_declarado_tem_executavel...` passava por **ausência de dado** quando rodado isolado: `commands/indice.py` só era importado por outro módulo de teste, então o registro chegava vazio e a bijeção não tinha o que comparar | execução da T-027 | o teste passou a importar o índice ele mesmo. ✅ corrigido |
-| ~~A-15~~ | ~~O corte de W4 não previu onde a execução do comando mora~~ — as quatro tarefas restantes ganharam `commands/<dominio>.py`, `commands/entradas/<dominio>.py` e o teste; `entradas` virou pacote (um módulo por tarefa) e **`commands/indice.py` passou a ser gerado** por `make gerar-indice`, porque as cinco precisariam da mesma linha nele | execução da T-027 | ✅ corrigido |
-| A-14 | **Onde persiste a autorização de RN-L05 não está em documento nenhum.** "Só o RT libera, com justificativa" — mas o bloqueio por validade é derivado da data (ADR-0022) e não há coluna para desfazê-lo. Implementado como fato da trilha de auditoria | execução da T-027 | **T-028** precisa consultar a trilha ao decidir a saída; se não couber, vira ADR e coluna |
-| ~~A-16~~ | ~~Duas convenções de endpoint de escrita nos documentos~~ — CONTRATOS §8 (`/api/comandos/{nome}`) é normativo e prevaleceu; as 4 tarefas restantes de W4 foram corrigidas, e a referência morta a `confirm_action` em T-029 saiu junto | execução da T-027 | ✅ corrigido |
-| A-12 | **T-025 não cabia nos arquivos que declarava.** A lista de propriedade exclusiva citava `confirm_action.py` — arquivo que o escopo da própria tarefa manda não criar (A-05) — e `commands/*.test.py`, caminho inexistente. E os AC-3/AC-4/AC-7 exigem tabela (T-036) e rota HTTP (T-011) para serem verificáveis | execução da T-025 | lista corrigida; 3 arquivos de outra tarefa tocados, registrados no arquivo da tarefa |
-| A-13 | **`make check` nunca pôde passar.** `web/eslint.config.js` e `web/scripts/arch-check.ts` são invocados pelo Makefile e **nunca existiram** em commit nenhum; `eslint` não é dependência de `web/package.json`. O comando que o CLAUDE.md chama de "o que o CI roda" para na primeira etapa | execução da T-025 | **T-041** (CI) e **T-005** (arch do TS) |
-| ~~A-04b~~ | ~~`arch:check` só do lado Python~~ | A-002 | ✅ as 6 regras do TS existem em `web/scripts/arch-check.ts`, com fixture de violação por regra |
-| ~~A-09~~ | ~~`make typecheck` não cobria `tests`~~ | T-018 | ✅ cobre `src tests`; os 10 erros corrigidos — os parâmetros de catálogo em `assistant/` viraram `Sequence[Mapping[...]]`, que é o tipo certo |
-| A-11 | Os fakes de `tests/registry/` reimplementam a interseção de escopo da porta. Se o adaptador real parar de intersectar, **toda a suíte de registry continua verde** | auditoria de testes | **T-042** |
-| A-10 | O observador do LangFuse tinha três defeitos — região errada, `update_trace()` inexistente na v4, nota sem `trace_id` — todos invisíveis porque o `except` que torna a telemetria não-fatal a torna muda | execução real | [ADR-0026](../adr/0026-observabilidade.md) · **T-043** |
-| A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
-| ~~A-07b~~ | ~~Não há CI~~ | A-002 | ✅ `.github/workflows/ci.yml`, com Postgres como serviço |
-| A-08b | Spike sem relatório R-001 | A-002 | T-017 parcial |
-| A-01 | `select` rodava no cliente — `D` atravessava a rede | [A-001](../relatorios/A-001-auditoria-pre-migracao.md) | [ADR-0020](../adr/0020-select-no-servidor.md) |
-| A-02 | Sessão em cookie sem CSRF | A-001 | [ADR-0019](../adr/0019-autenticacao-e-cadastro.md) · T-037 |
-| A-03 | `viewKey` por hash prometia revogação impossível | A-001 | [ADR-0021](../adr/0021-viewkey-e-viewid.md) |
-| A-04 | `status` armazenava estado derivado | A-001 | [ADR-0022](../adr/0022-status-registrado-e-efetivo.md) |
-| A-05 | `requires` estático não cabia em 2 componentes | A-001 | Catálogo 23 → 22 |
-| A-06 | 6 permissões sem uso, 1 contradizendo tarefa | A-001 | 18 permissões |
-| A-07 | CONTRATOS definia 3 de 7 entidades | A-001 | CONTRATOS rev. 2.0 |
-
-Classificação: **muda regra** → pergunta ao cliente · **muda decisão técnica** →
-ADR · **muda escopo** → revisão do PRD.

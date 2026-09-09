@@ -161,10 +161,17 @@ def test_lote_nao_tem_coluna_saldo_nem_status_derivado(dono: Engine) -> None:
         assert derivado not in check, f"ADR-0022: {derivado} e' derivado, nao armazenado"
 
 
-def test_saldo_materializado_bate_com_a_soma_dos_movimentos(dono: Engine) -> None:
-    """A view e' derivada e reconstruivel. Se divergir, a fonte e' o movimento."""
+def test_saldo_bate_com_a_soma_dos_movimentos(dono: Engine) -> None:
+    """A view e' derivada. Se divergir, a fonte e' o movimento.
+
+    Nao ha mais `REFRESH`: `saldo_lote` deixou de ser materializada na migracao
+    0005 (achado A-20). Materializada, ela so' mudava por comando manual que
+    nenhum caminho da aplicacao executava — e todo saldo LIDO ficava para tras
+    depois da primeira escrita. Agora e' calculada, e concordar com a soma
+    deixou de ser algo a verificar depois de atualizar: e' verdade por
+    construcao. O teste continua, porque a definicao da view pode mudar.
+    """
     with dono.begin() as c:
-        c.execute(sa.text("REFRESH MATERIALIZED VIEW saldo_lote"))
         da_view = c.execute(
             sa.text("SELECT saldo FROM saldo_lote WHERE lote_id = 't-l'")
         ).scalar_one()

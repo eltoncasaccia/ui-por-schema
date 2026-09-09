@@ -18,7 +18,9 @@ class Config:
         return Config(
             database_url=os.environ.get(
                 "DATABASE_URL",
-                "postgresql+asyncpg://estoque:troque-isto@localhost:15432/estoque",
+                # Papel RESTRITO, nunca o dono (achado A-27): o dono ignora REVOKE, e com
+                # ele a imutabilidade de movimento e auditoria valeria só nos testes.
+                "postgresql+asyncpg://estoque_app:app@localhost:15432/estoque",
             ),
             sessao_secret=os.environ.get("SESSAO_SECRET", "dev-inseguro"),
             modo_demo=os.environ.get("MODO_DEMO", "true").lower() == "true",

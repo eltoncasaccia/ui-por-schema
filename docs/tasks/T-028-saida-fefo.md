@@ -116,10 +116,10 @@ Autorizar controlado (T-030). Descarte e estorno (T-029).
   de 30 dias como dependente de liberação e não o propõe, mesmo quando o RT já
   liberou. O servidor aceita. A divergência é no sentido seguro, e some quando
   houver `RepoAuditoria` — T-007 e T-024.
-- **A view materializada continua parada.** O comando não depende dela, mas toda
-  LEITURA de saldo (`lote_lista`, `lote_detalhe`, `quarentena_fila`) mostra o
-  valor de antes da primeira escrita. Ver A-20: precisa de dono ou de gatilho, e
-  os dois são schema — T-036.
+- ~~**A view materializada continua parada.**~~ **Resolvido** pela migração 0005:
+  `saldo_lote` deixou de ser materializada e passou a ser calculada. O comando
+  continua somando os movimentos dentro da transação travada — é a fonte, e
+  agora a view concorda com ela por construção.
 
 ## Armadilhas
 

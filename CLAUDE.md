@@ -82,6 +82,12 @@ make env-completar   # acrescenta as variáveis novas
 make modelo          # mostra provedor, modelo e modo em uso
 ```
 
+**Dois papéis de banco, e a diferença é regulatória.** `DATABASE_URL` usa
+`estoque_app` — o papel restrito, sem `UPDATE`/`DELETE` em `movimento` e
+`auditoria`. `DATABASE_URL_ADMIN` usa o dono, e **só a migração e o seed** o
+usam. O dono ignora `REVOKE`: com ele na aplicação, `RN-M02` e `RN-D02` valiam
+só nos testes (achado A-27).
+
 `make env` existe por um motivo concreto ([ADR-0027](docs/adr/0027-ambiente-verificado.md)):
 acrescentar variável ao `.env.example` **não** atualiza o `.env` de quem já
 rodou, e a variável ausente cai num padrão que funciona — e é por funcionar que

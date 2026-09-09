@@ -123,7 +123,9 @@ async def semear(url: str) -> None:
             ["id"],
         )
 
-        await c.execute(sa.text("REFRESH MATERIALIZED VIEW saldo_lote"))
+        # Nao ha mais REFRESH: `saldo_lote` virou view comum na migracao 0005.
+        # Ela e' calculada, nao atualizada — e por isso nunca fica para tras
+        # (achado A-20).
 
     async with eng.connect() as c:
         n_lote = (await c.execute(sa.select(sa.func.count()).select_from(m.lote))).scalar_one()
@@ -156,7 +158,9 @@ async def _upsert(
 
 
 def main() -> int:
-    url = os.environ.get("DATABASE_URL")
+    # O seed escreve dado de demonstração e roda como DONO: `estoque_app` não
+    # tem privilégio para tudo que o seed faz, e nem deveria ter.
+    url = os.environ.get("DATABASE_URL_ADMIN") or os.environ.get("DATABASE_URL")
     if not url:
         print("DATABASE_URL ausente", file=sys.stderr)
         return 1

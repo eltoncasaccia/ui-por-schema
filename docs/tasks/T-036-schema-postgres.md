@@ -38,7 +38,10 @@ api/tests/data/test_schema.py
 | `UNIQUE (produto_id, numero, unidade_id)` | `RN-L08` |
 | `CHECK` de classe × tipo de unidade | `RN-P02`, `RN-P03` |
 
-- **View materializada `saldo_lote`**, atualizada na mesma transação do movimento —
+- ~~**View materializada `saldo_lote`**~~, atualizada na mesma transação do movimento
+  — **a materialização nunca foi atualizada por caminho nenhum da aplicação**
+  (achado A-20); a migração 0005 a tornou view comum, que cumpre a promessa por
+  construção. O texto original dizia —
   derivada, reconstruível, nunca editável (ADR-0022).
 - Índices para os requisitos de tempo: `movimento(lote_id)` e
   `movimento(cliente_id, criado_em)` para `RNF-01`; `lote(unidade_id, validade)`

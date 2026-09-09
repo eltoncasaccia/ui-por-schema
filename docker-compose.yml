@@ -21,6 +21,7 @@ services:
     build: ./api
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL_ADMIN: ${DATABASE_URL_ADMIN}
       SESSAO_SECRET: ${SESSAO_SECRET}
       MODO_DEMO: ${MODO_DEMO}
       CORS_ORIGIN: ${CORS_ORIGIN}

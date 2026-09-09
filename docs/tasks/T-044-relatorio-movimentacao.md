@@ -21,7 +21,7 @@ Este componente troca 300 relatórios possíveis por ~164 tokens de catálogo.
 **Lado servidor**
 
 ```
-api/src/estoque/registry/componentes/relatorio_movimentacao.py
+api/src/estoque/application/registry/componentes/relatorio_movimentacao.py
 api/tests/registry/test_relatorio_movimentacao.py
 ```
 
@@ -37,7 +37,7 @@ web/src/views/relatorio_movimentacao.tsx
 ## Só leitura
 
 `api/src/estoque/data/porta.py`, `api/src/estoque/domain/**`,
-`api/src/estoque/registry/definir.py`
+`api/src/estoque/application/registry/definir.py`
 
 ## Escopo
 

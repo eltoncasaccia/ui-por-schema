@@ -123,8 +123,8 @@ Ou individualmente:
 
 | Arquivo | Gerado por |
 |---|---|
-| `api/src/estoque/registry/indice.py` | `make gerar-indice` |
-| `api/src/estoque/commands/indice.py` | `make gerar-indice` |
+| `api/src/estoque/application/registry/indice.py` | `make gerar-indice` |
+| `api/src/estoque/application/commands/indice.py` | `make gerar-indice` |
 | `web/src/views/indice.ts` | `make gerar-indice` |
 | `web/src/generated/contrato.json` | `make types` |
 | `web/src/generated/componentes.ts` | `make types` |
@@ -140,13 +140,17 @@ tarefas de escrita de W4 precisariam da mesma linha de import nele.
 
 ## 5. Arquitetura, em uma tela
 
+**Ports & Adapters (hexagonal)**, com a regra de dependência do Clean: as setas
+apontam para dentro, e quem verifica é o CI, não a revisão
+([ADR-0031](docs/adr/0031-ports-and-adapters.md)).
+
 ```
         pergunta do usuário
                 │
                 ▼
    ┌─────────────────────────────┐
    │  catálogo POR ATOR          │  só o que este papel pode ver
-   │  registry/registry.py       │  (ADR-0003)
+   │  application/registry/      │  (ADR-0003)
    └──────────────┬──────────────┘
                   ▼
    ┌─────────────────────────────┐
@@ -156,12 +160,12 @@ tarefas de escrita de W4 precisariam da mesma linha de import nele.
                   ▼
    ┌─────────────────────────────┐
    │  VALIDAR contra o catálogo  │  ← a barreira. Componente fora
-   │  schema/validar.py          │    do catálogo DESTE ator morre
+   │  application/schema/        │    do catálogo DESTE ator morre
    └──────────────┬──────────────┘    aqui (ADR-0002)
                   ▼
    ┌─────────────────────────────┐
    │  load  →  select            │  autorizado, com identidade real.
-   │  registry/componentes/*.py  │  `select` roda NO SERVIDOR (ADR-0020)
+   │  application/registry/      │  `select` roda NO SERVIDOR (ADR-0020)
    └──────────────┬──────────────┘
                   ▼
    ┌─────────────────────────────┐
@@ -170,26 +174,17 @@ tarefas de escrita de W4 precisariam da mesma linha de import nele.
    └─────────────────────────────┘
 ```
 
-**Camadas do `api/`, verificadas por `import-linter`** (não é convenção, é CI).
-O *porquê* de cada uma — e de `src/estoque` — está no
-[ADR-0030](docs/adr/0030-layout-de-diretorios.md): **diretório é definido pelo que
-pode importar, não pelo tipo de arquivo.**
+**A tese em forma de contrato de CI:** `assistant` não importa
+`application.commands`. Se existir caminho de código do assistente até um comando
+de escrita, a promessa de que *"o modelo nunca autoriza escrever"* deixa de ser
+verificável.
 
-
-| Módulo | Papel | Não pode importar |
-|---|---|---|
-| `domain/` | tipos, regras puras, erros, identidade | **nada** do projeto |
-| `data/` | porta única de dados + SQLAlchemy | — |
-| `registry/` | os componentes: params, `requires`, `load`, `select` | `server`, `sqlalchemy` |
-| `schema/` | validação da saída do modelo, `viewKey` | — |
-| `assistant/` | adapter de modelo, prompt, trace, observador | **`commands`** ← a barreira do ADR-0002 |
-| `commands/` | pipeline de escrita | — |
-| `server/` | borda HTTP, autorização por registro, auditoria | — |
-| `auth/`, `autorizacao/`, `auditoria/` | sessão/CSRF, permissões, trilha | — |
-
-A regra **`assistant` não importa `commands`** é a tese em forma de teste: se
-existir caminho de código do assistente até um comando de escrita, a promessa
-de que "o modelo nunca autoriza escrever" deixa de ser verificável.
+> **As camadas de cada lado ficam no `CLAUDE.md` do projeto**, porque são
+> convenções diferentes de linguagens diferentes:
+> **[`api/CLAUDE.md`](api/CLAUDE.md)** — o hexágono, os quatro contratos do
+> `import-linter`, a anatomia de um componente.
+> **[`web/CLAUDE.md`](web/CLAUDE.md)** — as camadas do cliente, o sistema visual,
+> a bijeção com o registry.
 
 ---
 

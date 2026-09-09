@@ -22,10 +22,10 @@ operador acaba usando.
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/lote_lista.py
-api/src/estoque/registry/componentes/lote_detalhe.py
-api/src/estoque/registry/componentes/lote_movimentos.py
-api/src/estoque/registry/componentes/quarentena_fila.py
+api/src/estoque/application/registry/componentes/lote_lista.py
+api/src/estoque/application/registry/componentes/lote_detalhe.py
+api/src/estoque/application/registry/componentes/lote_movimentos.py
+api/src/estoque/application/registry/componentes/quarentena_fila.py
 api/tests/registry/test_lote_lista.py
 api/tests/registry/test_lote_detalhe.py
 api/tests/registry/test_lote_movimentos.py

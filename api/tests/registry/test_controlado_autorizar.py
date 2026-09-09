@@ -12,17 +12,17 @@ import grimp
 import pytest
 from fakes import contexto
 
-from estoque.commands.entradas.autorizacao import EntradaAutorizacao
-from estoque.domain.identidade import Ator
-from estoque.domain.tipos import Movimento
-from estoque.registry.componentes.controlado_autorizar import (
+from estoque.application.commands.entradas.autorizacao import EntradaAutorizacao
+from estoque.application.registry.componentes.controlado_autorizar import (
     VM,
     Dados,
     Params,
     projetar,
 )
-from estoque.registry.definir import CommandDef
-from estoque.registry.registry import buscar, ids_permitidos
+from estoque.application.registry.definir import CommandDef
+from estoque.application.registry.registry import buscar, ids_permitidos
+from estoque.domain.identidade import Ator
+from estoque.domain.tipos import Movimento
 
 TODAS_AS_PERSONAS = ("marco", "helena", "ivo", "odair", "cleide", "rafael", "sandra")
 
@@ -171,7 +171,7 @@ def test_ac8_o_assistente_nao_alcanca_o_comando_de_autorizacao() -> None:
     g = grimp.build_graph("estoque", cache_dir=None)
     caminho = g.find_shortest_chain(
         importer="estoque.assistant",
-        imported="estoque.commands.autorizacao",
+        imported="estoque.application.commands.autorizacao",
         as_packages=True,
     )
     assert caminho is None, f"o assistente alcança a autorização por {caminho}"
@@ -183,7 +183,7 @@ def test_ac8_o_grafo_enxerga_o_caminho_que_existe() -> None:
     assert (
         g.find_shortest_chain(
             importer="estoque.server",
-            imported="estoque.commands.autorizacao",
+            imported="estoque.application.commands.autorizacao",
             as_packages=True,
         )
         is not None
@@ -238,7 +238,7 @@ def test_o_componente_e_formulario_inteiro() -> None:
 async def test_a_fila_respeita_o_escopo(personas: dict[str, Ator]) -> None:
     """RN-A01: o `load` pede ao repositório, e o repositório intersecta. Odair
     não vê pendência da Matriz."""
-    from estoque.registry.componentes.controlado_autorizar import carregar
+    from estoque.application.registry.componentes.controlado_autorizar import carregar
 
     dados = await carregar(Params(), contexto(personas["odair"]))
     for mov in dados.movimentos:

@@ -4,9 +4,9 @@ O teste que vale aqui e' o negativo: provar que Cleide NAO recebe custo por
 nenhum caminho, inclusive por valor de enum.
 """
 
+from estoque.application.registry.orcamento import ALERTA_TOKENS, tokens_do_catalogo
+from estoque.application.registry.registry import ids_permitidos
 from estoque.domain.identidade import Ator
-from estoque.registry.orcamento import ALERTA_TOKENS, tokens_do_catalogo
-from estoque.registry.registry import ids_permitidos
 
 TODAS_AS_PERSONAS = ("marco", "helena", "ivo", "odair", "cleide", "rafael", "sandra")
 
@@ -101,7 +101,7 @@ def test_metrica_de_custo_some_do_enum_de_quem_nao_pode(
     Cleide continua vendo `estoque_indicador` — ela precisa dele. O que ela nao
     ve e' a metrica `valor_em_estoque`, e por isso o modelo nao consegue propor.
     """
-    from estoque.registry.registry import catalogo_de
+    from estoque.application.registry.registry import catalogo_de
 
     for nome in SEM_CUSTO:
         entrada = next(e for e in catalogo_de(personas[nome]) if e["id"] == "estoque_indicador")
@@ -111,7 +111,7 @@ def test_metrica_de_custo_some_do_enum_de_quem_nao_pode(
 
 
 def test_quem_tem_custo_ve_a_metrica(personas: dict[str, Ator]) -> None:
-    from estoque.registry.registry import catalogo_de
+    from estoque.application.registry.registry import catalogo_de
 
     for nome in COM_CUSTO:
         entrada = next(e for e in catalogo_de(personas[nome]) if e["id"] == "estoque_indicador")
@@ -131,7 +131,7 @@ def test_descricao_nunca_enumera_valor_de_enum_filtrado(
     Regra que passa a valer: a descricao descreve o COMPONENTE; o enum descreve
     as OPCOES. Nunca as duas coisas.
     """
-    from estoque.registry.registry import catalogo_de, todos, valores_proibidos
+    from estoque.application.registry.registry import catalogo_de, todos, valores_proibidos
 
     for nome, ator in personas.items():
         for entrada in catalogo_de(ator):
@@ -151,6 +151,6 @@ def test_orcamento_de_tokens_abaixo_do_alerta(personas: dict[str, Ator]) -> None
 
 
 def test_teto_de_catalogo_e_verificado_na_importacao() -> None:
-    from estoque.registry.orcamento import verificar_teto
+    from estoque.application.registry.orcamento import verificar_teto
 
     verificar_teto()  # nao levanta abaixo do teto

@@ -21,12 +21,12 @@ de Helena contém estes componentes.
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/quarentena_liberar.py
-api/src/estoque/registry/componentes/lote_status_acao.py
+api/src/estoque/application/registry/componentes/quarentena_liberar.py
+api/src/estoque/application/registry/componentes/lote_status_acao.py
 api/tests/registry/test_quarentena_liberar.py
 api/tests/registry/test_lote_status_acao.py
 
-api/src/estoque/commands/lote.py       api/src/estoque/commands/entradas/lote.py
+api/src/estoque/application/commands/lote.py       api/src/estoque/application/commands/entradas/lote.py
 api/tests/commands/test_lote_comandos.py
 ```
 

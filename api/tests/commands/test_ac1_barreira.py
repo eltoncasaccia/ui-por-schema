@@ -31,15 +31,15 @@ import pytest
 # vazio, a bijecao nao tem o que comparar e o teste passa por ausencia de dado —
 # verde por nao ter olhado nada, que e' o pior modo de falha possivel para o
 # teste que sustenta o ADR-0002.
-import estoque.commands.indice  # noqa: F401
-from estoque.commands import pipeline
-from estoque.commands.tipos import Comando
-from estoque.registry.definir import CommandDef
-from estoque.registry.registry import todos
+import estoque.application.commands.indice  # noqa: F401
+from estoque.application.commands import pipeline
+from estoque.application.commands.tipos import Comando
+from estoque.application.registry.definir import CommandDef
+from estoque.application.registry.registry import todos
 
 RAIZ = "estoque"
 ASSISTENTE = "estoque.assistant"
-ESCRITA = "estoque.commands"
+ESCRITA = "estoque.application.commands"
 
 
 @pytest.fixture(scope="module")

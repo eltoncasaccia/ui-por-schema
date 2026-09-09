@@ -22,11 +22,11 @@ import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.pool import NullPool
 
-import estoque.commands.indice  # noqa: F401  — registra os comandos
-from estoque.commands import pipeline
-from estoque.commands.autorizacao import _etag_do_movimento
-from estoque.commands.saida import _etag_da_saida, _saldo
-from estoque.commands.tipos import ContextoComando
+import estoque.application.commands.indice  # noqa: F401  — registra os comandos
+from estoque.application.commands import pipeline
+from estoque.application.commands.autorizacao import _etag_do_movimento
+from estoque.application.commands.saida import _etag_da_saida, _saldo
+from estoque.application.commands.tipos import ContextoComando
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator

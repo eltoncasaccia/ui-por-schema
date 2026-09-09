@@ -12,8 +12,8 @@ import pytest
 from fakes import MOVIMENTOS, SINAL, contexto
 from pydantic import ValidationError
 
+from estoque.application.registry.componentes.lote_movimentos import Params, carregar, projetar
 from estoque.domain.erros import ErroDominio
-from estoque.registry.componentes.lote_movimentos import Params, carregar, projetar
 
 
 async def _vm(ator: Any, lote_id: str, **params: Any) -> Any:

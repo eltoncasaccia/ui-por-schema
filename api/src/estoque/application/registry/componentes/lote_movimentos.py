@@ -22,6 +22,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from estoque.application.registry.definir import ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.saldo import calcular_saldo
 from estoque.domain.tipos import (
@@ -30,8 +32,6 @@ from estoque.domain.tipos import (
     StatusMovimento,
     TipoMovimento,
 )
-from estoque.registry.definir import ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 DIAS: dict[str, int | None] = {"7": 7, "30": 30, "90": 90, "365": 365, "tudo": None}
 

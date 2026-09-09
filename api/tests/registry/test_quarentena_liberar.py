@@ -13,15 +13,15 @@ import pytest
 from fakes import contexto
 from pydantic import ValidationError
 
-from estoque.domain.erros import ErroDominio
-from estoque.domain.identidade import Ator
-from estoque.registry.componentes.quarentena_liberar import (
+from estoque.application.registry.componentes.quarentena_liberar import (
     VM,
     Params,
     carregar,
     projetar,
 )
-from estoque.registry.registry import buscar, ids_permitidos
+from estoque.application.registry.registry import buscar, ids_permitidos
+from estoque.domain.erros import ErroDominio
+from estoque.domain.identidade import Ator
 
 TODAS_AS_PERSONAS = ("marco", "helena", "ivo", "odair", "cleide", "rafael", "sandra")
 
@@ -196,9 +196,11 @@ def test_o_modulo_de_entradas_nao_alcanca_o_pipeline() -> None:
     # `cache_dir=None`: cache pode servir grafo velho — ver a docstring do
     # fixture `grafo` em `tests/commands/test_ac1_barreira.py`.
     g = grimp.build_graph("estoque", include_external_packages=True, cache_dir=None)
-    for proibido in ("estoque.commands.pipeline", "estoque.data", "sqlalchemy"):
+    for proibido in ("estoque.application.commands.pipeline", "estoque.data", "sqlalchemy"):
         caminho = g.find_shortest_chain(
-            importer="estoque.commands.entradas", imported=proibido, as_packages=True
+            importer="estoque.application.commands.entradas",
+            imported=proibido,
+            as_packages=True,
         )
         assert caminho is None, f"entradas alcança {proibido} por {caminho}"
 
@@ -211,8 +213,8 @@ def test_o_grafo_enxerga_o_import_que_existe() -> None:
     g = grimp.build_graph("estoque", cache_dir=None)
     assert (
         g.find_shortest_chain(
-            importer="estoque.commands.lote",
-            imported="estoque.commands.pipeline",
+            importer="estoque.application.commands.lote",
+            imported="estoque.application.commands.pipeline",
             as_packages=True,
         )
         is not None

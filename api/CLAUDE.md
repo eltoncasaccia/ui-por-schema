@@ -29,6 +29,67 @@ uv run lint-imports                  # contratos de camada
 
 ---
 
+## O padrão: Ports & Adapters (hexagonal)
+
+O desenho tem nome, e é o de sempre: **arquitetura hexagonal**, com a regra de
+dependência do Clean — **as setas apontam para dentro**. Nada no núcleo conhece
+Postgres, HTTP ou o modelo de linguagem.
+
+O que este projeto faz e a maioria não: **a regra é CI, não revisão**
+([ADR-0031](../docs/adr/0031-ports-and-adapters.md)).
+
+```
+                        ADAPTERS PRIMÁRIOS
+                     (quem CHAMA o sistema)
+                              │
+                        server/  ← HTTP
+                              │
+        ┌─────────────────────▼─────────────────────┐
+        │              APPLICATION                  │
+        │   registry/  leitura   (load, select)     │
+        │   commands/  escrita   (pipeline)         │
+        │   schema/    valida a entrada hostil      │
+        │                                           │
+        │        ┌───────────────────────┐          │
+        │        │        DOMAIN         │          │
+        │        │  tipos · regras puras │          │
+        │        │  FEFO · validade      │          │
+        │        │  máquina de estados   │          │
+        │        └───────────────────────┘          │
+        └───────────────────┬───────────────────────┘
+                            │  fala só com PORTAS
+        ┌───────────────────▼───────────────────────┐
+        │  data/porta.py         6 Protocol         │
+        │  assistant/adapter.py  AdaptadorModelo    │
+        │  assistant/observador.py  Observador      │
+        └───────────────────┬───────────────────────┘
+                            │
+                     ADAPTERS SECUNDÁRIOS
+                    (o que o sistema chama)
+     data/repositorios.py · assistant/fabrica.py · langfuse_obs.py
+             Postgres          OpenRouter/Ollama      LangFuse
+```
+
+### Onde cada coisa mora, e por quê
+
+| Pasta | Papel no hexágono | Por que existe separada |
+|---|---|---|
+| `domain/` | **núcleo** | Regra que precisa de banco é regra que ninguém testa. Não importar nada é o que deixa `RN-L02` ser exercitada sem subir Postgres |
+| `application/registry/` | caso de uso de **leitura** | Componente descreve **o quê**, não **como buscar** |
+| `application/commands/` | caso de uso de **escrita** | Separado de `registry` **para o contrato 3 poder existir** — não é arrumação |
+| `application/schema/` | validação de entrada | Schema recebido é payload não-confiável **venha do modelo ou do cliente** |
+| `data/porta.py` | **portas** (6 `Protocol`) | O que a aplicação precisa, sem dizer de onde vem |
+| `data/repositorios.py` | **adapter** Postgres | Aplica escopo (`RN-A01`) e some com campo restrito (`RN-A02`) — num lugar só |
+| `assistant/` | **porta + adapter** do LLM | `adapter.py` é a porta; `fabrica.py` escolhe OpenRouter, Ollama ou Anthropic |
+| `server/` | **adapter primário** | A borda HTTP, e o único módulo que conhece os dois planos |
+| `auth/`, `autorizacao/`, `auditoria/` | serviços transversais | Fora de `server/` de propósito: `autorizacao/motor.py` é chamado pela borda **e** pelo pipeline. Dentro de `server/`, `commands` teria que importar a borda para autorizar |
+
+> **Ambiguidade honesta:** `auth/` é meio adapter (sessão em cookie, CSRF) e meio
+> aplicação (política de acesso). É a única fronteira do projeto que não é limpa,
+> e está anotada em vez de disfarçada.
+
+---
+
 ## Camadas — verificadas, não combinadas
 
 `api/.importlinter` transforma o desenho em CI. Os contratos:
@@ -36,9 +97,15 @@ uv run lint-imports                  # contratos de camada
 | # | Contrato | Por quê |
 |---|---|---|
 | 1 | `domain` não importa **nada** do projeto | regra pura tem de ser testável sem banco, sem HTTP, sem modelo |
-| 2 | `registry` não importa `server` nem `sqlalchemy` | componente descreve **o quê**, não **como buscar** |
-| 3 | **`assistant` não importa `commands`** | a tese em forma de teste: se existe caminho do assistente até a escrita, "o modelo nunca autoriza escrever" deixa de ser verificável |
+| 2 | `application.registry` não importa `server` nem `sqlalchemy` | componente descreve **o quê**, não **como buscar** |
+| 3 | **`assistant` não importa `application.commands`** | a tese em forma de teste: se existe caminho do assistente até a escrita, "o modelo nunca autoriza escrever" deixa de ser verificável |
 | 4 | `assistant.prompt` não importa `data` | prompt não pode conter dado do estoque ([ADR-0012](../docs/adr/0012-injecao-de-prompt-via-dado.md)) |
+
+**E o verificador tem testes que provam que ele quebra.**
+`tests/arquitetura/test_verificador_falha_quando_violado.py` introduz cada
+violação de propósito — inclusive por caminho indireto de dois saltos — e afirma
+que o `lint-imports` sai com código diferente de zero. Sem isso, verde não
+significa nada: pode estar verde por não estar verificando.
 
 Precisou violar um contrato? **Pare.** O contrato está certo e o desenho está
 errado, ou é uma decisão que vira ADR. Não é para desligar a regra.
@@ -47,7 +114,7 @@ errado, ou é uma decisão que vira ADR. Não é para desligar a regra.
 
 ## Anatomia de um componente do registry
 
-Todo componente em `src/estoque/registry/componentes/<id>.py` tem a mesma forma.
+Todo componente em `src/estoque/application/registry/componentes/<id>.py` tem a mesma forma.
 `fila_vencimento.py` é o exemplo canônico — **leia antes de escrever o seu**.
 
 ```python

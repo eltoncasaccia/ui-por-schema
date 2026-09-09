@@ -20,8 +20,8 @@ exportável, com cinco anos de retenção.
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/temperatura_historico.py
-api/src/estoque/registry/componentes/temperatura_excursoes.py
+api/src/estoque/application/registry/componentes/temperatura_historico.py
+api/src/estoque/application/registry/componentes/temperatura_excursoes.py
 api/tests/registry/test_temperatura_historico.py
 api/tests/registry/test_temperatura_excursoes.py
 ```

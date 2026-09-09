@@ -21,11 +21,11 @@ modelo escolhe abri-lo; nunca o monta peça por peça.
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/recebimento_registrar.py
+api/src/estoque/application/registry/componentes/recebimento_registrar.py
 api/tests/registry/test_recebimento_registrar.py
 
-api/src/estoque/commands/recebimento.py
-api/src/estoque/commands/entradas/recebimento.py
+api/src/estoque/application/commands/recebimento.py
+api/src/estoque/application/commands/entradas/recebimento.py
 api/tests/commands/test_recebimento_comandos.py
 ```
 

@@ -18,7 +18,7 @@ import json
 import secrets
 from typing import Any
 
-from estoque.schema.contrato import ViewSchema
+from estoque.application.schema.contrato import ViewSchema
 
 BITS_VIEW_ID = 128
 

@@ -9,8 +9,8 @@ from typing import Any
 
 import pytest
 
+from estoque.application.schema.validar import validar_schema
 from estoque.domain.identidade import Ator
-from estoque.schema.validar import validar_schema
 
 
 def bloco(tipo: str, **params: Any) -> dict[str, Any]:

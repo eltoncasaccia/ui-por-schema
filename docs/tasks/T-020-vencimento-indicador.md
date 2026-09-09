@@ -20,8 +20,8 @@ indicador numérico usado em panoramas compostos.
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/fila_vencimento.py
-api/src/estoque/registry/componentes/estoque_indicador.py
+api/src/estoque/application/registry/componentes/fila_vencimento.py
+api/src/estoque/application/registry/componentes/estoque_indicador.py
 api/tests/registry/test_fila_vencimento.py
 api/tests/registry/test_estoque_indicador.py
 ```

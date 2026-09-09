@@ -39,7 +39,8 @@ antigo recebe `Status: Substituído por ADR-XXXX`. O histórico é o valor.
 | [0027](./0027-ambiente-verificado.md) | Conferir o `.env` contra o exemplo, por comando | Ferramental | Aceito |
 | [0028](./0028-processo-de-decisao.md) | Pergunta curta antes; ADR depois | Processo | Aceito |
 | [0029](./0029-relatorio-como-componente.md) | Relatório é componente parametrizado | Ciclo 1 | Aceito |
-| [0030](./0030-layout-de-diretorios.md) | Diretórios por dependência permitida, não por tipo | Fundacional | Aceito — **emenda 0007** |
+| [0030](./0030-layout-de-diretorios.md) | ~~Diretórios por dependência permitida~~ | Fundacional | **Substituído por 0031** |
+| [0031](./0031-ports-and-adapters.md) | Ports & Adapters, com a regra de dependência no CI | Fundacional | Aceito — **substitui 0030**, emenda 0007 |
 
 ## Origem das decisões
 

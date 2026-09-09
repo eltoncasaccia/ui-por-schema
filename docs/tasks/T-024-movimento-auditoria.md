@@ -21,8 +21,8 @@ autorizações pendentes de controlado** — foi assim que o catálogo coube em 
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/movimento_lista.py
-api/src/estoque/registry/componentes/auditoria_trilha.py
+api/src/estoque/application/registry/componentes/movimento_lista.py
+api/src/estoque/application/registry/componentes/auditoria_trilha.py
 api/tests/registry/test_movimento_lista.py
 api/tests/registry/test_auditoria_trilha.py
 ```

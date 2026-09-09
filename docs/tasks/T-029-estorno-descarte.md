@@ -20,13 +20,13 @@ movimento é recusado para todos, incluindo Diretor.**
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/movimento_estorno.py
-api/src/estoque/registry/componentes/movimento_descarte.py
+api/src/estoque/application/registry/componentes/movimento_estorno.py
+api/src/estoque/application/registry/componentes/movimento_descarte.py
 api/tests/registry/test_movimento_estorno.py
 api/tests/registry/test_movimento_descarte.py
 
-api/src/estoque/commands/estorno.py
-api/src/estoque/commands/entradas/estorno.py
+api/src/estoque/application/commands/estorno.py
+api/src/estoque/application/commands/entradas/estorno.py
 api/tests/commands/test_estorno_comandos.py
 ```
 

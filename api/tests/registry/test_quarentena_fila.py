@@ -10,7 +10,7 @@ from typing import Any
 
 from fakes import LOTES, contexto
 
-from estoque.registry.componentes.quarentena_fila import Params, carregar, projetar
+from estoque.application.registry.componentes.quarentena_fila import Params, carregar, projetar
 
 
 async def _vm(ator: Any, **params: Any) -> Any:

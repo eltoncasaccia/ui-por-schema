@@ -1,7 +1,7 @@
 """ADR-0021 — os dois identificadores, e por que sao dois."""
 
-from estoque.schema.contrato import Bloco, ViewSchema
-from estoque.schema.viewkey import novo_view_id, view_key
+from estoque.application.schema.contrato import Bloco, ViewSchema
+from estoque.application.schema.viewkey import novo_view_id, view_key
 
 
 def s(*blocos: Bloco, titulo: str | None = None) -> ViewSchema:

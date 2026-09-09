@@ -32,9 +32,9 @@ from typing import Any
 
 import sqlalchemy as sa
 
-from estoque.commands.entradas.saida import JUSTIFICATIVA_MINIMA, EntradaSaida
-from estoque.commands.pipeline import etag_de_valores, registrar
-from estoque.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.commands.entradas.saida import JUSTIFICATIVA_MINIMA, EntradaSaida
+from estoque.application.commands.pipeline import etag_de_valores, registrar
+from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
 from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados
 from estoque.data.repositorios import RepoLoteSQL, RepoProdutoSQL

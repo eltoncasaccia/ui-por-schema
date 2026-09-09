@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Aceito |
+| **Status** | **Substituído por [ADR-0031](./0031-ports-and-adapters.md)** — descrevia este mesmo desenho sem nomeá-lo, e o nome é o que serve numa conversa técnica |
 | **Data** | 2026-09-08 |
 | **Escopo** | Fundacional |
 | **Emenda** | [ADR-0007](./0007-camadas-e-arch-check.md) — a tabela de camadas de lá é a da v1 e não descreve mais o `api/` |
@@ -92,7 +92,7 @@ Partir em dois não é organização: é a condição para o contrato existir.
 [importlinter:contract:3]
 name = assistente nunca alcanca comandos de escrita
 source_modules = estoque.assistant
-forbidden_modules = estoque.commands
+forbidden_modules = estoque.application.commands
 allow_indirect_imports = False
 ```
 

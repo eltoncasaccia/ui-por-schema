@@ -20,7 +20,7 @@ modelo** — é aqui que o ADR-0002 vira código.
 ## Arquivos de propriedade exclusiva
 
 ```
-api/src/estoque/commands/pipeline.py   api/src/estoque/commands/tipos.py
+api/src/estoque/application/commands/pipeline.py   api/src/estoque/application/commands/tipos.py
 api/tests/commands/*.py
 ```
 

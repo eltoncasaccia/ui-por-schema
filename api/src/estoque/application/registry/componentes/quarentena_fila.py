@@ -16,6 +16,12 @@ from datetime import date
 
 from pydantic import BaseModel
 
+# O nome de exibicao das unidades vem de `lote_lista` em vez de ser copiado:
+# duas tabelas com os mesmos tres nomes divergem no dia em que uma unidade
+# muda de nome, e a divergencia aparece so' na tela.
+from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
+from estoque.application.registry.definir import ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.identidade import UnidadeId
 from estoque.domain.regras.validade import (
     ClasseValidade,
@@ -24,13 +30,6 @@ from estoque.domain.regras.validade import (
     status_efetivo,
 )
 from estoque.domain.tipos import ClasseProduto, Lote, StatusLoteEfetivo
-
-# O nome de exibicao das unidades vem de `lote_lista` em vez de ser copiado:
-# duas tabelas com os mesmos tres nomes divergem no dia em que uma unidade
-# muda de nome, e a divergencia aparece so' na tela.
-from estoque.registry.componentes.lote_lista import NOME_UNIDADE
-from estoque.registry.definir import ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 
 class Params(BaseModel):

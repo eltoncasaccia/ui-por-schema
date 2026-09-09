@@ -24,10 +24,10 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from estoque.application.registry.definir import ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.identidade import UnidadeId
 from estoque.domain.regras.validade import dias_ate_vencer
-from estoque.registry.definir import ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 NOME_UNIDADE: dict[str, str] = {
     "cd-matriz": "CD Matriz",

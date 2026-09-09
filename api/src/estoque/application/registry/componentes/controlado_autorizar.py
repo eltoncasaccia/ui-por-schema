@@ -22,13 +22,13 @@ from datetime import UTC, datetime
 
 from pydantic import BaseModel
 
-from estoque.commands.entradas.autorizacao import EntradaAutorizacao
+from estoque.application.commands.entradas.autorizacao import EntradaAutorizacao
+from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
+from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.identidade import UnidadeId
 from estoque.domain.tipos import Movimento
-from estoque.registry.componentes.lote_lista import NOME_UNIDADE
-from estoque.registry.definir import CommandDef, ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 
 class Params(BaseModel):

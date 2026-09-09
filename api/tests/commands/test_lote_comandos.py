@@ -23,8 +23,8 @@ import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.pool import NullPool
 
-import estoque.commands.indice  # noqa: F401  — registra os comandos do lote
-from estoque.commands import pipeline
+import estoque.application.commands.indice  # noqa: F401  — registra os comandos do lote
+from estoque.application.commands import pipeline
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
@@ -126,8 +126,8 @@ async def _etag(motor: AsyncEngine, ator: Ator, lote_id: str = LOTE) -> str:
     """O etag como o comando o calcula, pelo mesmo caminho."""
     from datetime import UTC, datetime
 
-    from estoque.commands.lote import _etag_do_lote
-    from estoque.commands.tipos import ContextoComando
+    from estoque.application.commands.lote import _etag_do_lote
+    from estoque.application.commands.tipos import ContextoComando
 
     class _E:
         lote_id = ""

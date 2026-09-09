@@ -12,8 +12,8 @@ from typing import Any
 import pytest
 from fakes import contexto
 
+from estoque.application.registry.componentes.lote_detalhe import Params, carregar, projetar
 from estoque.domain.erros import ErroDominio
-from estoque.registry.componentes.lote_detalhe import Params, carregar, projetar
 
 
 async def _vm(ator: Any, lote_id: str) -> Any:

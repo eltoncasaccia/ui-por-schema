@@ -22,8 +22,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.pool import NullPool
 
-from estoque.commands import pipeline
-from estoque.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.commands import pipeline
+from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator

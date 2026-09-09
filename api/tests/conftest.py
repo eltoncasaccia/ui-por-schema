@@ -43,7 +43,7 @@ def personas() -> dict[str, Ator]:
 
 @pytest.fixture(autouse=True)
 def _registro_carregado() -> None:
-    import estoque.registry.indice  # noqa: F401
+    import estoque.application.registry.indice  # noqa: F401
 
 
 @pytest.fixture

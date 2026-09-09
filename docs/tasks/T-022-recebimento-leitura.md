@@ -20,8 +20,8 @@ registro (T-026).
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/recebimento_lista.py
-api/src/estoque/registry/componentes/recebimento_detalhe.py
+api/src/estoque/application/registry/componentes/recebimento_lista.py
+api/src/estoque/application/registry/componentes/recebimento_detalhe.py
 api/tests/registry/test_recebimento_lista.py
 api/tests/registry/test_recebimento_detalhe.py
 ```

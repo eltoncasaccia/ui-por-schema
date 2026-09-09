@@ -17,7 +17,7 @@
 ## Arquivos de propriedade exclusiva
 
 ```
-api/src/estoque/registry/definir.py   api/src/estoque/registry/tipos.py   api/src/estoque/registry/definir.test.py
+api/src/estoque/application/registry/definir.py   api/src/estoque/application/registry/tipos.py   api/src/estoque/application/registry/definir.test.py
 ```
 
 ## Só leitura

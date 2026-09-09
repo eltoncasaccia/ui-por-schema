@@ -13,18 +13,18 @@ import pytest
 from fakes import contexto
 from pydantic import ValidationError
 
-from estoque.commands.entradas.lote import EntradaStatus
-from estoque.domain.erros import ErroDominio
-from estoque.domain.identidade import Ator
-from estoque.domain.tipos import Lote
-from estoque.registry.componentes.lote_status_acao import (
+from estoque.application.commands.entradas.lote import EntradaStatus
+from estoque.application.registry.componentes.lote_status_acao import (
     VM,
     Dados,
     Params,
     carregar,
     projetar,
 )
-from estoque.registry.registry import buscar, ids_permitidos
+from estoque.application.registry.registry import buscar, ids_permitidos
+from estoque.domain.erros import ErroDominio
+from estoque.domain.identidade import Ator
+from estoque.domain.tipos import Lote
 
 TODAS_AS_PERSONAS = ("marco", "helena", "ivo", "odair", "cleide", "rafael", "sandra")
 

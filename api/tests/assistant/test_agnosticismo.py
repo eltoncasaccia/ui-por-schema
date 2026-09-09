@@ -9,6 +9,7 @@ import inspect
 
 import pytest
 
+from estoque.application.registry.registry import catalogo_de
 from estoque.assistant.adapter import (
     ErroDeModelo,
     ferramenta_do_catalogo,
@@ -16,7 +17,6 @@ from estoque.assistant.adapter import (
 )
 from estoque.assistant.fabrica import PADRAO_POR_PROVEDOR, criar_adaptador
 from estoque.domain.identidade import Ator
-from estoque.registry.registry import catalogo_de
 from estoque.server import app
 
 

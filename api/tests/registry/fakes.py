@@ -25,6 +25,7 @@ from dataclasses import replace
 from datetime import date, datetime, timedelta
 from typing import Any
 
+from estoque.application.registry.definir import LoadContext, Pagina
 from estoque.data.porta import ContextoDados, Repositorios
 from estoque.domain.identidade import Ator, UnidadeId
 from estoque.domain.tipos import (
@@ -33,7 +34,6 @@ from estoque.domain.tipos import (
     Produto,
     StatusLoteRegistrado,
 )
-from estoque.registry.definir import LoadContext, Pagina
 
 HOJE = date.today()
 AGORA = datetime(2026, 9, 1, 10, 0, 0)

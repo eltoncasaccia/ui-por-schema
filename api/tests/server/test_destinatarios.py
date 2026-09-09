@@ -10,8 +10,8 @@ divergiriam, e a lista prometeria o que a abertura nega.
 
 import inspect
 
+from estoque.application.schema.validar import validar_schema
 from estoque.domain.identidade import Ator
-from estoque.schema.validar import validar_schema
 from estoque.server import app
 
 

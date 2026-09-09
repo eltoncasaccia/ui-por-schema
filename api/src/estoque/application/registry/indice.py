@@ -5,7 +5,7 @@ Nao edite a mao: 22 componentes registrados manualmente num arquivo so' seriam
 22 conflitos de merge garantidos em trabalho paralelo.
 """
 
-from estoque.registry.componentes import (
+from estoque.application.registry.componentes import (
     controlado_autorizar,
     estoque_indicador,
     fila_vencimento,
@@ -18,7 +18,7 @@ from estoque.registry.componentes import (
     quarentena_liberar,
     vencimento_grafico,
 )
-from estoque.registry.orcamento import verificar_teto
+from estoque.application.registry.orcamento import verificar_teto
 
 __all__ = [
     "controlado_autorizar",

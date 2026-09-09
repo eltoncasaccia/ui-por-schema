@@ -1,8 +1,8 @@
 """Paginação é transporte, não vocabulário do modelo."""
 
-import estoque.registry.indice  # noqa: F401
-from estoque.registry.definir import Pagina
-from estoque.registry.registry import todos
+import estoque.application.registry.indice  # noqa: F401
+from estoque.application.registry.definir import Pagina
+from estoque.application.registry.registry import todos
 
 
 def test_pagina_nao_e_param_de_nenhum_componente() -> None:

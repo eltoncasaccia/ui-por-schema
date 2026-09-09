@@ -7,13 +7,13 @@ rodar o sistema cedo, e nao so' os testes.
 
 import pytest
 
+from estoque.application.registry.registry import buscar, valores_proibidos
 from estoque.autorizacao.motor import (
     autorizar_params_ou_falhar,
     autorizar_unidade_do_param,
 )
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
-from estoque.registry.registry import buscar, valores_proibidos
 
 
 # --- BUG 1 · CS-01: schema forjado direto no endpoint -----------------------

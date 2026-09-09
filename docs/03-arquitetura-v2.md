@@ -247,7 +247,7 @@ O schema, não os dados — assim o item continua correto meses depois.
 > [ADR-0016](./adr/0016-api-python-cliente-typescript.md). Cinco destas nove —
 > `application/`, `state/`, `render/`, `viewmodels/`, `components/` — não existem
 > no `api/`. Fica aqui como registro do que se planejou; **o layout que vale é o
-> do [ADR-0030](./adr/0030-layout-de-diretorios.md)**.
+> do [ADR-0031](./adr/0031-ports-and-adapters.md)** — Ports & Adapters.
 
 Mantidas da v1 porque se pagaram:
 

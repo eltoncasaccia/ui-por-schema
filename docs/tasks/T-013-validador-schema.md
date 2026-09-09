@@ -18,7 +18,7 @@ por ator no lugar da constante do cliente.
 ## Arquivos de propriedade exclusiva
 
 ```
-api/src/estoque/schema/validar.py   api/src/estoque/schema/validar.test.py   api/src/estoque/schema/adversarial.test.py
+api/src/estoque/application/schema/validar.py   api/src/estoque/application/schema/validar.test.py   api/src/estoque/application/schema/adversarial.test.py
 ```
 
 ## Escopo

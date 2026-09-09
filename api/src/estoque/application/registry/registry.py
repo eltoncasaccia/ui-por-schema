@@ -13,8 +13,8 @@ from collections.abc import Iterator, Mapping
 from types import UnionType
 from typing import Any, Literal, Union, get_args, get_origin
 
+from estoque.application.registry.definir import ComponentDef, RequiresPorValor, permissoes_base
 from estoque.domain.identidade import Ator, Permissao
-from estoque.registry.definir import ComponentDef, RequiresPorValor, permissoes_base
 
 TETO_CATALOGO = 25  # ADR-0011. Acima disso, recuperacao de catalogo vira obrigatoria.
 

@@ -1,6 +1,6 @@
 ---
 name: componente-novo
-description: Cria um componente do catálogo do assistente, dos dois lados — registro Python em api/src/estoque/registry/componentes/ e view React em web/src/views/. Use ao executar T-019, T-021 a T-030, ou quando a tarefa disser "registra o componente X", "novo componente", ou listar ids na coluna Componentes do BOARD. Cobre params, requires, load, select, viewmodel, a bijeção e os testes obrigatórios.
+description: Cria um componente do catálogo do assistente, dos dois lados — registro Python em api/src/estoque/application/registry/componentes/ e view React em web/src/views/. Use ao executar T-019, T-021 a T-030, ou quando a tarefa disser "registra o componente X", "novo componente", ou listar ids na coluna Componentes do BOARD. Cobre params, requires, load, select, viewmodel, a bijeção e os testes obrigatórios.
 ---
 
 # Componente novo, dos dois lados
@@ -17,7 +17,7 @@ disso — passar do teto é discussão de escopo, não de código.
 
 ## 0. Leia o exemplo canônico antes de escrever
 
-`api/src/estoque/registry/componentes/fila_vencimento.py` e
+`api/src/estoque/application/registry/componentes/fila_vencimento.py` e
 `web/src/views/fila_vencimento.tsx`. Eles têm a forma, o estilo e a densidade de
 comentário que o projeto usa. **Imite-os.**
 

@@ -27,9 +27,10 @@ import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-COMPONENTES = RAIZ / "api" / "src" / "estoque" / "registry" / "componentes"
-INDICE_PY = RAIZ / "api" / "src" / "estoque" / "registry" / "indice.py"
-COMANDOS = RAIZ / "api" / "src" / "estoque" / "commands"
+APLICACAO = RAIZ / "api" / "src" / "estoque" / "application"
+COMPONENTES = APLICACAO / "registry" / "componentes"
+INDICE_PY = APLICACAO / "registry" / "indice.py"
+COMANDOS = APLICACAO / "commands"
 INDICE_CMD = COMANDOS / "indice.py"
 VIEWS = RAIZ / "web" / "src" / "views"
 INDICE_TS = VIEWS / "indice.ts"
@@ -68,11 +69,11 @@ def texto_py(nomes: list[str]) -> str:
         importacoes = ""
         todos = "[]"
     elif len(nomes) == 1:
-        importacoes = f"from estoque.registry.componentes import {nomes[0]}\n"
+        importacoes = f"from estoque.application.registry.componentes import {nomes[0]}\n"
         todos = f'["{nomes[0]}"]'
     else:
         corpo = "".join(f"    {n},\n" for n in nomes)
-        importacoes = f"from estoque.registry.componentes import (\n{corpo})\n"
+        importacoes = f"from estoque.application.registry.componentes import (\n{corpo})\n"
         todos = "[\n" + "".join(f'    "{n}",\n' for n in nomes) + "]"
     return f'''"""Importa todos os componentes, registrando-os. Ponto unico de entrada.
 
@@ -81,7 +82,7 @@ Nao edite a mao: 22 componentes registrados manualmente num arquivo so' seriam
 22 conflitos de merge garantidos em trabalho paralelo.
 """
 
-{importacoes}from estoque.registry.orcamento import verificar_teto
+{importacoes}from estoque.application.registry.orcamento import verificar_teto
 
 __all__ = {todos}
 
@@ -97,7 +98,7 @@ def texto_cmd(nomes: list[str]) -> str:
         # Mesma forma do `registry/indice.py`: o `__all__` e' o que satisfaz o
         # F401 do ruff sem `noqa` — o import existe pelo efeito colateral.
         corpo = "".join(f"    {n},\n" for n in nomes)
-        importacoes = f"from estoque.commands import (\n{corpo})\n"
+        importacoes = f"from estoque.application.commands import (\n{corpo})\n"
         todos = "[\n" + "".join(f'    "{n}",\n' for n in nomes) + "]"
     return f'''"""Importa os modulos de comando, registrando-os. Ponto unico de entrada.
 

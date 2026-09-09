@@ -22,7 +22,14 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from estoque.commands.entradas.saida import EXIGEM_DESTINATARIO, EntradaSaida, MotivoSaida
+from estoque.application.commands.entradas.saida import (
+    EXIGEM_DESTINATARIO,
+    EntradaSaida,
+    MotivoSaida,
+)
+from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
+from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.identidade import UnidadeId
 from estoque.domain.regras.fefo import propor_fefo
@@ -33,9 +40,6 @@ from estoque.domain.regras.validade import (
     status_efetivo,
 )
 from estoque.domain.tipos import ClasseProduto, Lote, StatusLoteEfetivo
-from estoque.registry.componentes.lote_lista import NOME_UNIDADE
-from estoque.registry.definir import CommandDef, ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 # Rótulos dos motivos. A lista fechada vive em `commands/entradas/saida.py`,
 # junto do schema que o comando valida — aqui só a tradução para a tela, e o

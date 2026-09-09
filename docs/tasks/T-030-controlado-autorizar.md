@@ -36,11 +36,11 @@ assim que o catálogo coube em 23 (ADR-0011).
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/controlado_autorizar.py
+api/src/estoque/application/registry/componentes/controlado_autorizar.py
 api/tests/registry/test_controlado_autorizar.py
 
-api/src/estoque/commands/autorizacao.py
-api/src/estoque/commands/entradas/autorizacao.py
+api/src/estoque/application/commands/autorizacao.py
+api/src/estoque/application/commands/entradas/autorizacao.py
 api/tests/commands/test_autorizacao_comandos.py
 ```
 

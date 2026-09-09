@@ -21,8 +21,8 @@ release: **custo invisível por todos os caminhos.**
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/produto_ficha.py
-api/src/estoque/registry/componentes/produto_saldo_por_unidade.py
+api/src/estoque/application/registry/componentes/produto_ficha.py
+api/src/estoque/application/registry/componentes/produto_saldo_por_unidade.py
 api/tests/registry/test_produto_ficha.py
 api/tests/registry/test_produto_saldo_por_unidade.py
 ```

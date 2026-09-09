@@ -24,11 +24,11 @@ from typing import Any
 
 import sqlalchemy as sa
 
+from estoque.application.commands.entradas.autorizacao import MOTIVO_MINIMO, EntradaAutorizacao
+from estoque.application.commands.pipeline import etag_de_valores, registrar
+from estoque.application.commands.saida import _saldo, _travar_lote
+from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
 from estoque.autorizacao.motor import negar_se_mesma_pessoa
-from estoque.commands.entradas.autorizacao import MOTIVO_MINIMO, EntradaAutorizacao
-from estoque.commands.pipeline import etag_de_valores, registrar
-from estoque.commands.saida import _saldo, _travar_lote
-from estoque.commands.tipos import Comando, ContextoComando, Efeito
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio, nao_encontrado
 from estoque.domain.regras.estados import resulta_negativo

@@ -4,8 +4,8 @@ Numero medido na v1: ~164 tokens por componente registrado, em TODA pergunta.
 A conta e' linear e implacavel — 25 componentes ~= 4k tokens de prompt sempre.
 """
 
+from estoque.application.registry.registry import TETO_CATALOGO, catalogo_de, todos
 from estoque.domain.identidade import Ator
-from estoque.registry.registry import TETO_CATALOGO, catalogo_de, todos
 
 # Aproximacao suficiente para orcamento: ~4 caracteres por token em pt-BR.
 _CHARS_POR_TOKEN = 4

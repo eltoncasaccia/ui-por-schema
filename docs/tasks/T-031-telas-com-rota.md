@@ -26,7 +26,7 @@ web/src/app/telas/*.tsx   web/src/app/layout/*.tsx   web/src/app/telas/*.test.ts
 
 ## Só leitura
 
-`api/src/estoque/registry/componentes/**`
+`api/src/estoque/application/registry/componentes/**`
 
 ## Escopo
 

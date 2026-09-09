@@ -26,8 +26,13 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
-import estoque.commands.indice  # registra os comandos de escrita
-import estoque.registry.indice  # noqa: F401  — registra os componentes
+import estoque.application.commands.indice  # registra os comandos de escrita
+import estoque.application.registry.indice  # noqa: F401  — registra os componentes
+from estoque.application.commands import pipeline
+from estoque.application.registry.definir import LoadContext, Pagina, permissoes_base
+from estoque.application.registry.registry import buscar, catalogo_de, valores_proibidos
+from estoque.application.schema.validar import revalidar_ou_falhar, validar_schema
+from estoque.application.schema.viewkey import novo_view_id, view_key
 from estoque.assistant.adapter import AdaptadorModelo, ErroDeModelo, extrair_json
 from estoque.assistant.fabrica import criar_adaptador
 from estoque.assistant.langfuse_obs import criar as criar_observador
@@ -40,16 +45,11 @@ from estoque.autorizacao.motor import (
     autorizar_params_ou_falhar,
     autorizar_unidade_do_param,
 )
-from estoque.commands import pipeline
 from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados, Repositorios
 from estoque.data.repositorios import RepoLoteSQL, RepoMovimentoSQL, RepoProdutoSQL
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import PERMISSOES_POR_PAPEL, Ator
-from estoque.registry.definir import LoadContext, Pagina, permissoes_base
-from estoque.registry.registry import buscar, catalogo_de, valores_proibidos
-from estoque.schema.validar import revalidar_ou_falhar, validar_schema
-from estoque.schema.viewkey import novo_view_id, view_key
 from estoque.server import sessao as ses
 from estoque.server.config import Config
 

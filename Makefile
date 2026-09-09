@@ -41,7 +41,7 @@ gerar-indice:  ## regenera registry/indice.py e views/indice.ts varrendo os dire
 	@python3 scripts/gerar_indice.py
 
 types: gerar-indice  ## gera os tipos do cliente a partir do registry da API
-	cd api && uv run python -m estoque.registry.exportar > ../web/src/generated/contrato.json
+	cd api && uv run python -m estoque.application.registry.exportar > ../web/src/generated/contrato.json
 	cd web && npx tsx scripts/gerar-tipos.ts
 
 test:  ## testes dos dois lados

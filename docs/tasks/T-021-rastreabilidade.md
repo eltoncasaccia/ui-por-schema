@@ -21,7 +21,7 @@ losartana, nove dias.** O alvo agora é 60 segundos.
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/rastreabilidade.py
+api/src/estoque/application/registry/componentes/rastreabilidade.py
 api/tests/registry/test_rastreabilidade.py
 ```
 

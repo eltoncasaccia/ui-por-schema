@@ -22,10 +22,10 @@ import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.pool import NullPool
 
-import estoque.commands.indice  # noqa: F401  — registra os comandos
-from estoque.commands import pipeline
-from estoque.commands.saida import _etag_da_saida, _saldo
-from estoque.commands.tipos import ContextoComando
+import estoque.application.commands.indice  # noqa: F401  — registra os comandos
+from estoque.application.commands import pipeline
+from estoque.application.commands.saida import _etag_da_saida, _saldo
+from estoque.application.commands.tipos import ContextoComando
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
@@ -396,7 +396,7 @@ async def test_com_a_liberacao_do_rt_na_trilha_a_saida_passa(
 
 
 async def _etag_do_lote_para_status(motor: AsyncEngine, ator: Ator, lote_id: str) -> str:
-    from estoque.commands.lote import _etag_do_lote
+    from estoque.application.commands.lote import _etag_do_lote
 
     class _E:
         lote_id = ""

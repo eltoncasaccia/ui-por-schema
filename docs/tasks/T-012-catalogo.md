@@ -18,8 +18,8 @@ que o ator não pode.**
 ## Arquivos de propriedade exclusiva
 
 ```
-api/src/estoque/registry/registry.py   api/src/estoque/registry/catalogo.py
-api/src/estoque/registry/orcamento.py  api/src/estoque/registry/*.test.py
+api/src/estoque/application/registry/registry.py   api/src/estoque/application/registry/catalogo.py
+api/src/estoque/application/registry/orcamento.py  api/src/estoque/application/registry/*.test.py
 scripts/gerar-indice.ts
 ```
 

@@ -8,6 +8,7 @@ from typing import Any
 
 import pytest
 
+from estoque.application.registry.registry import catalogo_de
 from estoque.assistant.adapter import (
     AdaptadorMock,
     AdaptadorOpenRouter,
@@ -16,7 +17,6 @@ from estoque.assistant.adapter import (
     json_schema_do_catalogo,
 )
 from estoque.domain.identidade import Ator
-from estoque.registry.registry import catalogo_de
 
 
 def test_sem_chave_falha_e_nao_cai_para_o_mock(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -52,7 +52,7 @@ def test_schema_restrito_e_o_catalogo_nao_divergem(personas: dict[str, Ator]) ->
     """ADR-0024 — o catálogo é serializado DUAS vezes: como texto no prompt e
     como JSON Schema. Divergência entre as duas é um modo de falha novo, e este
     teste é o que impede que ele passe."""
-    from estoque.registry.registry import ids_permitidos
+    from estoque.application.registry.registry import ids_permitidos
 
     for nome, ator in personas.items():
         assert set(_ids_do_schema(catalogo_de(ator))) == set(ids_permitidos(ator)), nome

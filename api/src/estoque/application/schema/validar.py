@@ -14,10 +14,10 @@ from dataclasses import dataclass, field
 
 from pydantic import ValidationError
 
+from estoque.application.registry import registry
+from estoque.application.schema.contrato import MAX_PARAMS, Bloco, ViewSchema
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
-from estoque.registry import registry
-from estoque.schema.contrato import MAX_PARAMS, Bloco, ViewSchema
 
 
 @dataclass(slots=True)

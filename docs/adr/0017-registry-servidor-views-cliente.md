@@ -30,7 +30,7 @@ declaração não pode ser única: `params`, `requires`, `description`, `load` e
 > bijeção entre elas é verificada em CI, não confiada.**
 
 ```python
-# api/src/estoque/registry/componentes/lote_lista.py
+# api/src/estoque/application/registry/componentes/lote_lista.py
 registrar(ComponentDef(
     id="lote_lista",
     label="Lotes",

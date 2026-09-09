@@ -10,8 +10,8 @@ import pytest
 from fakes import MOVIMENTOS, SINAL, contexto
 from pydantic import ValidationError
 
+from estoque.application.registry.componentes.lote_lista import Params, carregar, projetar
 from estoque.domain.tipos import Lote
-from estoque.registry.componentes.lote_lista import Params, carregar, projetar
 
 
 async def _vm(ator: Any, **params: Any) -> Any:

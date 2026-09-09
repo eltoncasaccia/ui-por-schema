@@ -5,7 +5,8 @@
 | **Status** | **CONGELADO** a partir da conclusão de T-004 |
 | **Autoridade** | Normativo. Código que divergir daqui está errado, não o contrário |
 | **Alteração** | Só por ADR novo + tarefa de contrato. Nunca em tarefa de feature |
-| **Revisão** | 2.1 — provedor e modo de saída viraram configuração ([ADR-0025](../adr/0025-agnosticismo-de-provedor.md)); composição vazia passou a ser resposta válida |
+| **Revisão** | 2.2 — `registry/`, `commands/` e `schema/` passaram para `application/` ([ADR-0031](../adr/0031-ports-and-adapters.md)). **Só caminho mudou**: nenhuma assinatura, nenhum tipo, nenhum campo |
+| | 2.1 — provedor e modo de saída viraram configuração ([ADR-0025](../adr/0025-agnosticismo-de-provedor.md)); composição vazia passou a ser resposta válida |
 
 > **Por que este documento existe.** Trabalho paralelo em várias sessões só é
 > seguro se as fronteiras entre as partes forem decididas **antes** de as partes
@@ -358,7 +359,7 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)): **22, folga de 3.**
 | Item | Convenção |
 |---|---|
 | Id de componente | `snake_case`, entidade primeiro — `lote_lista` |
-| Registro (Python) | `api/src/estoque/registry/componentes/<id>.py` |
+| Registro (Python) | `api/src/estoque/application/registry/componentes/<id>.py` |
 | View (TypeScript) | `web/src/views/<id>.tsx` |
 | Permissão | `<recurso>.<acao>` |
 | Teste de critério de aceite | `test_<us>_ac.py` / `*.ac.test.ts` |

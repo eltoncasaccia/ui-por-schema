@@ -17,7 +17,9 @@ import time
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import estoque.registry.indice  # noqa: F401
+import estoque.application.registry.indice  # noqa: F401
+from estoque.application.registry.registry import catalogo_de
+from estoque.application.schema.validar import validar_schema
 from estoque.assistant.adapter import extrair_json
 from estoque.assistant.fabrica import criar_adaptador
 from estoque.assistant.langfuse_obs import criar as criar_observador
@@ -25,8 +27,6 @@ from estoque.assistant.observador import Observador, ObservadorNulo
 from estoque.assistant.trace import Modo
 from estoque.domain.identidade import PERMISSOES_POR_PAPEL, Ator, PapelId
 from estoque.eval.casos import CASOS, Caso
-from estoque.registry.registry import catalogo_de
-from estoque.schema.validar import validar_schema
 
 TODAS = frozenset({"cd-matriz", "cd-refrigerado", "filial-uberlandia"})
 PERSONAS: dict[str, tuple[PapelId, frozenset[str]]] = {

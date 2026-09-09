@@ -19,8 +19,8 @@ dentro do bundle.
 import json
 from typing import Any
 
-import estoque.registry.indice  # noqa: F401  — registra os componentes
-from estoque.registry.registry import todos
+import estoque.application.registry.indice  # noqa: F401  — registra os componentes
+from estoque.application.registry.registry import todos
 
 
 def _sem_titulo_de_propriedade(no: Any) -> Any:

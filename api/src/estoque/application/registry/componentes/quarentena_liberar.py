@@ -18,7 +18,10 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from estoque.commands.entradas.lote import EntradaLiberacao
+from estoque.application.commands.entradas.lote import EntradaLiberacao
+from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
+from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.regras.validade import (
     ClasseValidade,
@@ -27,9 +30,6 @@ from estoque.domain.regras.validade import (
     status_efetivo,
 )
 from estoque.domain.tipos import ClasseProduto, Lote, StatusLoteEfetivo, StatusLoteRegistrado
-from estoque.registry.componentes.lote_lista import NOME_UNIDADE
-from estoque.registry.definir import CommandDef, ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 # RN-L07: recebimento com validade inferior a 6 meses é recusado, salvo
 # autorização expressa do RT. Aqui a regra não recusa — ela AVISA, porque o RT

@@ -24,7 +24,7 @@ api/src/estoque/server/*.test.py
 
 ## Só leitura
 
-`api/src/estoque/autorizacao/**`, `api/src/estoque/auditoria/**`, `api/src/estoque/schema/**`
+`api/src/estoque/autorizacao/**`, `api/src/estoque/auditoria/**`, `api/src/estoque/application/schema/**`
 
 ## Escopo
 

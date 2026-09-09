@@ -19,7 +19,10 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from estoque.commands.entradas.lote import AcaoStatus, EntradaStatus
+from estoque.application.commands.entradas.lote import AcaoStatus, EntradaStatus
+from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
+from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.identidade import PapelId
 from estoque.domain.regras.estados import EventoLote, transicao_valida
@@ -30,9 +33,6 @@ from estoque.domain.regras.validade import (
     status_efetivo,
 )
 from estoque.domain.tipos import Lote, StatusLoteEfetivo, StatusLoteRegistrado
-from estoque.registry.componentes.lote_lista import NOME_UNIDADE
-from estoque.registry.definir import CommandDef, ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 _EVENTO_DA_ACAO: dict[AcaoStatus, EventoLote | None] = {
     "bloquear": "bloqueio",

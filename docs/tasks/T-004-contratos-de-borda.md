@@ -17,7 +17,7 @@ congela os contratos** e abre as onze tarefas paralelas de W1.
 ## Arquivos de propriedade exclusiva
 
 ```
-api/src/estoque/schema/contrato.py   api/src/estoque/schema/viewkey.py   api/src/estoque/schema/*.test.py
+api/src/estoque/application/schema/contrato.py   api/src/estoque/application/schema/viewkey.py   api/src/estoque/application/schema/*.test.py
 api/src/estoque/server/envelope.py   api/src/estoque/server/rotas.py       (apenas as assinaturas)
 ```
 

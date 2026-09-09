@@ -10,9 +10,9 @@ source_modules = estoque.domain
 forbidden_modules =
     estoque.data
     estoque.server
-    estoque.registry
+    estoque.application.registry
     estoque.assistant
-    estoque.commands
+    estoque.application.commands
     estoque.auth
     sqlalchemy
     fastapi
@@ -22,7 +22,7 @@ forbidden_modules =
 [importlinter:contract:2]
 name = registry nao importa server nem sqlalchemy
 type = forbidden
-source_modules = estoque.registry
+source_modules = estoque.application.registry
 forbidden_modules =
     estoque.server
     sqlalchemy
@@ -34,7 +34,7 @@ forbidden_modules =
 name = assistente nunca alcanca comandos de escrita
 type = forbidden
 source_modules = estoque.assistant
-forbidden_modules = estoque.commands
+forbidden_modules = estoque.application.commands
 allow_indirect_imports = False
 
 # --- ADR-0012: injecao de prompt via dado ---

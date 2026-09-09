@@ -52,7 +52,7 @@ Precisou escrever em arquivo de outra tarefa? **Pare e sinalize.** Não é exce�
 justificável; é sinal de que o corte de tarefas está errado.
 
 **Nunca edite arquivo gerado:**
-`api/src/estoque/registry/indice.py`, `web/src/views/indice.ts`,
+`api/src/estoque/application/registry/indice.py`, `web/src/views/indice.ts`,
 `web/src/generated/*`. Rode `make gerar-indice` e `make types`.
 
 **Imite o que já existe.** Achado o arquivo mais parecido com o que você vai

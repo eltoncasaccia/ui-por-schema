@@ -20,11 +20,11 @@ O movimento mais frequente do sistema, e o que carrega mais regra por operação
 **Lado servidor** — params, `requires`, `description`, `load`, `select`, viewmodel:
 
 ```
-api/src/estoque/registry/componentes/movimento_saida.py
+api/src/estoque/application/registry/componentes/movimento_saida.py
 api/tests/registry/test_movimento_saida.py
 
-api/src/estoque/commands/saida.py
-api/src/estoque/commands/entradas/saida.py
+api/src/estoque/application/commands/saida.py
+api/src/estoque/application/commands/entradas/saida.py
 api/tests/commands/test_saida_comandos.py
 ```
 

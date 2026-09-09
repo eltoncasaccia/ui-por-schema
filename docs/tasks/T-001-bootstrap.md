@@ -40,7 +40,7 @@ web/vite.config.ts   web/vitest.config.ts   web/eslint.config.js
 - Vitest + Testing Library. ESLint.
 - Estrutura: `views/ render/ ui/ shell/ query/ estado/ generated/`
   *(corrigido: a tarefa dizia `components/ app/ state/`; os nomes adotados na
-  implementação são `ui/ shell/ estado/` — ver [ADR-0030](../adr/0030-layout-de-diretorios.md))*
+  implementação são `ui/ shell/ estado/` — ver [ADR-0031](../adr/0031-ports-and-adapters.md))*
 
 ### Faz — CI
 `lint` · `typecheck` · `test` · `arch` **nos dois lados**, em todo push.

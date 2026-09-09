@@ -21,8 +21,8 @@ import sqlalchemy as sa
 from httpx import ASGITransport, AsyncClient
 from pydantic import BaseModel
 
-from estoque.commands import pipeline
-from estoque.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.commands import pipeline
+from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
 from estoque.data import modelos as m
 
 URL_DONO = os.environ.get(

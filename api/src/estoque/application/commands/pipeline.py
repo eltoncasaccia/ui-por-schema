@@ -34,16 +34,16 @@ from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
 
-from estoque.auditoria import registro as aud
-from estoque.auditoria.registro import Origem
-from estoque.autorizacao.motor import autorizar_ou_falhar
-from estoque.commands.tipos import (
+from estoque.application.commands.tipos import (
     Comando,
     ContextoComando,
     Efeito,
     Resultado,
     sem_segredo,
 )
+from estoque.auditoria import registro as aud
+from estoque.auditoria.registro import Origem
+from estoque.autorizacao.motor import autorizar_ou_falhar
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio, nao_encontrado
 from estoque.domain.identidade import Ator

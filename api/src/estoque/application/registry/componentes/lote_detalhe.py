@@ -15,6 +15,8 @@ from datetime import date
 
 from pydantic import BaseModel
 
+from estoque.application.registry.definir import ComponentDef, LoadContext
+from estoque.application.registry.registry import registrar
 from estoque.domain.erros import nao_encontrado
 from estoque.domain.regras.validade import (
     ClasseValidade,
@@ -23,8 +25,6 @@ from estoque.domain.regras.validade import (
     status_efetivo,
 )
 from estoque.domain.tipos import ClasseProduto, Lote, StatusLoteEfetivo, StatusLoteRegistrado
-from estoque.registry.definir import ComponentDef, LoadContext
-from estoque.registry.registry import registrar
 
 
 class Params(BaseModel):

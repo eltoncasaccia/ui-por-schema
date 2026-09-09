@@ -1,0 +1,104 @@
+# T-041 — o que hoje só roda à mão. Achado A-07 da auditoria A-002.
+#
+# **O item que dá valor a esta tarefa é o Postgres como serviço** (AC-3). Sem
+# banco, os testes de imutabilidade PULAM — e teste que pula é teste que não
+# existe. São justamente os que provam `RN-M02`, `RN-D02` e o papel restrito da
+# aplicação (achado A-27).
+#
+# `make eval` fica de fora: gasta token a cada execução (ADR-0013).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  # Push novo cancela o anterior no mesmo ramo. CI que roda em fila de commits
+  # velhos gasta minuto e atrasa o que importa.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      db:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: estoque
+          POSTGRES_PASSWORD: troque-isto
+          POSTGRES_DB: estoque
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U estoque"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # A APLICAÇÃO usa o papel restrito; só a migração usa o dono (achado A-27).
+      # Se estas duas linhas trocarem de lugar, `test_papel_da_aplicacao.py` fica
+      # vermelho — e é para isso que ele existe.
+      DATABASE_URL: postgresql+asyncpg://estoque_app:app@localhost:5432/estoque
+      DATABASE_URL_ADMIN: postgresql+psycopg://estoque:troque-isto@localhost:5432/estoque
+      DATABASE_URL_TESTE: postgresql+psycopg://estoque:troque-isto@localhost:5432/estoque
+      DATABASE_URL_TESTE_APP: postgresql+psycopg://estoque_app:app@localhost:5432/estoque
+      DATABASE_URL_TESTE_APP_ASYNC: postgresql+asyncpg://estoque_app:app@localhost:5432/estoque
+      SESSAO_SECRET: ci-nao-e-segredo
+      CORS_ORIGIN: http://localhost:5173
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------- api
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Instalar dependências do api
+        working-directory: api
+        run: uv sync --frozen
+
+      - name: Migrar o banco
+        working-directory: api
+        # Como DONO: é ele quem cria o papel `estoque_app` e aplica os REVOKE.
+        run: uv run alembic upgrade head
+
+      - name: Semear
+        working-directory: api
+        run: uv run python -m estoque.data.seed
+
+      # ---------------------------------------------------------------- web
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Instalar dependências do web
+        working-directory: web
+        run: npm ci
+
+      # ------------------------------------------------------- verificação
+      # Os quatro alvos separados, e não `make check`, para a aba do GitHub
+      # dizer O QUE quebrou sem abrir o log.
+      - name: lint
+        run: make lint
+      - name: typecheck
+        run: make typecheck
+      - name: test
+        run: make test
+      - name: arch
+        run: make arch
+
+      # AC-3: o que dá valor à tarefa. Nove testes de banco pulando em silêncio
+      # é o mesmo que não tê-los, e o CI é exatamente onde isso passaria batido.
+      - name: nenhum teste pulou por falta de banco
+        working-directory: api
+        run: |
+          uv run pytest -q -rs 2>&1 | tee /tmp/saida.txt
+          if grep -qi "sem banco" /tmp/saida.txt; then
+            echo "::error::teste pulou por falta de Postgres — AC-3 da T-041"
+            exit 1
+          fi

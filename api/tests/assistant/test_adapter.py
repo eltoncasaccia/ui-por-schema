@@ -4,6 +4,7 @@ O erro central da POC v1 foi medir um parser simulado e publicar os números com
 se fossem reais. Estes testes existem para que isso não possa se repetir.
 """
 
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 import pytest
@@ -34,7 +35,7 @@ async def test_mock_e_sempre_identificado_como_mock() -> None:
 
 
 # --- ADR-0024: o enum de `tipo` é o catálogo do ator ------------------------
-def _ids_do_schema(cat: list[dict[str, Any]]) -> list[str]:
+def _ids_do_schema(cat: Sequence[Mapping[str, Any]]) -> list[str]:
     ramos = json_schema_do_catalogo(cat)["properties"]["blocos"]["items"]["anyOf"]
     return [r["properties"]["tipo"]["const"] for r in ramos]
 

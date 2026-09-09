@@ -49,12 +49,14 @@ test:  ## testes dos dois lados
 	cd web && npx vitest run
 
 typecheck:  ## mypy --strict + tsc
-	cd api && uv run mypy --strict src
+	# `src` E `tests`: o achado A-09 nasceu de `tests` ficar de fora, e dez erros
+	# de tipo viverem lá, invisíveis ao DoD e ao CI, visíveis a quem abre o arquivo.
+	cd api && uv run mypy --strict src tests
 	cd web && npx tsc --noEmit
 
 lint:  ## ruff + eslint
 	cd api && uv run ruff check src tests && uv run ruff format --check src tests
-	cd web && npx eslint src
+	cd web && npx eslint src scripts
 
 arch:  ## verificadores de arquitetura dos dois lados
 	@python3 scripts/gerar_indice.py --conferir

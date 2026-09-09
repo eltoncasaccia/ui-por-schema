@@ -16,6 +16,7 @@ silencioso repetiria isso, desta vez com numeros que parecem reais.
 import json
 import os
 import time
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -36,14 +37,14 @@ class Resposta:
 
 class AdaptadorModelo(Protocol):
     async def compor(
-        self, pergunta: str, catalogo: list[dict[str, Any]], modo: Modo = "restrito"
+        self, pergunta: str, catalogo: Sequence[Mapping[str, Any]], modo: Modo = "restrito"
     ) -> Resposta: ...
 
 
 # --------------------------------------------------------------------------
 # JSON Schema derivado do catalogo — ADR-0024
 # --------------------------------------------------------------------------
-def json_schema_do_catalogo(catalogo: list[dict[str, Any]]) -> dict[str, Any]:
+def json_schema_do_catalogo(catalogo: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Constroi o schema de saida restrito para ESTE ator.
 
     Uniao discriminada por `tipo`: cada componente traz os SEUS params, com os
@@ -127,7 +128,7 @@ def _tipo_json(tipo_python: str) -> str:
     return "string"
 
 
-def ferramenta_do_catalogo(catalogo: list[dict[str, Any]]) -> dict[str, Any]:
+def ferramenta_do_catalogo(catalogo: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """O MESMO schema, embrulhado como ferramenta.
 
     Tool calling tem suporte mais amplo que `response_format: json_schema` —
@@ -182,7 +183,7 @@ class AdaptadorOpenRouter:
             raise ErroDeModelo(msg)
 
     async def compor(
-        self, pergunta: str, catalogo: list[dict[str, Any]], modo: Modo = "restrito"
+        self, pergunta: str, catalogo: Sequence[Mapping[str, Any]], modo: Modo = "restrito"
     ) -> Resposta:
         prompt = montar(pergunta, catalogo)
         trace = Trace(
@@ -239,7 +240,9 @@ class AdaptadorOpenRouter:
         trace.ms_total = int((time.perf_counter() - inicio) * 1000)
         return Resposta("", trace)
 
-    def _corpo(self, prompt: str, catalogo: list[dict[str, Any]], modo: Modo) -> dict[str, Any]:
+    def _corpo(
+        self, prompt: str, catalogo: Sequence[Mapping[str, Any]], modo: Modo
+    ) -> dict[str, Any]:
         corpo: dict[str, Any] = {
             "model": self._modelo,
             "max_tokens": MAX_TOKENS,
@@ -299,7 +302,7 @@ class AdaptadorMock:
         self._respostas = respostas or {}
 
     async def compor(
-        self, pergunta: str, catalogo: list[dict[str, Any]], modo: Modo = "restrito"
+        self, pergunta: str, catalogo: Sequence[Mapping[str, Any]], modo: Modo = "restrito"
     ) -> Resposta:
         trace = Trace(origem="mock", modelo="mock", pergunta=pergunta, modo=modo)
         chave = pergunta.strip().lower()

@@ -18,6 +18,7 @@ dados. Ele responde COM TELAS, nao com frases sobre os dados.
 """
 
 import json
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 INSTRUCAO = """\
@@ -41,7 +42,7 @@ Regras:
 """
 
 
-def montar(pergunta: str, catalogo: list[dict[str, Any]]) -> str:
+def montar(pergunta: str, catalogo: Sequence[Mapping[str, Any]]) -> str:
     """Constroi o prompt. `catalogo` ja' vem filtrado pelo ator (ADR-0003).
 
     A pergunta do usuario e' entrada nao confiavel e e' delimitada. O pior caso

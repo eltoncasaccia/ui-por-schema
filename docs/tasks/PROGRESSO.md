@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**26 concluídas · 4 parciais · 12 não iniciadas** · 11 de 24 componentes previstos.
+**28 concluídas · 3 parciais · 11 não iniciadas** · 11 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -31,13 +31,13 @@ está pronto.
 
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
-| T-035 | Docker Compose, Makefile, README | ✅ | AC-5 (CI) pendente — ver A-07 |
-| T-001 | Bootstrap `api/` e `web/` | ✅ | AC-3 (CI verde) pendente — ver A-07 |
+| T-035 | Docker Compose, Makefile, README | ✅ | — |
+| T-001 | Bootstrap `api/` e `web/` | ✅ | — |
 | T-002 | Domínio: 7 tipos, erros, identidade | ✅ | — |
 | T-003 | Contrato do registry | ✅ | — |
 | T-004 | Schema, `viewKey`/`viewId`, envelope | ✅ | — |
 | T-039 | Codegen do registry → TS + bijeção | ✅ | 6 ACs verificados negativamente |
-| T-005 | Verificadores de arquitetura | 🟡 | 4 de 6 regras Python; **as 6 do TS não existem** |
+| T-005 | Verificadores de arquitetura | ✅ | 12 regras nos dois lados, cada uma com violação de propósito |
 
 ## W1 — Núcleo
 
@@ -113,7 +113,7 @@ está pronto.
 | | Tarefa | Estado | Origem |
 |---|---|---|---|
 | T-040 | CSRF e rate limit | ✅ | A-02, A-03 — **fechados** |
-| T-041 | CI no GitHub Actions | ⬜ | A-07 |
+| T-041 | CI no GitHub Actions | ✅ | A-07 — com Postgres, e portão que reprova teste pulado |
 | T-042 | Contract test fake ↔ repositório real | ⬜ | A-11 |
 | T-043 | Instrumentação ao vivo do LangFuse | ⬜ | A-10 |
 | T-044 | `relatorio_movimentacao` | ⬜ | ADR-0029 |

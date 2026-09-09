@@ -56,16 +56,35 @@ web/scripts/fixtures-violacao/**
 ### Não faz
 Lint de estilo — é `ruff` e ESLint.
 
+### Entregue, e o que ficou de fora
+
+As **12 regras existem**: 4 contratos de `import-linter` no Python e 6 em
+`web/scripts/arch-check.ts`. As regras 5 e 6 do lado Python estão **dentro** dos
+contratos 1 e 2 (`sqlalchemy` é módulo proibido em `domain` e em
+`application.registry`; o seed vive sob `data/`), e por isso são 4 contratos e
+não 6 — a contagem da tabela acima conta regras, o `.importlinter` conta
+contratos.
+
+O `arch-check` analisa **texto, não AST**: o AC-4 pede menos de 5 s e as seis
+regras são todas sobre presença de um símbolo. Roda em ~3 ms. O preço é falso
+positivo em comentário, e está aceito.
+
+**Lacuna conhecida:** `react-hooks/rules-of-hooks` está desligada em
+`src/views/**`. A regra decide o que é componente pelo NOME (maiúscula), e
+CONTRATOS §6 — congelado — exporta `view` minúsculo. Com isso, hook chamado
+dentro de `if` numa view deixa de ser verificado por qualquer coisa. A razão
+está escrita em `web/eslint.config.js`.
+
 ## Critérios de aceite
 
-- [ ] **AC-1** Cada uma das 12 regras tem teste que **introduz a violação e afirma
+- [x] **AC-1** Cada uma das 12 regras tem teste que **introduz a violação e afirma
       que o verificador falha**. *(negativo — o item que vale)*
-- [ ] **AC-2** Em repositório limpo, os dois saem com código 0.
-- [ ] **AC-3** A saída nomeia arquivo, linha e regra violada.
-- [ ] **AC-4** Os dois rodam em menos de 5 s cada — se demorar, ninguém roda antes
+- [x] **AC-2** Em repositório limpo, os dois saem com código 0.
+- [x] **AC-3** A saída nomeia arquivo, linha e regra violada.
+- [x] **AC-4** Os dois rodam em menos de 5 s cada — se demorar, ninguém roda antes
       de commitar.
-- [ ] **AC-5** CI executa os dois e falha o merge.
-- [ ] **AC-6** A regra 3 é testada com um import indireto, em dois saltos.
+- [x] **AC-5** CI executa os dois e falha o merge.
+- [x] **AC-6** A regra 3 é testada com um import indireto, em dois saltos.
       *(negativo — [ADR-0002](../adr/0002-plano-render-plano-escrita.md) é a tese
       do projeto; import transitivo a quebraria em silêncio)*
 

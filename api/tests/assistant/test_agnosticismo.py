@@ -81,7 +81,7 @@ def test_a_cadeia_de_fallback_termina_em_livre() -> None:
     from estoque.assistant.adapter import _cadeia
 
     for modo in ("restrito", "ferramenta", "livre"):
-        assert _cadeia(modo)[-1] == "livre", modo  # type: ignore[arg-type]
+        assert _cadeia(modo)[-1] == "livre", modo
     assert _cadeia("restrito") == ("restrito", "ferramenta", "livre")
 
 

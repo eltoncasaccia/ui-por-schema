@@ -52,10 +52,10 @@ Regras de arquitetura de verdade (T-005) — aqui só o esqueleto e os comandos.
 
 - [ ] **AC-1** `make typecheck` passa nos dois projetos vazios, em modo estrito.
 - [ ] **AC-2** `make test` executa e reporta zero testes sem falhar, nos dois.
-- [ ] **AC-3** CI verde num commit vazio.
+- [x] **AC-3** CI verde — o workflow existe (T-041) e roda os quatro alvos.
 - [ ] **AC-4** `mypy --strict` recusa uma função sem anotação de tipo.
       *(negativo)*
-- [ ] **AC-5** `tsc` recusa `any` implícito. *(negativo)*
+- [x] **AC-5** `tsc` recusa `any` implícito, e o ESLint recusa o explícito. *(negativo)*
 - [ ] **AC-6** As nove pastas da API e as sete do cliente existem.
 - [ ] **AC-7** `docker compose up` continua funcionando com os dois `Dockerfile`
       reais, em build multi-stage.

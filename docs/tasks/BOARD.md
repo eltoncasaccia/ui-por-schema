@@ -127,7 +127,7 @@ graph TD
 | [T-003](./T-003-contrato-registry.md) | Contrato do registry (sem `render`) | C | M | T-002 | ✅ |
 | [T-004](./T-004-contratos-de-borda.md) | Schema, `viewKey`/`viewId`, envelope | C | M | T-002, T-003 | ✅ |
 | [T-039](./T-039-codegen-e-bijecao.md) | **Codegen OpenAPI→TS + bijeção** · congela | C | M | T-003, T-004 | ✅ |
-| [T-005](./T-005-arch-check.md) | Verificadores: `import-linter` + `arch:check` | E | M | T-002 | 🟡 |
+| [T-005](./T-005-arch-check.md) | Verificadores: `import-linter` + `arch:check` | E | M | T-002 | ✅ |
 
 ### W1 — Núcleo · até 13 sessões
 
@@ -188,7 +188,7 @@ graph TD
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
 | [T-040](./T-040-csrf-e-rate-limit.md) | **CSRF e rate limit** — segurança prometida e ausente | B | M | T-037 | ✅ |
-| [T-041](./T-041-ci.md) | CI no GitHub Actions | E | P | T-001 | ⬜ |
+| [T-041](./T-041-ci.md) | CI no GitHub Actions | E | P | T-001 | ✅ |
 | [T-042](./T-042-contract-test-repositorios.md) | **Contract test** fake ↔ repositório real — hoje o escopo do adaptador não é testado | A | M | T-007 | ⬜ |
 | T-043 | Instrumentação ao vivo do pipeline do assistente (duração real de span) | C | M | T-011 | ⬜ |
 | [T-044](./T-044-relatorio-movimentacao.md) | `relatorio_movimentacao` — relatório parametrizado ([ADR-0029](../adr/0029-relatorio-como-componente.md)) | C | M | T-024 | ⬜ |
@@ -236,6 +236,8 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
 | ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
 | ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
+| ~~A-13~~ | ~~**`make check` nunca pôde passar.**~~ `web/eslint.config.js` e `web/scripts/arch-check.ts` eram invocados pelo Makefile e nunca existiram; `eslint` não era nem dependência | execução da T-025 | os dois escritos; `make check` passa em **21 s**, exit 0. ✅ resolvido |
+| A-28 | `react-hooks/rules-of-hooks` desligada em `src/views/**`: a regra identifica componente pelo NOME em maiúscula, e CONTRATOS §6 (congelado) exporta `view` minúsculo. Hook dentro de `if` numa view deixa de ser pego por qualquer verificador | execução da T-005 | anotado em `web/eslint.config.js`; volta se o contrato mudar, ou vira 7ª regra do `arch-check` |
 | ~~A-27~~ | ~~**A aplicação conectava como DONO do banco.**~~ O dono ignora `REVOKE`: com ele na `DATABASE_URL`, `RN-M02` ("movimento não pode ser excluído por ninguém") e `RN-D02` (auditoria append-only) eram verdade **só nos testes**, que usavam `estoque_app`. Provado numa transação revertida: o dono apagou 992 movimentos e 3510 linhas de auditoria | pergunta do usuário | `DATABASE_URL` passa a usar `estoque_app`; migração e seed usam `DATABASE_URL_ADMIN`, que o `env.py` já lia. `tests/data/test_papel_da_aplicacao.py` lê a URL **da configuração** e prova as recusas. ✅ resolvido |
 | ~~A-20~~ | ~~**A view `saldo_lote` nunca era atualizada.**~~ Medido: após um movimento de saída de 7, a view dizia 762 e o real era 755. Ficava em sincronia só porque o seed roda no boot do container | execução da T-028 | migração 0005: deixa de ser materializada e passa a ser calculada — a T-036 prometia "atualizada na mesma transação do movimento", e view comum entrega isso por construção. ✅ resolvido |
 | A-26 | **O padrão tinha nome e o projeto não o usava.** O código é Ports & Adapters desde sempre — `data/porta.py` tem 6 `Protocol`, `assistant/adapter.py` é a porta do LLM, `repositorios.py` é o adapter de Postgres —, mas nenhum documento dizia "hexagonal". O ADR-0030 chegou a descrever o mecanismo e inventou vocabulário em vez de usar o da indústria. Consequência real: não dá para explicar o desenho em conversa técnica | pergunta do usuário | [ADR-0031](../adr/0031-ports-and-adapters.md) nomeia o padrão; `registry/`, `commands/` e `schema/` agrupados sob `application/`; camadas movidas dos documentos genéricos para o `CLAUDE.md` de cada projeto. ✅ resolvido |
@@ -252,12 +254,12 @@ Registro vivo. Achado é dado do projeto, não ruído.
 | ~~A-16~~ | ~~Duas convenções de endpoint de escrita nos documentos~~ — CONTRATOS §8 (`/api/comandos/{nome}`) é normativo e prevaleceu; as 4 tarefas restantes de W4 foram corrigidas, e a referência morta a `confirm_action` em T-029 saiu junto | execução da T-027 | ✅ corrigido |
 | A-12 | **T-025 não cabia nos arquivos que declarava.** A lista de propriedade exclusiva citava `confirm_action.py` — arquivo que o escopo da própria tarefa manda não criar (A-05) — e `commands/*.test.py`, caminho inexistente. E os AC-3/AC-4/AC-7 exigem tabela (T-036) e rota HTTP (T-011) para serem verificáveis | execução da T-025 | lista corrigida; 3 arquivos de outra tarefa tocados, registrados no arquivo da tarefa |
 | A-13 | **`make check` nunca pôde passar.** `web/eslint.config.js` e `web/scripts/arch-check.ts` são invocados pelo Makefile e **nunca existiram** em commit nenhum; `eslint` não é dependência de `web/package.json`. O comando que o CLAUDE.md chama de "o que o CI roda" para na primeira etapa | execução da T-025 | **T-041** (CI) e **T-005** (arch do TS) |
-| A-04b | `arch:check` só do lado Python, 4 de 6 regras | A-002 | T-005 parcial |
-| A-09 | `make typecheck` roda `mypy --strict src` e **não `tests`**. Dez erros de tipo vivem lá há tempo, invisíveis ao DoD e ao CI — e visíveis no editor de quem abre o arquivo | T-018 | **T-041** |
+| ~~A-04b~~ | ~~`arch:check` só do lado Python~~ | A-002 | ✅ as 6 regras do TS existem em `web/scripts/arch-check.ts`, com fixture de violação por regra |
+| ~~A-09~~ | ~~`make typecheck` não cobria `tests`~~ | T-018 | ✅ cobre `src tests`; os 10 erros corrigidos — os parâmetros de catálogo em `assistant/` viraram `Sequence[Mapping[...]]`, que é o tipo certo |
 | A-11 | Os fakes de `tests/registry/` reimplementam a interseção de escopo da porta. Se o adaptador real parar de intersectar, **toda a suíte de registry continua verde** | auditoria de testes | **T-042** |
 | A-10 | O observador do LangFuse tinha três defeitos — região errada, `update_trace()` inexistente na v4, nota sem `trace_id` — todos invisíveis porque o `except` que torna a telemetria não-fatal a torna muda | execução real | [ADR-0026](../adr/0026-observabilidade.md) · **T-043** |
 | A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
-| A-07b | Não há CI | A-002 | **T-041** |
+| ~~A-07b~~ | ~~Não há CI~~ | A-002 | ✅ `.github/workflows/ci.yml`, com Postgres como serviço |
 | A-08b | Spike sem relatório R-001 | A-002 | T-017 parcial |
 | A-01 | `select` rodava no cliente — `D` atravessava a rede | [A-001](../relatorios/A-001-auditoria-pre-migracao.md) | [ADR-0020](../adr/0020-select-no-servidor.md) |
 | A-02 | Sessão em cookie sem CSRF | A-001 | [ADR-0019](../adr/0019-autenticacao-e-cadastro.md) · T-037 |

@@ -75,7 +75,7 @@ def test_so_rt_libera_quarentena() -> None:
     """RN-R02. O caso que da' sentido ao ADR-0003."""
     assert transicao_valida("quarentena", "liberacao", "rt") is True
     for papel in ("diretor", "gerente", "conferente", "comprador", "auditoria"):
-        assert transicao_valida("quarentena", "liberacao", papel) is False  # type: ignore[arg-type]
+        assert transicao_valida("quarentena", "liberacao", papel) is False
 
 
 def test_diretor_nao_e_nivel_e_conjunto() -> None:

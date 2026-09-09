@@ -39,7 +39,8 @@ não rode `npm install`** — a instalação mexeria no chão das outras sessõe
 
 ### `views/` é a camada mais restrita do projeto
 
-Verificado por `scripts/arch-check.ts`, não combinado:
+Verificado por `scripts/arch-check.ts` — que **existe e roda em ~3 ms**, com uma
+fixture de violação por regra em `scripts/fixtures-violacao/`. Não é combinado:
 
 - não importa `query/` nem o cliente de API — dado chega por `props.vm`
 - **não contém `useEffect`** — view que busca, sincroniza ou agenda deixou de ser

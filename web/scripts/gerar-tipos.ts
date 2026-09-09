@@ -41,7 +41,7 @@ const partes: string[] = [
 ]
 
 for (const c of contrato.componentes) {
-  const ts = await compile(c.viewmodel as never, `VM${nomeDoTipo(c.id)}`, {
+  const ts = await compile(c.viewmodel, `VM${nomeDoTipo(c.id)}`, {
     bannerComment: '',
     additionalProperties: false,
     style: { semi: false, singleQuote: true },

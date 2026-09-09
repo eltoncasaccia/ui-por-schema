@@ -57,7 +57,9 @@ function definir(parcial: Partial<Estado>) {
 
 export const sessao = {
   ler: () => estado,
-  ouvir(o: () => void) { ouvintes.add(o); return () => ouvintes.delete(o) },
+  // Arrow, e não método abreviado: os dois são passados sem `this`
+  // (`useSyncExternalStore`, `onClick`). Arrow declara que não dependem dele.
+  ouvir: (o: () => void) => { ouvintes.add(o); return () => ouvintes.delete(o) },
 
   pergunta(texto: string) {
     definir({ conversa: [...estado.conversa, { papel: 'usuario', texto }], pensando: true })
@@ -99,7 +101,7 @@ export const sessao = {
         : [...estado.fixadas, { viewKey: c.viewKey, titulo: c.titulo, blocos: c.blocos }],
     })
   },
-  limpar() { definir({ conversa: [], pensando: false }) },
+  limpar: () => { definir({ conversa: [], pensando: false }) },
   reset() { estado = { conversa: [], composicoes: {}, noWorkspace: null, fixadas: [], traces: [], pensando: false }; ouvintes.forEach((o) => o()) },
 }
 

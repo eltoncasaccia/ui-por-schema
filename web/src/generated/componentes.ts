@@ -426,6 +426,46 @@ export interface RastreabilidadeLoteDeCliente {
   ultima: string
 }
 
+/**
+ * Sem custo, para papel nenhum (CA-05). `Recebimento` nao carrega custo e
+ * nada aqui o busca.
+ */
+export interface VMRecebimentoDetalhe {
+  conferente: string
+  fornecedor: string
+  nota_fiscal: string
+  recebido_em: string
+  recebimento_id: string
+  responsavel_tecnico: string | null
+  status: 'rascunho' | 'conferido' | 'liberado'
+  status_rotulo: string
+  tem_pendencia_divergencia: boolean
+  temperatura_chegada_c: number | null
+  unidade: string
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020). `Recebimento` nao carrega
+ * custo e nada aqui o busca — o AC-7 e' verdadeiro por construcao, e testado.
+ */
+export interface VMRecebimentoLista {
+  com_divergencia: number
+  escopo: string
+  linhas: RecebimentoListaLinhaRecebimento[]
+  recorte: string
+  total: number
+}
+export interface RecebimentoListaLinhaRecebimento {
+  divergencia: boolean
+  fornecedor: string
+  nota_fiscal: string
+  recebido_em: string
+  recebimento_id: string
+  status: 'rascunho' | 'conferido' | 'liberado'
+  status_rotulo: string
+  unidade: string
+}
+
 export interface VMVencimentoGrafico {
   baldes: VencimentoGraficoBalde[]
   escopo: string
@@ -462,6 +502,8 @@ export type ComponentId =
   | 'quarentena_fila'
   | 'quarentena_liberar'
   | 'rastreabilidade'
+  | 'recebimento_detalhe'
+  | 'recebimento_lista'
   | 'vencimento_grafico'
 
 /** Usado pelo teste de bijeção: toda view precisa corresponder a um destes. */
@@ -481,6 +523,8 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'quarentena_fila',
   'quarentena_liberar',
   'rastreabilidade',
+  'recebimento_detalhe',
+  'recebimento_lista',
   'vencimento_grafico',
 ] as const
 
@@ -501,6 +545,8 @@ export interface ViewModels {
   quarentena_fila: VMQuarentenaFila
   quarentena_liberar: VMQuarentenaLiberar
   rastreabilidade: VMRastreabilidade
+  recebimento_detalhe: VMRecebimentoDetalhe
+  recebimento_lista: VMRecebimentoLista
   vencimento_grafico: VMVencimentoGrafico
 }
 
@@ -523,5 +569,7 @@ export const TAMANHOS: Record<ComponentId, string> = {
   quarentena_fila: 'inteira',
   quarentena_liberar: 'inteira',
   rastreabilidade: 'inteira',
+  recebimento_detalhe: 'inteira',
+  recebimento_lista: 'inteira',
   vencimento_grafico: 'inteira',
 }

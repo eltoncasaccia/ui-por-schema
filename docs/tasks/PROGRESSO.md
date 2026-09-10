@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**33 concluídas · 2 parciais · 12 não iniciadas** · 16 de 24 componentes previstos.
+**34 concluídas · 2 parciais · 11 não iniciadas** · 18 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -63,7 +63,7 @@ está pronto.
 |---|---|---|---|
 | T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
 
-## W3 — Leitura · 12 de 15 componentes
+## W3 — Leitura · 14 de 15 componentes
 
 | | Tarefa | Estado | Componentes |
 |---|---|---|---|
@@ -71,7 +71,7 @@ está pronto.
 | T-018 | Lote | ✅ | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` |
 | T-019 | Produto e custo restrito | ✅ | `produto_ficha` `produto_saldo_por_unidade` (AC-7 em branco — `RN-P06` sem armazenamento: [A-30](./ACHADOS.md), [T-046](./T-046-minimo-maximo-por-unidade.md)) |
 | T-021 | Rastreabilidade `CA-01` | ✅ | `rastreabilidade` — AC-1..AC-7 testados. Recorte de período no `load` (porta ignora `de`/`ate`: [A-31](./ACHADOS.md)). `RNF-01` real fica para T-034 |
-| T-022 | Recebimento — leitura | ⬜ | 2 — **desbloqueada** pela T-047 (repos + fakes + seed prontos). "Lotes gerados" fica sem `lote.recebimento_id` |
+| T-022 | Recebimento — leitura | ✅ | `recebimento_lista` `recebimento_detalhe` — AC-2..AC-7 testados. **AC-1 em branco**: "gerou lote em quarentena" precisa de `lote.recebimento_id`, que não tem schema. **AC-6** vira `periodo` enum (a tarefa pedia `de`/`ate` soltos — risco R-5). RN-R03 sem armazenamento para integridade/validade: [A-33](./ACHADOS.md) |
 | T-023 | Cadeia fria `CA-07` | ⬜ | 2 — **desbloqueada** pela T-047 |
 | T-024 | Movimento e trilha | ✅ | 2 |
 

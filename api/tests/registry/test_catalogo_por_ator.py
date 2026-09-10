@@ -207,6 +207,21 @@ def test_rastreabilidade_segue_auditoria_rastrear(personas: dict[str, Ator]) -> 
         assert "rastreabilidade" not in ids_permitidos(personas[nome]), nome
 
 
+# --- T-022: leitura de recebimento --------------------------------------
+def test_recebimento_lista_e_detalhe_seguem_recebimento_ler(
+    personas: dict[str, Ator],
+) -> None:
+    """Rafael (comprador) e' o contraexemplo: tem `lote.ler`, nao tem
+    `recebimento.ler`. O que entrou no CD nao lhe diz respeito."""
+    for nome in TODAS_AS_PERSONAS:
+        ator = personas[nome]
+        esperado = "recebimento.ler" in ator.permissoes
+        for componente in ("recebimento_lista", "recebimento_detalhe"):
+            assert (componente in ids_permitidos(ator)) is esperado, f"{nome}/{componente}"
+    for componente in ("recebimento_lista", "recebimento_detalhe"):
+        assert componente not in ids_permitidos(personas["rafael"])
+
+
 # --- ADR-0011 / RNF-08 -------------------------------------------------------
 def test_orcamento_de_tokens_abaixo_do_alerta(personas: dict[str, Ator]) -> None:
     for nome, ator in personas.items():

@@ -1877,6 +1877,169 @@
       }
     },
     {
+      "id": "recebimento_detalhe",
+      "label": "Recebimento",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "description": "Sem custo, para papel nenhum (CA-05). `Recebimento` nao carrega custo e\nnada aqui o busca.",
+        "properties": {
+          "conferente": {
+            "type": "string"
+          },
+          "fornecedor": {
+            "type": "string"
+          },
+          "nota_fiscal": {
+            "type": "string"
+          },
+          "recebido_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "recebimento_id": {
+            "type": "string"
+          },
+          "responsavel_tecnico": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "rascunho",
+              "conferido",
+              "liberado"
+            ],
+            "type": "string"
+          },
+          "status_rotulo": {
+            "type": "string"
+          },
+          "tem_pendencia_divergencia": {
+            "type": "boolean"
+          },
+          "temperatura_chegada_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unidade": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recebimento_id",
+          "recebido_em",
+          "unidade",
+          "fornecedor",
+          "nota_fiscal",
+          "status",
+          "status_rotulo",
+          "conferente",
+          "responsavel_tecnico",
+          "temperatura_chegada_c",
+          "tem_pendencia_divergencia"
+        ],
+        "title": "VMRecebimentoDetalhe",
+        "type": "object"
+      }
+    },
+    {
+      "id": "recebimento_lista",
+      "label": "Recebimentos",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "RecebimentoListaLinhaRecebimento": {
+            "properties": {
+              "divergencia": {
+                "type": "boolean"
+              },
+              "fornecedor": {
+                "type": "string"
+              },
+              "nota_fiscal": {
+                "type": "string"
+              },
+              "recebido_em": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "recebimento_id": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "rascunho",
+                  "conferido",
+                  "liberado"
+                ],
+                "type": "string"
+              },
+              "status_rotulo": {
+                "type": "string"
+              },
+              "unidade": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "recebimento_id",
+              "recebido_em",
+              "unidade",
+              "nota_fiscal",
+              "fornecedor",
+              "status",
+              "status_rotulo",
+              "divergencia"
+            ],
+            "title": "RecebimentoListaLinhaRecebimento",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020). `Recebimento` nao carrega\ncusto e nada aqui o busca — o AC-7 e' verdadeiro por construcao, e testado.",
+        "properties": {
+          "com_divergencia": {
+            "type": "integer"
+          },
+          "escopo": {
+            "type": "string"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/RecebimentoListaLinhaRecebimento"
+            },
+            "type": "array"
+          },
+          "recorte": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "escopo",
+          "recorte",
+          "com_divergencia",
+          "linhas"
+        ],
+        "title": "VMRecebimentoLista",
+        "type": "object"
+      }
+    },
+    {
       "id": "vencimento_grafico",
       "label": "Curva de vencimento",
       "tamanho": "inteira",

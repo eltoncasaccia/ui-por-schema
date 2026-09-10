@@ -20,6 +20,8 @@ import { view as produto_saldo_por_unidade } from './produto_saldo_por_unidade'
 import { view as quarentena_fila } from './quarentena_fila'
 import { view as quarentena_liberar } from './quarentena_liberar'
 import { view as rastreabilidade } from './rastreabilidade'
+import { view as recebimento_detalhe } from './recebimento_detalhe'
+import { view as recebimento_lista } from './recebimento_lista'
 import { view as vencimento_grafico } from './vencimento_grafico'
 
 /**
@@ -46,6 +48,8 @@ export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   quarentena_fila,
   quarentena_liberar,
   rastreabilidade,
+  recebimento_detalhe,
+  recebimento_lista,
   vencimento_grafico,
 }
 

@@ -21,6 +21,8 @@ from estoque.application.registry.componentes import (
     quarentena_fila,
     quarentena_liberar,
     rastreabilidade,
+    recebimento_detalhe,
+    recebimento_lista,
     vencimento_grafico,
 )
 from estoque.application.registry.orcamento import verificar_teto
@@ -41,6 +43,8 @@ __all__ = [
     "quarentena_fila",
     "quarentena_liberar",
     "rastreabilidade",
+    "recebimento_detalhe",
+    "recebimento_lista",
     "vencimento_grafico",
 ]
 

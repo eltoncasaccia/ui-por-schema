@@ -16,6 +16,21 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 
 ---
 
+## 0. Esperando decisão do cliente
+
+**Quatro perguntas paradas, e nenhuma é da equipe.** Estavam enterradas numa
+tabela de 42 achados que só auditoria lia inteira — registrado e invisível é o
+mesmo que não registrado. Ficam aqui até serem respondidas.
+
+| # | Pergunta | Trava |
+|---|---|---|
+| [A-19](./ACHADOS.md) | A lista de motivos de **saída** (quatro, derivados do enum) está certa? `RN-M05` exige uma lista fechada e não há nenhuma em documento | T-029 |
+| [A-23](./ACHADOS.md) | O livro de controlados **exportável** (`RN-C05`) entra no ciclo 1? Custa +1 no catálogo e uma tarefa | `RN-C05` |
+| [A-33](./ACHADOS.md) | O `status` do recebimento basta como "conferência registrada", ou `RN-R03` exige integridade e validade como itens separados, com coluna? | T-026 |
+| [A-35](./ACHADOS.md) | Auditar **navegação** (catálogo, identidade) é exigência regulatória, ou basta auditar leitura de dado? | recorte de `CS-05` |
+
+---
+
 ## 1. Tarefas
 
 ### W0 — Ambiente e contratos · serial

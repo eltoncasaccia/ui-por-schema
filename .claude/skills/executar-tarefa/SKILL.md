@@ -143,5 +143,14 @@ Não improvise. Pare se:
 Os dois últimos viram **achado**, registrado em `docs/tasks/ACHADOS.md`. Achado que
 muda regra vira pergunta ao cliente; achado que muda decisão técnica vira ADR.
 
+**Achado que muda regra vai para a seção 0 do BOARD**, não só para o ACHADOS:
+decisão do cliente enterrada numa tabela longa é decisão que ninguém vê, e
+registrado-e-invisível é o mesmo que não registrado.
+
+**Fechou um achado? Tire-o do ACHADOS** e mova o texto para
+`docs/relatorios/achados-resolvidos.md`, deixando só o id citável. Não fazer isso
+é o que transformou o arquivo no maior dos documentos de tarefa — 56% dele
+descrevia problemas que não existiam mais, e todo fechamento passava por cima.
+
 **Nenhum desses casos se resolve com uma suposição registrada em comentário de
 código.** É assim que documentação e sistema divergem.

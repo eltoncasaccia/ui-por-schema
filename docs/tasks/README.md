@@ -191,6 +191,11 @@ Uma sessão para e sinaliza — não improvisa — quando:
 Os dois últimos casos produzem **um achado**, registrado em [ACHADOS](./ACHADOS.md). Achado que
 muda regra vira pergunta ao cliente; achado que muda decisão técnica vira ADR.
 
+Duas regras que o arquivo aprendeu na marra: achado que depende do cliente vai
+também para a **seção 0 do [BOARD](./BOARD.md)**, senão ninguém o vê; e **achado
+fechado sai do ACHADOS** para
+[`relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md).
+
 **Nenhum desses casos se resolve com uma suposição registrada em comentário de
 código.** É assim que documentação e sistema divergem.
 

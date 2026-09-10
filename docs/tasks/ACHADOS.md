@@ -1,66 +1,98 @@
-# Achados — Ciclo 1
+# Achados
 
 Registro do que a execução descobriu e o documento não previa: conflito entre
 regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 
-Saiu do [BOARD](./BOARD.md) porque **é escrito raramente e lido inteiro só
-pelas auditorias** — quem executa uma tarefa não precisa dos 25 achados
-anteriores para entregar a dele.
+> **Próximo número: `A-37`.** Está aqui para ninguém precisar abrir o arquivo
+> só para descobrir o número seguinte.
 
-> Achado que muda regra vira pergunta ao cliente; achado que muda decisão
-> técnica vira ADR; achado que é trabalho vira tarefa no [BOARD](./BOARD.md).
+**Este arquivo só tem o que ainda exige ação.** Os 30 achados já fechados foram
+para [`docs/relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md)
+— eram 56% do arquivo, descrevendo problemas que não existem mais, e todo
+fechamento de tarefa passava por cima deles.
+
+> Achado que muda regra vira **pergunta ao cliente** · que muda decisão técnica
+> vira **ADR** · que é trabalho vira **tarefa no [BOARD](./BOARD.md)**.
+>
+> **Achado fechado sai daqui**, para o histórico. Deixá-lo é o que fez este
+> arquivo virar o maior dos documentos de tarefa.
 
 ---
 
-## Achados
+## 1. Esperando decisão do cliente
 
-Registro vivo. Achado é dado do projeto, não ruído.
+**Estes quatro estão parados, e a decisão não é da equipe.** Ficam no topo
+porque estavam enterrados numa tabela de 42 linhas e ninguém sabia que existiam
+— o que é o mesmo que não ter registrado.
+
+| # | A pergunta que precisa de resposta | Trava o quê |
+|---|---|---|
+| **A-19** | A lista de motivos de **saída** (quatro derivados do enum) está certa? Não há lista fechada em documento nenhum, e `RN-M05` exige uma | T-029, e qualquer relatório por motivo |
+| **A-23** | O livro de controlados **exportável** (`RN-C05`) entra no ciclo 1? Custa +1 no catálogo e uma tarefa | fechamento do `RN-C05` |
+| **A-33** | O `status` do recebimento basta como "conferência registrada", ou `RN-R03` exige integridade e validade como itens separados? | T-026, e o AC de conferência |
+| **A-35** | Auditar **navegação** (catálogo, identidade) é exigência regulatória, ou basta auditar leitura de dado? | recorte do AC-8 / `CS-05` |
+
+---
+
+## 2. Abertos, já endereçados por tarefa
+
+Têm dono no [BOARD](./BOARD.md). Ficam aqui só para o vínculo achado → tarefa
+não se perder.
+
+| # | Achado | Tarefa |
+|---|---|---|
+| A-10 | Observador do LangFuse com três defeitos, mudos por causa do `except` | **T-043** |
+| A-11 | Os fakes reimplementam a interseção de escopo da porta — se o adaptador real parar de intersectar, a suíte segue verde | **T-042** |
+| A-30 | `RN-P06` (mín/máx por unidade) não tem armazenamento nenhum | **T-046** |
+| A-31 | `RepoMovimento.por_cliente` ignora `de` e `ate` — no fake **e** no real | **T-007** / **T-042** |
+
+---
+
+## 3. Abertos, anotados como limite conhecido
+
+Não viram tarefa: são decisões conscientes de não fazer agora, e existem para
+não serem redescobertas como se fossem novidade.
 
 | # | Achado | Origem | Consequência |
 |---|---|---|---|
-| A-36 | **A lista de propriedade exclusiva da T-016 não cobria os próprios critérios dela.** A lista nomeava só `web/` (`query/*.ts`, `state/sessao.ts`, `app/rotas.tsx`), mas AC-5 e AC-6 são regras que vivem no **servidor** — "aberta por Odair, carrega sob a permissão de Odair" e "componente fora do catálogo do requisitante é rejeitado na abertura" só se provam em `api/`. Um teste no cliente provaria que o cliente pede direito, e o cliente é exatamente quem não se pode obrigar a nada. Além disso, `web/src/query/` e `web/src/state/` **nunca existiram**: viraram `estado/` na T-001 ([A-25](./ACHADOS.md)), e a T-016 nunca foi atualizada. Terceira tarefa seguida com a lista de arquivos errada — a T-011 tinha `server/*.test.py` e `server/middleware/*.py`, os dois inexistentes | execução da T-016 | Lista corrigida no arquivo da tarefa, com `App.tsx` (onde a rota se monta) e `api/tests/server/test_t016_ac.py` acrescentados. **Padrão a corrigir no processo, não só nesta tarefa**: as listas foram escritas antes de o código existir e não são reconferidas quando pastas mudam de nome. Vale uma passada nas tarefas ainda ⬜ antes de assumi-las — a `auditar-execucao` é o lugar |
-| A-34 | **`CS-06` estava rotulado, não implementado.** O PRD (§requisitos de segurança) e CONTRATOS §8 definem `CS-06` como *"rate limit **por ator no endpoint do assistente**"*. A T-040 entregou rate limit no **login** (`auth/limite.py`, por conta e por IP) e escreveu "T-040, CS-06" no topo do arquivo. São duas proteções com alvos diferentes — força bruta de senha e custo de token por ator — e a segunda não existia: `rotas/assistente.py` chamava o modelo sem teto nenhum. É o padrão do [A-002](../relatorios/A-002-auditoria-de-execucao.md) outra vez: promessa em documento, rótulo no código, mecanismo ausente | execução da T-011 | **Implementado na T-011** (`rotas/assistente.py`): 30 composições por ator e 120 por IP em janela de 5 min, conferidas **antes** de falar com o modelo, com a recusa auditada (`assistente_bloqueado`) fora da transação que o `raise` reverte. Reusa o `Limitador` da T-040 — cujo método `registrar_falha` tem nome errado para este uso (aqui conta **toda** chamada, não só a falha): renomear é tarefa da T-040. `test_cs06_limite_do_assistente.py`, 9 testes, com sabotagem verificada |
-| A-35 | **O AC-8 da T-011 é mais largo que o `CS-05` que ele cita.** O critério diz "toda requisição bem-sucedida gera evento de auditoria"; o `CS-05` do PRD diz "toda **resposta do assistente**", e CONTRATOS §8 diz "todo **acesso** — leitura inclusive". Seguir o AC ao pé da letra obrigaria a auditar `/api/catalogo`, `/api/auth/eu` e `/api/saude`, que não alcançam dado de domínio — o primeiro devolve o vocabulário calculado do próprio ator, o segundo a identidade de quem já está logado, o terceiro nada. A interface chama `/api/catalogo` a cada carga de tela: auditá-lo encheria a trilha de linhas que não respondem à pergunta do `RN-D05` ("quem olhou o quê"), e trilha ruidosa é trilha que ninguém lê | execução da T-011 | AC-8 verificado no recorte **"toda leitura de dado de domínio"**: `/api/componentes/*/dados` (4 componentes, com o par negativo da recusa que não vira evento), `/api/assistente/compor`, `/api/views/*`, `/api/comandos/*` (pipeline) e `/api/compartilhamentos`. O recorte está no topo da seção AC-8 de `test_t011_ac.py`. **Confirmar com o cliente** se auditar navegação (catálogo/identidade) é exigência regulatória — se for, vira tarefa e o AC-8 reabre |
-| A-33 | **`RN-R03` não tem armazenamento para as conferências item a item.** A regra exige conferência registrada de integridade da embalagem, validade mínima, nota fiscal e temperatura de chegada. Dessas quatro, o `Recebimento` congelado (CONTRATOS §3) só guarda `nota_fiscal` e `temperatura_chegada_c`; integridade da embalagem e validade mínima como resultados de conferência **não têm coluna** — nem em `recebimento`, nem no tipo de domínio. O `status` (`rascunho`/`conferido`/`liberado`) registra que a conferência aconteceu, não o que cada item deu | execução da T-022 | `recebimento_detalhe` mostra o que existe (status da conferência, nota, temperatura, dupla identificação, pendência de divergência). O checklist item a item de `RN-R03` fica para a tarefa que também entregar `lote.recebimento_id` (mesma mudança de contrato — "lotes gerados", já descopado da T-022), ou vira ADR se o cliente exigir os itens separados. **Confirmar com o cliente** se o `status` basta como "conferência registrada" no ciclo 1 |
-| ~~A-32~~ | ~~Os repositórios de recebimento e temperatura nunca foram construídos~~ — a T-007 os listava no escopo e foi marcada ✅, mas `data/repositorios.py` não tinha as classes, `deps.py` passava `None`, o fake era `_NaoUsado()` e não havia um recebimento no seed | execução da T-022 | **[T-047](./T-047-repos-recebimento-temperatura.md) fechada:** `RepoRecebimentoSQL`/`RepoTemperaturaSQL`, fiação, fakes reais, seed com 6 recebimentos, bateria de escopo fake↔real. T-022 e T-023 desbloqueadas. ✅ resolvido — resta `lote.recebimento_id` (schema, "lotes gerados"), descopado da T-022 |
-| A-31 | **`RepoMovimento.por_cliente(cliente_id, de, ate, ctx)` ignora `de` e `ate`.** O fake **e** o repositório real (`data/repositorios.py`) recebem os dois argumentos e não os usam na query — a assinatura promete um recorte de período que não acontece. Não é divergência fake↔real (os dois erram igual), é bug dos dois. Descoberto ao implementar `rastreabilidade`, cujo `RN-D04` é "cliente **e período**" | execução da T-021 | `rastreabilidade` faz o recorte de período **no `load`**, então a T-021 entrega `RN-D04` correto. Mas a porta continua mentindo: **T-007** conserta os dois (real + fake), e a bateria da **T-042** deve cobrir "período recorta" como invariante |
-| A-30 | **`RN-P06` (estoque mínimo e máximo por produto e por unidade) não tem armazenamento nenhum.** Não há coluna em `produto`, não há tabela `produto_unidade`, não há campo no `Produto` do domínio, não há método na `RepoProduto` (CONTRATOS §4, congelado) e não há dado no seed. A regra existe no documento 02 e a camada de dados nunca a implementou | execução da T-019 | **AC-7 da T-019 fica em branco** (produto e o componente entregues cobrindo AC-1..AC-6). Abre a **T-046**: tabela + migração (T-036), campo de domínio (T-002), método de porta — que é mudança de contrato congelado —, seed (T-006), e então min/máx no `produto_ficha` / `produto_saldo_por_unidade` |
-| ~~A-02b~~ | ~~CSRF prometido em 3 lugares, implementado em nenhum~~ | [A-002](../relatorios/A-002-auditoria-de-execucao.md) | ✅ T-040 |
-| ~~A-03b~~ | ~~Rate limit no login não existe~~ | A-002 | ✅ T-040 |
-| ~~A-05b~~ | ~~Bijeção registry ↔ views não verificada~~ | A-002 | ✅ T-039 |
-| ~~A-13~~ | ~~**`make check` nunca pôde passar.**~~ `web/eslint.config.js` e `web/scripts/arch-check.ts` eram invocados pelo Makefile e nunca existiram; `eslint` não era nem dependência | execução da T-025 | os dois escritos; `make check` passa em **21 s**, exit 0. ✅ resolvido |
-| A-29 | **`fakes.AGORA` era `datetime` ingênuo**, e a coluna real é `timestamptz`. `lote_movimentos` não percebia porque compara `.date()`; `movimento_lista` passa o corte como `datetime` e o falso quebrava onde o real funciona — achado A-11 outra vez, agora no tipo e não no escopo | execução da T-024 | corrigido na raiz: `AGORA` com fuso, e o `_mov` passou a aceitar `status` e `estorna`. ✅ resolvido |
-| A-28 | `react-hooks/rules-of-hooks` desligada em `src/views/**`: a regra identifica componente pelo NOME em maiúscula, e CONTRATOS §6 (congelado) exporta `view` minúsculo. Hook dentro de `if` numa view deixa de ser pego por qualquer verificador | execução da T-005 | anotado em `web/eslint.config.js`; volta se o contrato mudar, ou vira 7ª regra do `arch-check` |
-| ~~A-27~~ | ~~**A aplicação conectava como DONO do banco.**~~ O dono ignora `REVOKE`: com ele na `DATABASE_URL`, `RN-M02` ("movimento não pode ser excluído por ninguém") e `RN-D02` (auditoria append-only) eram verdade **só nos testes**, que usavam `estoque_app`. Provado numa transação revertida: o dono apagou 992 movimentos e 3510 linhas de auditoria | pergunta do usuário | `DATABASE_URL` passa a usar `estoque_app`; migração e seed usam `DATABASE_URL_ADMIN`, que o `env.py` já lia. `tests/data/test_papel_da_aplicacao.py` lê a URL **da configuração** e prova as recusas. ✅ resolvido |
-| ~~A-20~~ | ~~**A view `saldo_lote` nunca era atualizada.**~~ Medido: após um movimento de saída de 7, a view dizia 762 e o real era 755. Ficava em sincronia só porque o seed roda no boot do container | execução da T-028 | migração 0005: deixa de ser materializada e passa a ser calculada — a T-036 prometia "atualizada na mesma transação do movimento", e view comum entrega isso por construção. ✅ resolvido |
-| A-26 | **O padrão tinha nome e o projeto não o usava.** O código é Ports & Adapters desde sempre — `data/porta.py` tem 6 `Protocol`, `assistant/adapter.py` é a porta do LLM, `repositorios.py` é o adapter de Postgres —, mas nenhum documento dizia "hexagonal". O ADR-0030 chegou a descrever o mecanismo e inventou vocabulário em vez de usar o da indústria. Consequência real: não dá para explicar o desenho em conversa técnica | pergunta do usuário | [ADR-0031](../adr/0031-ports-and-adapters.md) nomeia o padrão; `registry/`, `commands/` e `schema/` agrupados sob `application/`; camadas movidas dos documentos genéricos para o `CLAUDE.md` de cada projeto. ✅ resolvido |
-| A-25 | **O layout de diretórios nunca foi decisão registrada.** ADR-0007 e `03-arquitetura-v2.md` §9 descrevem as camadas da **v1** — `application/`, `state/`, `render/`, `viewmodels/`, `components/` —, das quais cinco não existem no `api/` desde o ADR-0016. E `src/estoque` não era explicado em lugar nenhum. Descoberto por pergunta, não por auditoria | leitura do repositório | [ADR-0031](../adr/0031-ports-and-adapters.md) (que substituiu o 0030); 0007 e o doc 03 marcados como emendados; nomes do `web/` corrigidos em T-001; ADR-0029 acrescentado ao índice, de onde faltava. ✅ resolvido |
-| A-24 | **`RN-M02` e `RN-C01` eram incompatíveis no schema.** O `REVOKE UPDATE ON movimento` da migração 0001 tornava impossível a transição `aguardando_autorizacao → efetivado` que `RN-C01` exige e `CONTRATOS §3` documenta — conferido no banco: `permission denied` | execução da T-030 | migração 0004: `GRANT` por COLUNA (`status`, `autorizador_id`) mais gatilho que só aceita a transição documentada, com as demais colunas conferidas inalteradas. Decidido com o cliente. ✅ resolvido |
-| A-23 | **`RN-C05` promete livro de controlados "exportável"** e não há componente, comando nem endpoint de exportação em lugar nenhum do ciclo 1 | execução da T-030 | metade imutável entregue e testada; exportação do livro de controlados **não entregue** — precisa de tarefa e de +1 no catálogo. A T-023 estabeleceu um caminho para o caso de leitura: `csv` montado pelo `select` e baixado client-side a partir do viewmodel (`temperatura_historico`, AC-2) — sem endpoint. O livro de controlados pode reusar o padrão se a exportação dele couber num viewmodel |
-| A-22 | **O AC-6 da T-030 pedia recusa num fluxo que o ADR-0010 cortou.** `RN-C02` é sobre ajuste de saldo, e ajuste está fora do ciclo 1. A própria seção "Não faz" da tarefa excluía `RN-C04` pelo mesmo motivo e esqueceu este | execução da T-030 | AC-6 fica em branco, com a razão registrada. Volta quando inventário entrar |
-| A-21 | **O FEFO propunha o que o próprio sistema recusa.** `propor_fefo` implementa `RN-L02` e não conhece `RN-L05`: propõe o lote de menor validade, que costuma ser o que está na janela de 30 dias e depende de liberação do RT. Pior: quem escolhesse o lote certo pagava justificativa por isso | execução da T-028 | proposta calculada entre os que podem sair de fato, nos dois lados. ✅ corrigido |
-| A-19 | Não há lista fechada de motivos de **saída** em documento nenhum. `RN-M05` exige uma "por tipo de movimento", e o documento 02 só define a de ajuste (`RN-I06`) | execução da T-028 | quatro motivos derivados do enum do domínio, com o corte justificado no arquivo da tarefa. **Confirmar com o cliente** |
-| A-17 | **O cache do grimp serviu um grafo velho.** Ao sabotar o teste de barreira de propósito, `.grimp_cache` continuou reportando a violação depois de o import ter sido removido. Um cache que atrasa num sentido atrasa no outro: o import proibido entra, o cache ainda não viu, e o teste que sustenta o ADR-0002 fica **verde sobre uma barreira já caída** | execução da T-027 | `cache_dir=None` nos três testes de grafo; `.grimp_cache/` no `.gitignore`. ✅ corrigido |
-| A-18 | `test_ac1_todo_comando_declarado_tem_executavel...` passava por **ausência de dado** quando rodado isolado: `commands/indice.py` só era importado por outro módulo de teste, então o registro chegava vazio e a bijeção não tinha o que comparar | execução da T-027 | o teste passou a importar o índice ele mesmo. ✅ corrigido |
-| ~~A-15~~ | ~~O corte de W4 não previu onde a execução do comando mora~~ — as quatro tarefas restantes ganharam `commands/<dominio>.py`, `commands/entradas/<dominio>.py` e o teste; `entradas` virou pacote (um módulo por tarefa) e **`commands/indice.py` passou a ser gerado** por `make gerar-indice`, porque as cinco precisariam da mesma linha nele | execução da T-027 | ✅ corrigido |
 | A-14 | **Onde persiste a autorização de RN-L05 não está em documento nenhum.** "Só o RT libera, com justificativa" — mas o bloqueio por validade é derivado da data (ADR-0022) e não há coluna para desfazê-lo. Implementado como fato da trilha de auditoria | execução da T-027 | **T-028** precisa consultar a trilha ao decidir a saída; se não couber, vira ADR e coluna |
-| ~~A-16~~ | ~~Duas convenções de endpoint de escrita nos documentos~~ — CONTRATOS §8 (`/api/comandos/{nome}`) é normativo e prevaleceu; as 4 tarefas restantes de W4 foram corrigidas, e a referência morta a `confirm_action` em T-029 saiu junto | execução da T-027 | ✅ corrigido |
-| A-12 | **T-025 não cabia nos arquivos que declarava.** A lista de propriedade exclusiva citava `confirm_action.py` — arquivo que o escopo da própria tarefa manda não criar (A-05) — e `commands/*.test.py`, caminho inexistente. E os AC-3/AC-4/AC-7 exigem tabela (T-036) e rota HTTP (T-011) para serem verificáveis | execução da T-025 | lista corrigida; 3 arquivos de outra tarefa tocados, registrados no arquivo da tarefa |
-| A-13 | **`make check` nunca pôde passar.** `web/eslint.config.js` e `web/scripts/arch-check.ts` são invocados pelo Makefile e **nunca existiram** em commit nenhum; `eslint` não é dependência de `web/package.json`. O comando que o CLAUDE.md chama de "o que o CI roda" para na primeira etapa | execução da T-025 | **T-041** (CI) e **T-005** (arch do TS) |
-| ~~A-04b~~ | ~~`arch:check` só do lado Python~~ | A-002 | ✅ as 6 regras do TS existem em `web/scripts/arch-check.ts`, com fixture de violação por regra |
-| ~~A-09~~ | ~~`make typecheck` não cobria `tests`~~ | T-018 | ✅ cobre `src tests`; os 10 erros corrigidos — os parâmetros de catálogo em `assistant/` viraram `Sequence[Mapping[...]]`, que é o tipo certo |
-| A-11 | Os fakes de `tests/registry/` reimplementam a interseção de escopo da porta. Se o adaptador real parar de intersectar, **toda a suíte de registry continua verde** | auditoria de testes | **T-042** |
-| A-10 | O observador do LangFuse tinha três defeitos — região errada, `update_trace()` inexistente na v4, nota sem `trace_id` — todos invisíveis porque o `except` que torna a telemetria não-fatal a torna muda | execução real | [ADR-0026](../adr/0026-observabilidade.md) · **T-043** |
-| A-06b | Escopo cresceu sem o PRD acompanhar | A-002 | PRD revisado |
-| ~~A-07b~~ | ~~Não há CI~~ | A-002 | ✅ `.github/workflows/ci.yml`, com Postgres como serviço |
+| A-22 | **O AC-6 da T-030 pedia recusa num fluxo que o ADR-0010 cortou.** `RN-C02` é sobre ajuste de saldo, e ajuste está fora do ciclo 1. A própria seção "Não faz" da tarefa excluía `RN-C04` pelo mesmo motivo e esqueceu este | execução da T-030 | AC-6 fica em branco, com a razão registrada. Volta quando inventário entrar |
+| A-28 | `react-hooks/rules-of-hooks` desligada em `src/views/**`: a regra identifica componente pelo NOME em maiúscula, e CONTRATOS §6 (congelado) exporta `view` minúsculo. Hook dentro de `if` numa view deixa de ser pego por qualquer verificador | execução da T-005 | anotado em `web/eslint.config.js`; volta se o contrato mudar, ou vira 7ª regra do `arch-check` |
 | A-08b | Spike sem relatório R-001, e perguntas não commitadas antes da execução | A-002 | **R-001 entregue** (2026-09-09), T-017 fechada. A parte "perguntas antes do resultado" é **não recuperável** para o spike (usou os 17 casos da T-032); a disciplina passa a valer para os casos novos da [T-032](./T-032-suite-de-avaliacao.md) — ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md) |
-| A-01 | `select` rodava no cliente — `D` atravessava a rede | [A-001](../relatorios/A-001-auditoria-pre-migracao.md) | [ADR-0020](../adr/0020-select-no-servidor.md) |
-| A-02 | Sessão em cookie sem CSRF | A-001 | [ADR-0019](../adr/0019-autenticacao-e-cadastro.md) · T-037 |
-| A-03 | `viewKey` por hash prometia revogação impossível | A-001 | [ADR-0021](../adr/0021-viewkey-e-viewid.md) |
-| A-04 | `status` armazenava estado derivado | A-001 | [ADR-0022](../adr/0022-status-registrado-e-efetivo.md) |
-| A-05 | `requires` estático não cabia em 2 componentes | A-001 | Catálogo 23 → 22 |
-| A-06 | 6 permissões sem uso, 1 contradizendo tarefa | A-001 | 18 permissões |
-| A-07 | CONTRATOS definia 3 de 7 entidades | A-001 | CONTRATOS rev. 2.0 |
 
-Classificação: **muda regra** → pergunta ao cliente · **muda decisão técnica** →
-ADR · **muda escopo** → revisão do PRD.
+---
+
+## 4. Resolvidos
+
+**30 achados**, com o texto inteiro em
+[`docs/relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md).
+
+Os ids continuam citáveis: `A-01` a `A-07` (auditoria A-001), `A-02b` a `A-09`
+(auditoria A-002), e `A-12`, `A-13`, `A-15` a `A-18`, `A-20`, `A-21`, `A-24` a
+`A-27`, `A-29`, `A-32`, `A-34`, `A-36` (execução).
+
+---
+
+## O que estes 42 achados ensinaram
+
+Classificação feita na 37ª entrega, olhando os 42 de uma vez. **Metade é o
+processo funcionando; a outra metade tem três causas com nome.**
+
+| Família | Qtd | Causa raiz |
+|---|---|---|
+| Bug achado por teste ou execução | 11 | — é para isso que os testes existem |
+| Contrato incompleto, descoberto no uso | 8 | — normal num ciclo 1 |
+| **Documento prometeu, código não tem** | 10 | status declarado **sem verificação** |
+| **Regra sem lastro no modelo de dados** | 4 | ninguém perguntou "cada `RN` tem coluna?" antes de congelar CONTRATOS |
+| **Documentos se contradizem** | 5 | cada um foi escrito bem, **isolado**; ninguém cruzou um contra o outro |
+| **Corte de tarefa errado** | 4 | listas de arquivo escritas **antes do código** e nunca reconferidas |
+
+As três causas de baixo já viraram regra: *"Status é entrega, não relatório"* no
+[`CLAUDE.md`](../../CLAUDE.md) existe **porque** a primeira aconteceu dez vezes.
+
+**A segunda ainda não tem antídoto.** A [matriz de
+rastreabilidade](../RASTREABILIDADE.md) mapeia por **família** (`RN-R` → T-022,
+T-026), não por regra: ela responde *"onde mora `RN-R`?"* e nunca poderia
+responder *"`RN-R03` tem armazenamento?"* — que é exatamente a pergunta que
+produziu A-33, A-30, A-14 e A-19. **59 regras, nenhuma rastreada
+individualmente.** Enquanto for assim, essa família volta.

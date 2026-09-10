@@ -2040,6 +2040,267 @@
       }
     },
     {
+      "id": "temperatura_excursoes",
+      "label": "Excursões de temperatura",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "TemperaturaExcursoesExcursao": {
+            "properties": {
+              "duracao_horas": {
+                "type": "number"
+              },
+              "fim": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "inicio": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "leituras": {
+                "type": "integer"
+              },
+              "lotes": {
+                "items": {
+                  "$ref": "#/$defs/TemperaturaExcursoesLotePresente"
+                },
+                "type": "array"
+              },
+              "pico_celsius": {
+                "type": "number"
+              },
+              "sentido": {
+                "enum": [
+                  "calor",
+                  "frio"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "inicio",
+              "fim",
+              "duracao_horas",
+              "sentido",
+              "pico_celsius",
+              "leituras",
+              "lotes"
+            ],
+            "title": "TemperaturaExcursoesExcursao",
+            "type": "object"
+          },
+          "TemperaturaExcursoesLotePresente": {
+            "properties": {
+              "entrou_em": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "lote_id": {
+                "type": "string"
+              },
+              "numero": {
+                "type": "string"
+              },
+              "produto": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "quarentena",
+                  "liberado",
+                  "bloqueado",
+                  "descartado"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "lote_id",
+              "numero",
+              "produto",
+              "status",
+              "entrou_em"
+            ],
+            "title": "TemperaturaExcursoesLotePresente",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo (CA-05): nada aqui busca produto por preco, so' por nome.",
+        "properties": {
+          "ate": {
+            "format": "date",
+            "type": "string"
+          },
+          "de": {
+            "format": "date",
+            "type": "string"
+          },
+          "excursoes": {
+            "items": {
+              "$ref": "#/$defs/TemperaturaExcursoesExcursao"
+            },
+            "type": "array"
+          },
+          "faixa_max_c": {
+            "default": 8.0,
+            "type": "number"
+          },
+          "faixa_min_c": {
+            "default": 2.0,
+            "type": "number"
+          },
+          "total_excursoes": {
+            "type": "integer"
+          },
+          "unidade": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "unidade",
+          "de",
+          "ate",
+          "total_excursoes",
+          "excursoes"
+        ],
+        "title": "VMTemperaturaExcursoes",
+        "type": "object"
+      }
+    },
+    {
+      "id": "temperatura_historico",
+      "label": "Histórico de temperatura",
+      "tamanho": "alta",
+      "viewmodel": {
+        "$defs": {
+          "TemperaturaHistoricoBalde": {
+            "description": "Um intervalo agregado. `tem_excursao` marca o balde que esconde ao menos\numa leitura fora da faixa — sem ele, agregar apagaria a excursao.",
+            "properties": {
+              "fim": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "inicio": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "leituras": {
+                "type": "integer"
+              },
+              "maximo": {
+                "type": "number"
+              },
+              "media": {
+                "type": "number"
+              },
+              "minimo": {
+                "type": "number"
+              },
+              "tem_excursao": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "inicio",
+              "fim",
+              "minimo",
+              "maximo",
+              "media",
+              "leituras",
+              "tem_excursao"
+            ],
+            "title": "TemperaturaHistoricoBalde",
+            "type": "object"
+          },
+          "TemperaturaHistoricoPonto": {
+            "properties": {
+              "celsius": {
+                "type": "number"
+              },
+              "fora_da_faixa": {
+                "type": "boolean"
+              },
+              "instante": {
+                "format": "date-time",
+                "type": "string"
+              }
+            },
+            "required": [
+              "instante",
+              "celsius",
+              "fora_da_faixa"
+            ],
+            "title": "TemperaturaHistoricoPonto",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo (CA-05): temperatura nao tem preco, e nada aqui busca produto.\n\n`pontos` **ou** `baldes` vem preenchido, nunca os dois — `agregado` diz qual.\n`csv` e' a exportacao (AC-2), montada das mesmas linhas.",
+        "properties": {
+          "agregado": {
+            "type": "boolean"
+          },
+          "ate": {
+            "format": "date",
+            "type": "string"
+          },
+          "baldes": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/TemperaturaHistoricoBalde"
+            },
+            "type": "array"
+          },
+          "csv": {
+            "type": "string"
+          },
+          "de": {
+            "format": "date",
+            "type": "string"
+          },
+          "exportavel": {
+            "default": true,
+            "type": "boolean"
+          },
+          "faixa_max_c": {
+            "default": 8.0,
+            "type": "number"
+          },
+          "faixa_min_c": {
+            "default": 2.0,
+            "type": "number"
+          },
+          "leituras_fora_da_faixa": {
+            "type": "integer"
+          },
+          "pontos": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/TemperaturaHistoricoPonto"
+            },
+            "type": "array"
+          },
+          "total_leituras": {
+            "type": "integer"
+          },
+          "unidade": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "unidade",
+          "de",
+          "ate",
+          "total_leituras",
+          "leituras_fora_da_faixa",
+          "agregado",
+          "csv"
+        ],
+        "title": "VMTemperaturaHistorico",
+        "type": "object"
+      }
+    },
+    {
       "id": "vencimento_grafico",
       "label": "Curva de vencimento",
       "tamanho": "inteira",

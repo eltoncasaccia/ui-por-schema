@@ -222,6 +222,21 @@ def test_recebimento_lista_e_detalhe_seguem_recebimento_ler(
         assert componente not in ids_permitidos(personas["rafael"])
 
 
+# --- T-023: cadeia fria ----------------------------------------------------
+def test_temperatura_historico_e_excursoes_seguem_temperatura_ler(
+    personas: dict[str, Ator],
+) -> None:
+    """Rafael (comprador) de novo: `lote.ler` e `custo.ler`, mas nada de
+    `temperatura.ler`. A cadeia fria da câmara não é assunto de compra."""
+    for nome in TODAS_AS_PERSONAS:
+        ator = personas[nome]
+        esperado = "temperatura.ler" in ator.permissoes
+        for componente in ("temperatura_historico", "temperatura_excursoes"):
+            assert (componente in ids_permitidos(ator)) is esperado, f"{nome}/{componente}"
+    for componente in ("temperatura_historico", "temperatura_excursoes"):
+        assert componente not in ids_permitidos(personas["rafael"])
+
+
 # --- ADR-0011 / RNF-08 -------------------------------------------------------
 def test_orcamento_de_tokens_abaixo_do_alerta(personas: dict[str, Ator]) -> None:
     for nome, ator in personas.items():

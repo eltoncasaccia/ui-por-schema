@@ -77,7 +77,7 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 > `RepoMovimento.por_cliente` ignora `de`/`ate` (achado [A-31](./ACHADOS.md),
 > conserto em T-007/T-042). `RNF-01` medido de verdade fica para T-034.
 | [T-022](./T-022-recebimento-leitura.md) | Recebimento | `recebimento_lista` `recebimento_detalhe` | M | ✅ |
-| [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | ⬜ |
+| [T-023](./T-023-temperatura.md) | Cadeia fria `CA-07` | `temperatura_historico` `temperatura_excursoes` | M | ✅ |
 | [T-024](./T-024-movimento-auditoria.md) | Movimento e trilha | `movimento_lista` `auditoria_trilha` | M | ✅ |
 | [T-047](./T-047-repos-recebimento-temperatura.md) | **Repos de recebimento e temperatura** — escopo deferido da T-007 ([A-32](./ACHADOS.md)) | G | ✅ |
 
@@ -94,6 +94,13 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 > `lote.recebimento_id`, que não existe. **RN-R03 sem armazenamento** para
 > integridade/validade como conferências registradas: achado
 > [A-33](./ACHADOS.md).
+>
+> **T-023 fechou:** `temperatura_historico` (série com faixa 2–8 °C, agregação
+> automática acima de 480 pontos, `csv` no viewmodel) e `temperatura_excursoes`
+> (ocorrências fora da faixa + lotes presentes até o fim da janela, `RN-F04`).
+> AC-1..AC-6 verificados. **Exportação (AC-2) é client-side a partir do
+> viewmodel** — não há endpoint de export no ciclo 1 ([A-23](./ACHADOS.md)); os
+> mesmos dados da tela, por construção.
 
 ### W4 — Escrita · até 5 sessões · 7 componentes
 
@@ -148,12 +155,13 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 18** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 20** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
 `quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028),
 `controlado_autorizar` (T-030), `movimento_lista` `auditoria_trilha` (T-024),
-`produto_ficha` `produto_saldo_por_unidade` (T-019), `rastreabilidade` (T-021) e
-`recebimento_lista` `recebimento_detalhe` (T-022).
+`produto_ficha` `produto_saldo_por_unidade` (T-019), `rastreabilidade` (T-021),
+`recebimento_lista` `recebimento_detalhe` (T-022) e `temperatura_historico`
+`temperatura_excursoes` (T-023).
 **4 de escrita, teto 25.**
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no

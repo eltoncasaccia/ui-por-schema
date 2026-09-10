@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**34 concluídas · 2 parciais · 11 não iniciadas** · 18 de 24 componentes previstos.
+**35 concluídas · 2 parciais · 10 não iniciadas** · 20 de 24 componentes previstos.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -63,7 +63,7 @@ está pronto.
 |---|---|---|---|
 | T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
 
-## W3 — Leitura · 14 de 15 componentes
+## W3 — Leitura · 15 de 15 componentes
 
 | | Tarefa | Estado | Componentes |
 |---|---|---|---|
@@ -72,7 +72,7 @@ está pronto.
 | T-019 | Produto e custo restrito | ✅ | `produto_ficha` `produto_saldo_por_unidade` (AC-7 em branco — `RN-P06` sem armazenamento: [A-30](./ACHADOS.md), [T-046](./T-046-minimo-maximo-por-unidade.md)) |
 | T-021 | Rastreabilidade `CA-01` | ✅ | `rastreabilidade` — AC-1..AC-7 testados. Recorte de período no `load` (porta ignora `de`/`ate`: [A-31](./ACHADOS.md)). `RNF-01` real fica para T-034 |
 | T-022 | Recebimento — leitura | ✅ | `recebimento_lista` `recebimento_detalhe` — AC-2..AC-7 testados. **AC-1 em branco**: "gerou lote em quarentena" precisa de `lote.recebimento_id`, que não tem schema. **AC-6** vira `periodo` enum (a tarefa pedia `de`/`ate` soltos — risco R-5). RN-R03 sem armazenamento para integridade/validade: [A-33](./ACHADOS.md) |
-| T-023 | Cadeia fria `CA-07` | ⬜ | 2 — **desbloqueada** pela T-047 |
+| T-023 | Cadeia fria `CA-07` | ✅ | `temperatura_historico` `temperatura_excursoes` — AC-1..AC-6 testados. Agregação automática acima de 480 pontos; excursão detectada por corrida contígua fora de 2–8 °C; lote vinculado se entrou até o fim da excursão (AC-4, com par negativo). **Exportação (AC-2) é `csv` no viewmodel** — sem endpoint ([A-23](./ACHADOS.md)). `RNF-04` real fica para T-034 |
 | T-024 | Movimento e trilha | ✅ | 2 |
 
 ## W4 — Escrita · pipeline pronto, comandos por fazer
@@ -137,7 +137,7 @@ movem estoque, com auditoria e recusa negativa testadas.
 | CA-04 dupla identificação | T-030 | ✅ **completo**: submissão não muda saldo, autorização grava as duas identidades distintas, e a mesma pessoa é recusada em três camadas — permissão, domínio e CHECK do banco |
 | CA-05 custo invisível | T-019 | ✅ `produto_ficha` entregue: chave de custo ausente para os 4 papéis sem `custo.ler` (não `null`), presente e só sob pedido para os 3 que podem, schema forjado recusado no servidor, exportação herda a omissão |
 | CA-06 escopo de unidade | T-018 | 🟡 provado na fila e nos quatro de lote; falta cobrir os demais |
-| CA-07 cadeia fria | T-023 | ⬜ |
+| CA-07 cadeia fria | T-023 | ✅ histórico consultável por período com faixa 2–8 °C e agregação no período longo; excursões com os lotes expostos (`RN-F04`, corte de presença testado nas duas direções); exportação `csv` no viewmodel. `RNF-04` (2 s) e `RNF-06` (5 anos no banco real) ficam para T-034 |
 | CA-08 excluir recusado | T-029 + banco | 🟡 banco recusa, e agora há movimento criado pela aplicação para provar contra (T-028 AC-7); falta o caminho de estorno |
 
 ## Requisitos de segurança

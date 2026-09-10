@@ -116,6 +116,10 @@ LOTES: list[Lote] = [
     _lote("l-vac-quar-venc", "p-vac", "VAC2301", "cd-refrigerado", "quarentena", -3),
     _lote("l-rital-bloq", "p-rital", "RIT2401", "cd-matriz", "bloqueado", 500),
     _lote("l-vac-uber-quar", "p-vac", "VAC2403", "filial-uberlandia", "quarentena", 250),
+    # T-023 AC-4: um lote do CD Refrigerado que so' entra DEPOIS da excursao de
+    # calor da serie TEMPERATURAS (ver `m-13`). E' o par negativo do vinculo do
+    # RN-F04 — nao estava na camara quando a temperatura subiu.
+    _lote("l-vac-ref-tardio", "p-vac", "VAC2410", "cd-refrigerado", "quarentena", 300),
 ]
 
 
@@ -196,6 +200,10 @@ MOVIMENTOS: list[Movimento] = [
         dias_atras=9,
         estorna="m-02",
     ),
+    # T-023 AC-4: entrada de `l-vac-ref-tardio` HOJE (AGORA) — depois da excursao
+    # da serie TEMPERATURAS (i=5,6, ~AGORA-42h a -36h). O `temperatura_excursoes`
+    # nao deve vincular este lote: ele nao estava na camara quando subiu.
+    _mov("m-13", _POR_ID["l-vac-ref-tardio"], "entrada", 100, "recebimento", dias_atras=0),
 ]
 
 SINAL = {"entrada": 1, "estorno": 1, "saida": -1, "descarte": -1}

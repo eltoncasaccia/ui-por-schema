@@ -56,23 +56,50 @@ Decidir destino de lote em excursão — é do RT, via `lote_status_acao` (T-027
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Consulta por período de 5 anos responde dentro do limite de tela
+- [x] **AC-1** Consulta por período de 5 anos responde dentro do limite de tela
       (`RNF-04`), com agregação por intervalo quando o período é longo.
       *(`RNF-06`)*
-- [ ] **AC-2** Exportação disponível e com os mesmos dados da tela. *(`CA-07`)*
-- [ ] **AC-3** Toda excursão das fixtures aparece, com os lotes vinculados.
+      — `select` agrega em ≤ `LIMITE_PONTOS` (480) baldes de tempo acima desse
+      volume; `agregado`/`pontos`/`baldes` no viewmodel. Provado com série
+      sintética de 7.300 leituras (5 anos, 6/6 h): `agregado`, ≤ 480 baldes,
+      excursão plantada sobrevive à agregação (`tem_excursao`). Série curta vem
+      ponto a ponto. `test_temperatura_historico::test_ac1_*`. **`RNF-04` (2 s
+      medido) fica para T-034** — aqui a garantia é estrutural (saída limitada).
+- [x] **AC-2** Exportação disponível e com os mesmos dados da tela. *(`CA-07`)*
+      — `csv` no viewmodel, montado por `select` das **mesmas** linhas
+      (`pontos` ou `baldes`) que a tela desenha, então "mesmos dados" é
+      verdadeiro por construção e testado. A view oferece como download
+      client-side. **Não há endpoint de export no ciclo 1** ([A-23](./ACHADOS.md));
+      esta é a forma que cabe nos arquivos da tarefa. `test_temperatura_historico::test_ac2_*`.
+- [x] **AC-3** Toda excursão das fixtures aparece, com os lotes vinculados.
       *(`RN-F04`)*
-- [ ] **AC-4** Lote presente na unidade no período da excursão aparece vinculado;
+      — a série `TEMPERATURAS` tem uma excursão de calor (duas leituras a
+      9,8 °C); `temperatura_excursoes` a devolve com sentido, pico, duração e os
+      lotes. `test_temperatura_excursoes::test_ac3_*`.
+- [x] **AC-4** Lote presente na unidade no período da excursão aparece vinculado;
       lote que entrou depois **não** aparece. *(negativo — precisão do vínculo)*
-- [ ] **AC-5** Como Odair, temperatura do CD Refrigerado é negada — não é unidade
+      — corte: entrada na unidade com `criado_em <= fim da excursão`.
+      `l-vac-quar` e `l-vac-quar-venc` (entraram antes) aparecem;
+      `l-vac-ref-tardio` (fixture nova, `m-13`, entra hoje) **não**.
+      `test_temperatura_excursoes::test_ac4_*`.
+- [x] **AC-5** Como Odair, temperatura do CD Refrigerado é negada — não é unidade
       dele. *(negativo — `CA-06`)*
-- [ ] **AC-6** Período invertido (`de > ate`) é rejeitado. *(negativo)*
+      — `unidade_id` fora do escopo → `nao_encontrado`, face pública idêntica a
+      unidade inexistente (ADR-0014), nos dois componentes. Contraponto: Ivo
+      alcança e vê a série. `test_temperatura_*::test_ac5_*`.
+- [x] **AC-6** Período invertido (`de > ate`) é rejeitado. *(negativo)*
+      — `model_validator` recusa na validação, antes do `load`. Em
+      `temperatura_excursoes`, `de` sem `ate` (recorte pela metade) também é
+      recusado. `test_temperatura_*::test_ac6_*`.
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+2**.
+- [x] Contagem de catálogo no BOARD: **+2** (18 → 20 registrados; teto 25).
 
 ## Armadilhas
 
 AC-4 é o critério que dá valor regulatório ao componente. Vincular todo lote da
 unidade, sem filtrar pela janela de presença, produz lista inflada e inútil na
-inspeção.
+inspeção. **Resolvido:** o vínculo exige `entrada.criado_em <= fim da excursão`,
+e a fixture `l-vac-ref-tardio` prova o corte pelo lado negativo. Ciclo 1 não tem
+transferência entre unidades, então "presente" é "entrou até então" — quando
+houver saída de lote inteiro, o corte ganha um limite superior.

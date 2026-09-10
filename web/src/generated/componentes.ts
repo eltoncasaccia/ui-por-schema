@@ -466,6 +466,74 @@ export interface RecebimentoListaLinhaRecebimento {
   unidade: string
 }
 
+/**
+ * Sem custo (CA-05): nada aqui busca produto por preco, so' por nome.
+ */
+export interface VMTemperaturaExcursoes {
+  ate: string
+  de: string
+  excursoes: TemperaturaExcursoesExcursao[]
+  faixa_max_c?: number
+  faixa_min_c?: number
+  total_excursoes: number
+  unidade: string
+}
+export interface TemperaturaExcursoesExcursao {
+  duracao_horas: number
+  fim: string
+  inicio: string
+  leituras: number
+  lotes: TemperaturaExcursoesLotePresente[]
+  pico_celsius: number
+  sentido: 'calor' | 'frio'
+}
+export interface TemperaturaExcursoesLotePresente {
+  entrou_em: string
+  lote_id: string
+  numero: string
+  produto: string
+  status: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado'
+}
+
+/**
+ * Sem custo (CA-05): temperatura nao tem preco, e nada aqui busca produto.
+ *
+ * `pontos` **ou** `baldes` vem preenchido, nunca os dois — `agregado` diz qual.
+ * `csv` e' a exportacao (AC-2), montada das mesmas linhas.
+ */
+export interface VMTemperaturaHistorico {
+  agregado: boolean
+  ate: string
+  baldes?: TemperaturaHistoricoBalde[]
+  csv: string
+  de: string
+  exportavel?: boolean
+  faixa_max_c?: number
+  faixa_min_c?: number
+  leituras_fora_da_faixa: number
+  pontos?: TemperaturaHistoricoPonto[]
+  total_leituras: number
+  unidade: string
+}
+/**
+ * Um intervalo agregado. `tem_excursao` marca o balde que esconde ao menos
+ * uma leitura fora da faixa — sem ele, agregar apagaria a excursao.
+ */
+export interface TemperaturaHistoricoBalde {
+  fim: string
+  inicio: string
+  leituras: number
+  maximo: number
+  media: number
+  minimo: number
+  tem_excursao: boolean
+}
+export interface TemperaturaHistoricoPonto {
+  celsius: number
+  fora_da_faixa: boolean
+  instante: string
+}
+
 export interface VMVencimentoGrafico {
   baldes: VencimentoGraficoBalde[]
   escopo: string
@@ -504,6 +572,8 @@ export type ComponentId =
   | 'rastreabilidade'
   | 'recebimento_detalhe'
   | 'recebimento_lista'
+  | 'temperatura_excursoes'
+  | 'temperatura_historico'
   | 'vencimento_grafico'
 
 /** Usado pelo teste de bijeção: toda view precisa corresponder a um destes. */
@@ -525,6 +595,8 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'rastreabilidade',
   'recebimento_detalhe',
   'recebimento_lista',
+  'temperatura_excursoes',
+  'temperatura_historico',
   'vencimento_grafico',
 ] as const
 
@@ -547,6 +619,8 @@ export interface ViewModels {
   rastreabilidade: VMRastreabilidade
   recebimento_detalhe: VMRecebimentoDetalhe
   recebimento_lista: VMRecebimentoLista
+  temperatura_excursoes: VMTemperaturaExcursoes
+  temperatura_historico: VMTemperaturaHistorico
   vencimento_grafico: VMVencimentoGrafico
 }
 
@@ -571,5 +645,7 @@ export const TAMANHOS: Record<ComponentId, string> = {
   rastreabilidade: 'inteira',
   recebimento_detalhe: 'inteira',
   recebimento_lista: 'inteira',
+  temperatura_excursoes: 'inteira',
+  temperatura_historico: 'alta',
   vencimento_grafico: 'inteira',
 }

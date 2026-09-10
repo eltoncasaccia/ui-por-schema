@@ -23,6 +23,8 @@ from estoque.application.registry.componentes import (
     rastreabilidade,
     recebimento_detalhe,
     recebimento_lista,
+    temperatura_excursoes,
+    temperatura_historico,
     vencimento_grafico,
 )
 from estoque.application.registry.orcamento import verificar_teto
@@ -45,6 +47,8 @@ __all__ = [
     "rastreabilidade",
     "recebimento_detalhe",
     "recebimento_lista",
+    "temperatura_excursoes",
+    "temperatura_historico",
     "vencimento_grafico",
 ]
 

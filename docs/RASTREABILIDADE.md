@@ -16,13 +16,13 @@ do ciclo 1** — nenhum caiu com o corte do [ADR-0010](./adr/0010-corte-de-escop
 | CA | Origem no cliente | História | Tarefas | Teste que prova |
 |---|---|---|---|---|
 | **CA-01** | Recall da losartana, 9 dias | US-01 | [T-021](./tasks/T-021-rastreabilidade.md) · [T-006](./tasks/T-006-fixtures.md) · [T-010](./tasks/T-010-auditoria.md) | `T-021 AC-1` (< 60 s, com volume real) |
-| **CA-02** | Divergência de 3,8% | US-02, US-05, US-07 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) · [T-028](./tasks/T-028-saida-fefo.md) | `T-002 AC-1` (sem campo saldo) · `T-025 AC-5` |
+| **CA-02** ✅ | Divergência de 3,8% | US-02, US-05, US-07 | [T-002](./tasks/T-002-dominio-tipos-erros.md) · [T-007](./tasks/T-007-repositorios.md) · [T-025](./tasks/T-025-pipeline-de-comando.md) · [T-028](./tasks/T-028-saida-fefo.md) · [T-029](./tasks/T-029-estorno-descarte.md) | `T-002 AC-1` (sem campo saldo) · `T-025 AC-5` · `T-029 AC-4` (saldo é a soma dos dois movimentos) |
 | **CA-03** | R$ 183 mil vencidos | US-04 | [T-020](./tasks/T-020-vencimento-indicador.md) | `T-020 AC-1`, `AC-2` (fronteiras 89/90/91) |
 | **CA-04** ✅ | Blister de clonazepam | US-06 | [T-028](./tasks/T-028-saida-fefo.md) · [T-030](./tasks/T-030-controlado-autorizar.md) · [T-024](./tasks/T-024-movimento-auditoria.md) | `T-030 AC-3` (mesma pessoa é recusada, em três camadas) |
 | **CA-05** | Vazamento de margem | US-08 | [T-007](./tasks/T-007-repositorios.md) · [T-012](./tasks/T-012-catalogo.md) · [T-019](./tasks/T-019-componentes-produto.md) · [T-020](./tasks/T-020-vencimento-indicador.md) · [T-024](./tasks/T-024-movimento-auditoria.md) | `T-019 AC-4` (agregado derivado) · `T-024 AC-5` (trilha) |
 | **CA-06** | Pedido do cliente | US-09 | [T-007](./tasks/T-007-repositorios.md) · [T-009](./tasks/T-009-motor-de-permissao.md) · [T-018](./tasks/T-018-componentes-lote.md) · [T-023](./tasks/T-023-temperatura.md) | `T-011 AC-7` (resposta byte a byte idêntica) |
 | **CA-07** | Auto de infração da ANVISA | US-10 | [T-023](./tasks/T-023-temperatura.md) | `T-023 AC-3`, `AC-4` (vínculo por janela) |
-| **CA-08** | `RN-M02` | US-07 | [T-029](./tasks/T-029-estorno-descarte.md) · [T-024](./tasks/T-024-movimento-auditoria.md) | `T-029 AC-1`, `AC-2` (Diretor recusado) |
+| **CA-08** ✅ | `RN-M02` | US-07 | [T-029](./tasks/T-029-estorno-descarte.md) · [T-024](./tasks/T-024-movimento-auditoria.md) · [T-036](./tasks/T-036-schema-postgres.md) | `T-029 AC-1` (varredura do `openapi()`), `AC-2` (Diretor recusado, byte a byte) · `T-036` (banco recusa `UPDATE`/`DELETE`) |
 
 ---
 
@@ -84,8 +84,8 @@ Teto de 25 por [ADR-0011](./adr/0011-teto-de-catalogo.md), verificado por `RNF-0
 | 18 | `quarentena_liberar` ✅ | `lote.liberar` | [T-027](./tasks/T-027-quarentena-e-status.md) |
 | 19 | `lote_status_acao` ✅ | `lote.status` | T-027 |
 | 20 | `movimento_saida` ✅ | `movimento.criar` | [T-028](./tasks/T-028-saida-fefo.md) |
-| 21 | `movimento_estorno` | `movimento.estornar` | [T-029](./tasks/T-029-estorno-descarte.md) |
-| 22 | `movimento_descarte` | `movimento.descartar` | T-029 |
+| 21 | `movimento_estorno` ✅ | `movimento.estornar` | [T-029](./tasks/T-029-estorno-descarte.md) |
+| 22 | `movimento_descarte` ✅ | `movimento.descartar` | T-029 |
 | 23 | `controlado_autorizar` ✅ | `controlado.autorizar` | [T-030](./tasks/T-030-controlado-autorizar.md) |
 
 **Não são componentes de catálogo**, e a razão é a mesma nos dois: são decisões

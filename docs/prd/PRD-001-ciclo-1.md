@@ -241,6 +241,13 @@ e está amarrado a uma tarefa em [RASTREABILIDADE.md](../RASTREABILIDADE.md).
 - **AC-07.3** Dado o estorno aplicado, então o saldo reflete a soma dos dois
   movimentos, sem edição de campo.
 
+> **Entregue na T-029, com um recorte:** no ciclo 1 só **saída** se estorna. O
+> sinal de `estorno` é fixo e positivo na view `saldo_lote` (migração 0001,
+> congelada), então um estorno de entrada somaria de novo a quantidade que se
+> queria desfazer — achado [A-38](../tasks/ACHADOS.md). Entrada errada não tem
+> correção neste ciclo, e o comando recusa dizendo isso em vez de gravar um saldo
+> errado. Os três ACs acima valem inteiros para o caso que existe.
+
 ### US-08 — Não ver o que não me cabe · *Cleide, Helena, Ivo* · `CA-05`
 
 - **AC-08.1** Dado um papel sem `custo.ler`, então custo e margem não aparecem em

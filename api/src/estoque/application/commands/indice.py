@@ -11,6 +11,8 @@ contrato 3 do import-linter e' o que garante isso — nao a disciplina.
 
 from estoque.application.commands import (
     autorizacao,
+    descarte,
+    estorno,
     lote,
     recebimento,
     saida,
@@ -18,6 +20,8 @@ from estoque.application.commands import (
 
 __all__ = [
     "autorizacao",
+    "descarte",
+    "estorno",
     "lote",
     "recebimento",
     "saida",

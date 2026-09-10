@@ -985,6 +985,289 @@
       }
     },
     {
+      "id": "movimento_descarte",
+      "label": "Descartar lote",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "MovimentoDescarteLoteDescartavel": {
+            "properties": {
+              "dias_restantes": {
+                "type": "integer"
+              },
+              "impedimento": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "lote_id": {
+                "type": "string"
+              },
+              "numero": {
+                "type": "string"
+              },
+              "pode_descartar": {
+                "type": "boolean"
+              },
+              "produto": {
+                "type": "string"
+              },
+              "saldo": {
+                "type": "integer"
+              },
+              "status_efetivo": {
+                "enum": [
+                  "quarentena",
+                  "liberado",
+                  "bloqueado",
+                  "descartado",
+                  "vencido",
+                  "esgotado"
+                ],
+                "type": "string"
+              },
+              "unidade": {
+                "type": "string"
+              },
+              "validade": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "lote_id",
+              "produto",
+              "numero",
+              "unidade",
+              "validade",
+              "dias_restantes",
+              "saldo",
+              "status_efetivo",
+              "pode_descartar"
+            ],
+            "title": "MovimentoDescarteLoteDescartavel",
+            "type": "object"
+          },
+          "MovimentoDescarteOpcaoMotivo": {
+            "properties": {
+              "rotulo": {
+                "type": "string"
+              },
+              "valor": {
+                "enum": [
+                  "vencimento",
+                  "avaria"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "valor",
+              "rotulo"
+            ],
+            "title": "MovimentoDescarteOpcaoMotivo",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "alvo": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/MovimentoDescarteLoteDescartavel"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "escopo": {
+            "type": "string"
+          },
+          "exige_dupla_identificacao": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fila": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/MovimentoDescarteLoteDescartavel"
+            },
+            "type": "array"
+          },
+          "motivos": {
+            "items": {
+              "$ref": "#/$defs/MovimentoDescarteOpcaoMotivo"
+            },
+            "type": "array"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "escopo",
+          "motivos"
+        ],
+        "title": "VMMovimentoDescarte",
+        "type": "object"
+      }
+    },
+    {
+      "id": "movimento_estorno",
+      "label": "Estornar movimento",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "MovimentoEstornoLancamento": {
+            "properties": {
+              "autor": {
+                "type": "string"
+              },
+              "estorna_movimento_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "impedimento": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "motivo": {
+                "type": "string"
+              },
+              "movimento_id": {
+                "type": "string"
+              },
+              "pode_estornar": {
+                "type": "boolean"
+              },
+              "quantidade": {
+                "type": "integer"
+              },
+              "registrado_em": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "tipo": {
+                "enum": [
+                  "entrada",
+                  "saida",
+                  "descarte",
+                  "estorno"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "movimento_id",
+              "tipo",
+              "quantidade",
+              "motivo",
+              "autor",
+              "registrado_em",
+              "pode_estornar"
+            ],
+            "title": "MovimentoEstornoLancamento",
+            "type": "object"
+          },
+          "MovimentoEstornoOpcaoMotivo": {
+            "properties": {
+              "rotulo": {
+                "type": "string"
+              },
+              "valor": {
+                "enum": [
+                  "erro_de_separacao",
+                  "estorno"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "valor",
+              "rotulo"
+            ],
+            "title": "MovimentoEstornoOpcaoMotivo",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).",
+        "properties": {
+          "alvo": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/MovimentoEstornoLancamento"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "lancamentos": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/MovimentoEstornoLancamento"
+            },
+            "type": "array"
+          },
+          "lote": {
+            "type": "string"
+          },
+          "motivos": {
+            "items": {
+              "$ref": "#/$defs/MovimentoEstornoOpcaoMotivo"
+            },
+            "type": "array"
+          },
+          "produto": {
+            "type": "string"
+          },
+          "saldo": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "unidade": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "produto",
+          "lote",
+          "unidade",
+          "saldo",
+          "total",
+          "motivos"
+        ],
+        "title": "VMMovimentoEstorno",
+        "type": "object"
+      }
+    },
+    {
       "id": "movimento_lista",
       "label": "Movimentos",
       "tamanho": "inteira",

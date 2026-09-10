@@ -3,7 +3,7 @@
 Registro do que a execução descobriu e o documento não previa: conflito entre
 regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 
-> **Próximo número: `A-38`.** Está aqui para ninguém precisar abrir o arquivo
+> **Próximo número: `A-39`.** Está aqui para ninguém precisar abrir o arquivo
 > só para descobrir o número seguinte.
 
 **Este arquivo só tem o que ainda exige ação.** Os 30 achados já fechados foram
@@ -27,7 +27,7 @@ porque estavam enterrados numa tabela de 42 linhas e ninguém sabia que existiam
 
 | # | A pergunta que precisa de resposta | Trava o quê |
 |---|---|---|
-| **A-19** | A lista de motivos de **saída** (quatro derivados do enum) está certa? Não há lista fechada em documento nenhum, e `RN-M05` exige uma | T-029, e qualquer relatório por motivo |
+| **A-19** | As listas de motivos derivadas do enum estão certas? Não há lista fechada em documento nenhum, e `RN-M05` exige uma **por tipo**. Hoje são três, todas derivadas: **saída** (`venda` `avaria` `furto` `erro_de_separacao`, T-028), **estorno** (`erro_de_separacao` `estorno`, T-029) e **descarte** (`vencimento` `avaria`, T-029) | qualquer relatório por motivo. ~~T-029~~ — ela fechou com a lista derivada, como a T-028: a regra que `RN-M05` exige (lista fechada, texto livre como complemento) está implementada e testada; o que falta é o cliente confirmar **quais** valores |
 | **A-23** | O livro de controlados **exportável** (`RN-C05`) entra no ciclo 1? Custa +1 no catálogo e uma tarefa | fechamento do `RN-C05` |
 | **A-33** | O `status` do recebimento basta como "conferência registrada", ou `RN-R03` exige integridade e validade como itens separados? | T-026, e o AC de conferência |
 | **A-35** | Auditar **navegação** (catálogo, identidade) é exigência regulatória, ou basta auditar leitura de dado? | recorte do AC-8 / `CS-05` |
@@ -57,6 +57,7 @@ não serem redescobertas como se fossem novidade.
 |---|---|---|---|
 | A-14 | **Onde persiste a autorização de RN-L05 não está em documento nenhum.** "Só o RT libera, com justificativa" — mas o bloqueio por validade é derivado da data (ADR-0022) e não há coluna para desfazê-lo. Implementado como fato da trilha de auditoria | execução da T-027 | **T-028** precisa consultar a trilha ao decidir a saída; se não couber, vira ADR e coluna |
 | A-22 | **O AC-6 da T-030 pedia recusa num fluxo que o ADR-0010 cortou.** `RN-C02` é sobre ajuste de saldo, e ajuste está fora do ciclo 1. A própria seção "Não faz" da tarefa excluía `RN-C04` pelo mesmo motivo e esqueceu este | execução da T-030 | AC-6 fica em branco, com a razão registrada. Volta quando inventário entrar |
+| A-38 | **Estorno de ENTRADA não tem representação no esquema.** `RN-M03` diz que correção se faz por estorno, sem distinguir o tipo do original — mas o sinal de `estorno` é fixo e positivo na view `saldo_lote` (migração 0001, congelada): gravado como está, o estorno de uma entrada **somaria de novo** a quantidade que se queria desfazer. No ciclo 1 só saída se estorna, e o comando recusa o resto dizendo isso | execução da T-029 | Entrada errada não tem correção no ciclo 1. Descrito nas duas telas e nos dois testes negativos. Sair disso exige um tipo novo (`ajuste_negativo`, que o ADR-0010 cortou) ou sinal por movimento — **decisão técnica, vira ADR** quando o inventário entrar |
 | A-28 | `react-hooks/rules-of-hooks` desligada em `src/views/**`: a regra identifica componente pelo NOME em maiúscula, e CONTRATOS §6 (congelado) exporta `view` minúsculo. Hook dentro de `if` numa view deixa de ser pego por qualquer verificador | execução da T-005 | anotado em `web/eslint.config.js`; volta se o contrato mudar, ou vira 7ª regra do `arch-check` |
 | A-08b | Spike sem relatório R-001, e perguntas não commitadas antes da execução | A-002 | **R-001 entregue** (2026-09-09), T-017 fechada. A parte "perguntas antes do resultado" é **não recuperável** para o spike (usou os 17 casos da T-032); a disciplina passa a valer para os casos novos da [T-032](./T-032-suite-de-avaliacao.md) — ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md) |
 

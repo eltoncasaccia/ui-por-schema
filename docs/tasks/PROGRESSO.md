@@ -7,8 +7,8 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**38 concluídas · 2 parciais · 8 não iniciadas** · 21 de 24 componentes previstos.
-**W0, W1, W2 e W3 fechadas.** As duas parciais que restam são de W5 (T-032, T-033).
+**39 concluídas · 2 parciais · 7 não iniciadas** · 23 de 24 componentes previstos.
+**W0, W1, W2, W3 e W4 fechadas.** As duas parciais que restam são de W5 (T-032, T-033).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
 > delas (dizia "2 parciais" com três linhas 🟡 na tabela). Para reconferir:
@@ -80,7 +80,7 @@ está pronto.
 | T-023 | Cadeia fria `CA-07` | ✅ | `temperatura_historico` `temperatura_excursoes` — AC-1..AC-6 testados. Agregação automática acima de 480 pontos; excursão detectada por corrida contígua fora de 2–8 °C; lote vinculado se entrou até o fim da excursão (AC-4, com par negativo). **Exportação (AC-2) é `csv` no viewmodel** — sem endpoint ([A-23](./ACHADOS.md)). `RNF-04` real fica para T-034 |
 | T-024 | Movimento e trilha | ✅ | 2 |
 
-## W4 — Escrita · pipeline pronto, comandos por fazer
+## W4 — Escrita · fechada, sete comandos
 
 | | Tarefa | Estado |
 |---|---|---|
@@ -88,7 +88,7 @@ está pronto.
 | T-026 | Registrar recebimento | ✅ |
 | T-027 | Quarentena e status | ✅ |
 | T-028 | Saída com FEFO | ✅ |
-| T-029 | Estorno e descarte | ⬜ |
+| T-029 | Estorno e descarte | ✅ |
 | T-030 | Dupla identificação `CA-04` | ✅ |
 
 > **O ADR-0002 deixou de ser promessa.** Até a T-025, *"a saída do modelo
@@ -99,9 +99,17 @@ está pronto.
 > (`api/tests/commands/test_ac1_barreira.py`). Cada um foi confirmado vermelho
 > com a violação introduzida de propósito.
 >
-> O que ainda falta: **T-029** (estorno e descarte). Cinco comandos prontos:
-> liberar quarentena, mudar status, dar saída, autorizar controlado e registrar
-> recebimento.
+> **A W4 fechou com a T-029.** São sete comandos: liberar quarentena, mudar
+> status, dar saída, autorizar controlado, registrar recebimento, **estornar** e
+> **descartar**. Os oito ACs da T-029 verificados — AC-1 e AC-2 pela varredura do
+> `openapi()` do app real e por HTTP com sessão de Diretor, AC-3 comparando a
+> linha inteira do original antes e depois. Seis proteções sabotadas de
+> propósito, seis testes vermelhos.
+>
+> **Limite conhecido, [A-38](./ACHADOS.md):** só **saída** se estorna. O sinal de
+> `estorno` é fixo e positivo na view `saldo_lote` (migração 0001, congelada), e
+> um estorno de entrada somaria de novo o que se queria desfazer — entrada errada
+> não tem correção no ciclo 1.
 
 ## W5 — Garantias
 
@@ -138,13 +146,13 @@ movem estoque, com auditoria e recusa negativa testadas.
 | | Depende de | Estado |
 |---|---|---|
 | CA-01 recall < 60 s | T-021 | 🟡 `rastreabilidade` entregue, duas direções, consulta auditada, escopo não atravessa. Prova de forma (`load` linear); o número real de `RNF-01` contra Postgres é do T-034 |
-| CA-02 saldo auditável | T-025, T-028, T-029 | 🟡 razão imutável, saída e liberação prontas, com trilha de valor anterior e novo; falta estorno (T-029) |
+| CA-02 saldo auditável | T-025, T-028, T-029 | ✅ **completo**: razão imutável, saída, liberação e agora estorno — o saldo depois da correção é a soma dos dois movimentos, sem edição de campo (AC-4), e a trilha registra saldo anterior e posterior |
 | CA-03 fila de vencimento | T-020 | ✅ **único completo** |
 | CA-04 dupla identificação | T-030 | ✅ **completo**: submissão não muda saldo, autorização grava as duas identidades distintas, e a mesma pessoa é recusada em três camadas — permissão, domínio e CHECK do banco |
 | CA-05 custo invisível | T-019 | ✅ `produto_ficha` entregue: chave de custo ausente para os 4 papéis sem `custo.ler` (não `null`), presente e só sob pedido para os 3 que podem, schema forjado recusado no servidor, exportação herda a omissão |
 | CA-06 escopo de unidade | T-018 | 🟡 provado na fila e nos quatro de lote; falta cobrir os demais |
 | CA-07 cadeia fria | T-023 | ✅ histórico consultável por período com faixa 2–8 °C e agregação no período longo; excursões com os lotes expostos (`RN-F04`, corte de presença testado nas duas direções); exportação `csv` no viewmodel. `RNF-04` (2 s) e `RNF-06` (5 anos no banco real) ficam para T-034 |
-| CA-08 excluir recusado | T-029 + banco | 🟡 banco recusa, e agora há movimento criado pela aplicação para provar contra (T-028 AC-7); falta o caminho de estorno |
+| CA-08 excluir recusado | T-029 + banco | ✅ **completo**: o banco recusa `UPDATE`/`DELETE` (T-036), **nenhuma rota responde a verbo que apague ou substitua** — varredura do `openapi()`, com uma rota `DELETE` acrescentada de propósito para provar que a varredura enxerga —, e o Diretor recebe a mesma recusa que qualquer papel, byte a byte. Corrigir se faz por estorno, que é `INSERT` |
 
 ## Requisitos de segurança
 

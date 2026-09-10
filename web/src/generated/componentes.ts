@@ -229,6 +229,63 @@ export interface LoteStatusAcaoAcaoDisponivel {
 /**
  * Sem custo, para papel nenhum (CA-05, ADR-0020).
  */
+export interface VMMovimentoDescarte {
+  alvo?: MovimentoDescarteLoteDescartavel | null
+  escopo: string
+  exige_dupla_identificacao?: boolean
+  fila?: MovimentoDescarteLoteDescartavel[]
+  motivos: MovimentoDescarteOpcaoMotivo[]
+  total: number
+}
+export interface MovimentoDescarteLoteDescartavel {
+  dias_restantes: number
+  impedimento?: string | null
+  lote_id: string
+  numero: string
+  pode_descartar: boolean
+  produto: string
+  saldo: number
+  status_efetivo: 'quarentena' | 'liberado' | 'bloqueado' | 'descartado' | 'vencido' | 'esgotado'
+  unidade: string
+  validade: string
+}
+export interface MovimentoDescarteOpcaoMotivo {
+  rotulo: string
+  valor: 'vencimento' | 'avaria'
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
+export interface VMMovimentoEstorno {
+  alvo?: MovimentoEstornoLancamento | null
+  lancamentos?: MovimentoEstornoLancamento[]
+  lote: string
+  motivos: MovimentoEstornoOpcaoMotivo[]
+  produto: string
+  saldo: number
+  total: number
+  unidade: string
+}
+export interface MovimentoEstornoLancamento {
+  autor: string
+  estorna_movimento_id?: string | null
+  impedimento?: string | null
+  motivo: string
+  movimento_id: string
+  pode_estornar: boolean
+  quantidade: number
+  registrado_em: string
+  tipo: 'entrada' | 'saida' | 'descarte' | 'estorno'
+}
+export interface MovimentoEstornoOpcaoMotivo {
+  rotulo: string
+  valor: 'erro_de_separacao' | 'estorno'
+}
+
+/**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ */
 export interface VMMovimentoLista {
   escopo: string
   linhas: MovimentoListaLinhaMovimento[]
@@ -600,6 +657,8 @@ export type ComponentId =
   | 'lote_lista'
   | 'lote_movimentos'
   | 'lote_status_acao'
+  | 'movimento_descarte'
+  | 'movimento_estorno'
   | 'movimento_lista'
   | 'movimento_saida'
   | 'produto_ficha'
@@ -624,6 +683,8 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'lote_lista',
   'lote_movimentos',
   'lote_status_acao',
+  'movimento_descarte',
+  'movimento_estorno',
   'movimento_lista',
   'movimento_saida',
   'produto_ficha',
@@ -649,6 +710,8 @@ export interface ViewModels {
   lote_lista: VMLoteLista
   lote_movimentos: VMLoteMovimentos
   lote_status_acao: VMLoteStatusAcao
+  movimento_descarte: VMMovimentoDescarte
+  movimento_estorno: VMMovimentoEstorno
   movimento_lista: VMMovimentoLista
   movimento_saida: VMMovimentoSaida
   produto_ficha: VMProdutoFicha
@@ -676,6 +739,8 @@ export const TAMANHOS: Record<ComponentId, string> = {
   lote_lista: 'inteira',
   lote_movimentos: 'inteira',
   lote_status_acao: 'inteira',
+  movimento_descarte: 'inteira',
+  movimento_estorno: 'inteira',
   movimento_lista: 'inteira',
   movimento_saida: 'inteira',
   produto_ficha: 'meia',

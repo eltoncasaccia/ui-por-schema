@@ -28,7 +28,17 @@ api/tests/registry/test_movimento_descarte.py
 api/src/estoque/application/commands/estorno.py
 api/src/estoque/application/commands/entradas/estorno.py
 api/tests/commands/test_estorno_comandos.py
+
+api/src/estoque/application/commands/descarte.py
+api/src/estoque/application/commands/entradas/descarte.py
+api/tests/commands/test_descarte_comandos.py
 ```
+
+> **Corrigido na execução, pela mesma razão do A-15.** A lista trazia os arquivos
+> de `commands/` do **estorno** e não os do **descarte** — e são dois comandos,
+> não um. Enfiar os dois em `estorno.py` faria um módulo chamado "estorno"
+> executar descarte; a correção é a lista, não o código. Nenhum dos três arquivos
+> novos pertence a outra tarefa.
 
 > **Corrigido pelo achado A-15.** Os arquivos em `commands/` não estavam na lista
 > original, e sem eles a tarefa não fecha: o componente **declara** o comando, mas
@@ -54,7 +64,12 @@ api/tests/commands/test_estorno_comandos.py
 ```
 web/src/views/movimento_estorno.tsx
 web/src/views/movimento_descarte.tsx
+web/src/testes/movimento_estorno_descarte.test.tsx
 ```
+
+> O arquivo de teste do cliente também faltava na lista, e o AC-6 e o AC-7 têm
+> metade do lado de cá: a tela avisa antes de o servidor recusar. Mesmo
+> tratamento que a T-026 deu ao `recebimento_registrar.test.tsx`.
 
 > Esta tarefa atravessa os dois lados por causa do
 > [ADR-0017](../adr/0017-registry-servidor-views-cliente.md). O teste de bijeção
@@ -90,23 +105,51 @@ Exclusão. Não existe, em lugar nenhum, para ninguém.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Não existe rota, comando ou caminho de código que exclua ou edite
+- [x] **AC-1** Não existe rota, comando ou caminho de código que exclua ou edite
       movimento. Teste percorre as rotas registradas e afirma a ausência.
       *(negativo — `CA-08`, `RN-M02`)*
-- [ ] **AC-2** Marco (Diretor) tentando excluir movimento é recusado igual a
+- [x] **AC-2** Marco (Diretor) tentando excluir movimento é recusado igual a
       qualquer outro papel. *(negativo — `CA-08`)*
-- [ ] **AC-3** Estorno cria movimento novo e o original permanece **byte a byte
+- [x] **AC-3** Estorno cria movimento novo e o original permanece **byte a byte
       inalterado**. *(`RN-M03`)*
-- [ ] **AC-4** Saldo após estorno é a soma dos dois movimentos, sem edição de
+- [x] **AC-4** Saldo após estorno é a soma dos dois movimentos, sem edição de
       campo. *(`RN-M06`, `AC-07.3` do PRD)*
-- [ ] **AC-5** Estorno sem motivo de lista fechada é recusado. *(negativo)*
-- [ ] **AC-6** Descarte de lote **liberado e válido** é recusado — descarte não é
+- [x] **AC-5** Estorno sem motivo de lista fechada é recusado. *(negativo)*
+- [x] **AC-6** Descarte de lote **liberado e válido** é recusado — descarte não é
       atalho de saída. *(negativo — `RN-L06`)*
-- [ ] **AC-7** Descarte exige as duas identificações (Gerente e RT). *(negativo)*
-- [ ] **AC-8** Ambos passam por `confirm_action` antes de aplicar.
+- [x] **AC-7** Descarte exige as duas identificações (Gerente e RT). *(negativo)*
+- [x] **AC-8** Ambos passam por `confirm_action` antes de aplicar.
+
+> **Onde cada um foi verificado.** AC-1 a AC-5 e AC-8 em
+> `api/tests/commands/test_estorno_comandos.py` (25 testes, contra Postgres);
+> AC-6 e AC-7 em `api/tests/commands/test_descarte_comandos.py` (18);
+> a metade de tela dos dois em `web/src/testes/movimento_estorno_descarte.test.tsx`
+> (15); leitura, catálogo por ator e escopo em `api/tests/registry/`
+> (24 + 25). **AC-8 é a bandeira `confirm`, dos dois lados da declaração** —
+> não existe componente `confirm_action` (achado A-05), e confirmar é decisão do
+> motor de render.
+>
+> **Seis proteções foram sabotadas de propósito**, e o teste reprovou nas seis:
+> o par de papéis do descarte, a lista de estados descartáveis, a de tipos
+> estornáveis, o `ja_estornado`, e uma rota `DELETE /api/movimentos/{id}`
+> acrescentada à borda — que reprovou o AC-1 **e** o AC-2.
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+2**.
+- [x] Contagem de catálogo no BOARD: **+2** (21 → **23**, teto 25).
+
+## O que ficou fora, e por quê
+
+- **Estorno de entrada não existe** — achado [A-38](./ACHADOS.md). O sinal de
+  `estorno` é fixo e positivo na view `saldo_lote` (migração 0001, congelada):
+  estornar uma entrada somaria de novo o que se queria desfazer. O comando
+  recusa, com o par negativo testado dos dois lados.
+- **Descarte de lote sem saldo é recusado.** `quantidade > 0` é `CHECK` da
+  migração 0001, e um lote sem saldo já não ocupa prateleira. Um lote vencido e
+  zerado, portanto, continua com o status registrado que tinha.
+- **As listas de motivos seguem derivadas do enum** (A-19, aberto), como a T-028
+  fez para a saída. O que `RN-M05` exige — lista fechada por tipo, texto livre
+  como complemento — está implementado e testado; **quais** valores é resposta do
+  cliente.
 
 ## Armadilhas
 

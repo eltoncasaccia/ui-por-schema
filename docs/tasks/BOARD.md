@@ -24,7 +24,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | # | Pergunta | Trava |
 |---|---|---|
-| [A-19](./ACHADOS.md) | A lista de motivos de **saída** (quatro, derivados do enum) está certa? `RN-M05` exige uma lista fechada e não há nenhuma em documento | T-029 |
+| [A-19](./ACHADOS.md) | As **três** listas de motivos derivadas do enum estão certas? Saída (T-028), estorno e descarte (T-029). `RN-M05` exige lista fechada por tipo e não há nenhuma em documento | ~~T-029~~ — ela fechou com as listas derivadas, como a T-028: a regra está implementada e testada; falta o cliente confirmar **quais** valores |
 | [A-23](./ACHADOS.md) | O livro de controlados **exportável** (`RN-C05`) entra no ciclo 1? Custa +1 no catálogo e uma tarefa | `RN-C05` |
 | [A-33](./ACHADOS.md) | O `status` do recebimento basta como "conferência registrada", ou `RN-R03` exige integridade e validade como itens separados, com coluna? | ~~T-026~~ — ela fechou sem a resposta: o checklist de `RN-R03` já existe na **liberação** (T-027, `EntradaLiberacao`). O que segue em aberto é o `recebimento_detalhe` **exibir** os itens conferidos, e uma auditoria de `RN-R03` ponta a ponta |
 | [A-35](./ACHADOS.md) | Auditar **navegação** (catálogo, identidade) é exigência regulatória, ou basta auditar leitura de dado? | recorte de `CS-05` |
@@ -141,8 +141,20 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | [T-026](./T-026-recebimento-registrar.md) | Registrar recebimento | `recebimento_registrar` | G | T-025, T-022, T-048 | ✅ |
 | [T-027](./T-027-quarentena-e-status.md) | Quarentena e status | `quarentena_liberar` `lote_status_acao` | G | T-025, T-018 | ✅ |
 | [T-028](./T-028-saida-fefo.md) | Saída com FEFO | `movimento_saida` | G | T-025, T-008 | ✅ |
-| [T-029](./T-029-estorno-descarte.md) | Estorno e descarte | `movimento_estorno` `movimento_descarte` | M | T-025, T-024 | ⬜ |
+| [T-029](./T-029-estorno-descarte.md) | Estorno e descarte | `movimento_estorno` `movimento_descarte` | M | T-025, T-024 | ✅ |
 | [T-030](./T-030-controlado-autorizar.md) | Dupla identificação `CA-04` | `controlado_autorizar` | G | T-028, T-024 | ✅ |
+
+> **T-029 fechou, e com ela a W4 inteira.** `CA-08` deixou de ser promessa: não
+> há rota que apague ou substitua nada — a varredura sai do `openapi()` do app
+> real, e uma rota `DELETE` acrescentada de propósito reprovou o AC-1 **e** o
+> AC-2. Corrigir se faz por estorno, que é `INSERT`, e o original fica **byte a
+> byte** igual. O descarte é o segundo fluxo de duas pessoas do ciclo 1 (§4.1:
+> Gerente + RT): **nem o Diretor descarta**, mesmo tendo `movimento.descartar` na
+> matriz do §6 — a permissão deixa entrar, a tabela de estados recusa.
+> **Achado novo, [A-38](./ACHADOS.md):** estorno de **entrada** não tem
+> representação no esquema — o sinal de `estorno` é fixo e positivo na view
+> `saldo_lote` (migração 0001, congelada), e gravá-lo somaria de novo o que se
+> queria desfazer. Só saída se estorna no ciclo 1, e o comando diz isso.
 
 > **T-026 fechou, e com ela a `US-02`.** O leitor de código de barras funciona:
 > o `ean` é **param do componente**, o `load` resolve por `RepoProduto.por_ean`
@@ -197,16 +209,19 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 21** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 23** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
 `quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028),
 `controlado_autorizar` (T-030), `movimento_lista` `auditoria_trilha` (T-024),
 `produto_ficha` `produto_saldo_por_unidade` (T-019), `rastreabilidade` (T-021),
 `recebimento_lista` `recebimento_detalhe` (T-022), `temperatura_historico`
-`temperatura_excursoes` (T-023) e `recebimento_registrar` (T-026).
-**5 de escrita, teto 25.**
+`temperatura_excursoes` (T-023), `recebimento_registrar` (T-026) e
+`movimento_estorno` `movimento_descarte` (T-029).
+**7 de escrita, teto 25.**
 
-**23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no
-mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.
+**23 registrados, folga de 2 — e a W4 fechou, então este é o número final do
+ciclo 1** (a menos que a T-044 entre: `relatorio_movimentacao` faria 24, folga 1).
+Toda tarefa que registra componente atualiza esta tabela no mesmo commit. Acima
+de 25 o build quebra, e a discussão é de escopo.
 
 ---

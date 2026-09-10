@@ -13,6 +13,8 @@ import { view as lote_detalhe } from './lote_detalhe'
 import { view as lote_lista } from './lote_lista'
 import { view as lote_movimentos } from './lote_movimentos'
 import { view as lote_status_acao } from './lote_status_acao'
+import { view as movimento_descarte } from './movimento_descarte'
+import { view as movimento_estorno } from './movimento_estorno'
 import { view as movimento_lista } from './movimento_lista'
 import { view as movimento_saida } from './movimento_saida'
 import { view as produto_ficha } from './produto_ficha'
@@ -44,6 +46,8 @@ export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   lote_lista,
   lote_movimentos,
   lote_status_acao,
+  movimento_descarte,
+  movimento_estorno,
   movimento_lista,
   movimento_saida,
   produto_ficha,

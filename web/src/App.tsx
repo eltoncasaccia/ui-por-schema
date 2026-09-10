@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { api, type Bloco, type Eu } from './api'
+import { api, ErroApi, type Bloco, type Eu } from './api'
+import { caminhoDaView, irPara, useRotaView } from './app/rotas'
 import { limparAoSair } from './estado/cache'
 import { sessao, useSessao, viewKeyLocal } from './estado/sessao'
 import { Compartilhar } from './shell/Compartilhar'
@@ -33,9 +34,11 @@ export function App() {
   const [debug, setDebug] = useState(false)
   const [compartilhando, setCompartilhando] = useState<string | null>(null)
   const [itemAtual, setItemAtual] = useState<string | null>(null)
+  const [erroRota, setErroRota] = useState<string | null>(null)
   const [tema, setTema] = useTema()
   const { composicoes, noWorkspace } = useSessao()
   const largura = useLargura()
+  const { viewId } = useRotaView()
 
   const lateral = useDivisor(272, 200, 460, 'esquerda')
   const dock = useDivisor(380, 300, 620, 'direita')
@@ -52,6 +55,46 @@ export function App() {
     else setAssistente(true)
   }, [largura])
 
+  /**
+   * `/v/:viewId` — o endereço é o estado de entrada (T-016 AC-4).
+   *
+   * Recarregar reproduz a MESMA tela porque o schema vem do servidor pelo id,
+   * e não de memória local, que o reload apaga — era o bug do favorito da v1.
+   *
+   * E o schema é revalidado contra o catálogo de QUEM ABRE, no servidor
+   * (`/api/views/{id}`, ADR-0009 e ADR-0021). Um endereço que carregasse com a
+   * permissão de quem criou seria escalação de privilégio disfarçada de
+   * conveniência — por isso o cliente não decide nada aqui: pede e desenha.
+   */
+  useEffect(() => {
+    if (!eu || !viewId) { setErroRota(null); return }
+    let vivo = true
+    api.abrirView(viewId)
+      .then((v) => {
+        if (!vivo) return
+        setErroRota(null)
+        sessao.compos({
+          id: crypto.randomUUID(),
+          titulo: 'Tela compartilhada',
+          origem: 'sistema',
+          blocos: v.blocos,
+          schema: v.schema,
+          viewKey: viewKeyLocal(v.blocos),
+        })
+      })
+      .catch((e: unknown) => {
+        if (!vivo) return
+        // Revogado e inexistente respondem igual, de propósito (ADR-0014). A
+        // mensagem aqui é a mesma para os dois pelo mesmo motivo.
+        setErroRota(
+          e instanceof ErroApi && e.codigo === 'nao_encontrado'
+            ? 'Este endereço não está mais disponível.'
+            : 'Não foi possível abrir este endereço.',
+        )
+      })
+    return () => { vivo = false }
+  }, [eu, viewId])
+
   if (carregando) return <p className="vazio" style={{ padding: 32 }}>carregando…</p>
   if (!eu) return <Login aoEntrar={setEu} />
 
@@ -61,6 +104,9 @@ export function App() {
 
   function abrir(titulo: string, blocos: Bloco[], item: string | null = null) {
     setItemAtual(item)
+    // Sair do endereço da view ao abrir outra coisa: sem isso, um F5 depois de
+    // clicar no menu reabriria a tela compartilhada, e não a que está na frente.
+    if (viewId) irPara('/')
     sessao.compos({
       id: crypto.randomUUID(), titulo, origem: 'sistema', blocos,
       schema: { versao: 1, blocos: blocos.map((b) => ({ tipo: b.tipo, params: b.params })) },
@@ -73,10 +119,13 @@ export function App() {
     abrir(i.rotulo, [{ tipo: i.componente, params: i.params ?? {}, tamanho: i.componente === 'estoque_indicador' ? 'linha' : 'inteira' }], i.id)
   }
 
-  async function abrirRecebida(viewId: string, de: string) {
-    // O schema é revalidado contra o catálogo DE QUEM ABRE, no servidor.
-    const v = await api.abrirView(viewId)
-    abrir(`De ${de}`, v.blocos)
+  function abrirRecebida(id: string, _de: string) {
+    // Passa a ir pelo ENDEREÇO, e não por uma chamada solta: o efeito de
+    // `/v/:viewId` já sabe abrir, revalidar e tratar a negativa. Uma recebida
+    // aberta assim fica endereçável — dá para recarregar, favoritar no
+    // navegador e mandar o link (que continua não concedendo acesso: quem abre
+    // carrega sob a própria permissão).
+    irPara(caminhoDaView(id))
   }
 
   function sair() {
@@ -136,7 +185,7 @@ export function App() {
             {painel === 'navegacao' && <PainelNavegacao atual={itemAtual} aoAbrir={abrirDoMenu} />}
             {painel === 'fixadas' && <PainelFixadas aoAbrir={(t, b) => abrir(t, b)} />}
             {painel === 'recebidas' && (
-              <PainelRecebidas eu={eu} aoAbrir={(v, d) => void abrirRecebida(v, d)} />
+              <PainelRecebidas eu={eu} aoAbrir={abrirRecebida} />
             )}
             {/* usuário logado, fixo no rodapé */}
             <div className="rodape-ator">
@@ -155,7 +204,19 @@ export function App() {
             aria-orientation="vertical" onPointerDown={lateral.aoDescer} onKeyDown={lateral.aoTeclado} />
         )}
 
-        <Workspace eu={eu} aoCompartilhar={() => atual && setCompartilhando(atual.id)} />
+        {erroRota && (
+          <div role="status" className="vazio" style={{ padding: 32, flex: 1, minWidth: 0 }}>
+            {erroRota}
+            <div style={{ marginTop: 12 }}>
+              <button type="button" className="btn" onClick={() => irPara('/')}>
+                Voltar
+              </button>
+            </div>
+          </div>
+        )}
+        {!erroRota && (
+          <Workspace eu={eu} aoCompartilhar={() => atual && setCompartilhando(atual.id)} />
+        )}
 
         {assistente && !estreito && (
           <div className="divisor" role="separator" tabIndex={0} aria-label="Redimensionar assistente"

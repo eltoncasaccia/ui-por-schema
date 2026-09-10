@@ -7,7 +7,8 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**35 concluídas · 3 parciais · 9 não iniciadas** · 20 de 24 componentes previstos.
+**36 concluídas · 2 parciais · 9 não iniciadas** · 20 de 24 componentes previstos.
+**W0, W1, W2 e W3 fechadas.** As duas parciais que restam são de W5 (T-032, T-033).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
 > delas (dizia "2 parciais" com três linhas 🟡 na tabela). Para reconferir:
@@ -59,7 +60,7 @@ está pronto.
 | T-013 | Validador de schema | ✅ | — |
 | T-014 | Adapter de modelo e trace | ✅ | ampliado pelo ADR-0025 |
 | T-015 | Motor de render e layout | ✅ | — |
-| T-016 | TanStack Query, `viewId`, rotas | 🟡 | não há rota `/v/:viewId` no cliente |
+| T-016 | TanStack Query, `viewId`, rotas | ✅ | **7 ACs verificados.** Rota `/v/:viewId` em `web/src/app/rotas.tsx`, sem biblioteca de rota (única rota com parâmetro do ciclo 1; revisar na T-031). AC-2/AC-3 por comportamento — 4 blocos = 1 requisição, resposta atrasada não sobrescreve. AC-5/AC-6 no servidor ([A-36](./ACHADOS.md)): abrir view não devolve dado, e bloco fora do catálogo de quem abre some. Três sabotagens verificadas |
 
 ## W2 — Furo de risco
 

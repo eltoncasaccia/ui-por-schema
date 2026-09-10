@@ -46,7 +46,14 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 | [T-013](./T-013-validador-schema.md) | Validador de schema e revalidação | C | M | T-012 | ✅ |
 | [T-014](./T-014-adapter-modelo.md) | Adapter Claude e Execution Trace | C | M | T-004 | ✅ |
 | [T-015](./T-015-motor-de-render.md) | Motor de render e política de layout | D | M | T-039 | ✅ |
-| [T-016](./T-016-query-e-viewkey.md) | TanStack Query, `viewId`, rotas | D | M | T-013, T-015 | 🟡 |
+| [T-016](./T-016-query-e-viewkey.md) | TanStack Query, `viewId`, rotas | D | M | T-013, T-015 | ✅ |
+
+> **T-016 fechou, e com ela a W1 inteira.** A rota `/v/:viewId` existe
+> (`web/src/app/rotas.tsx`), **sem biblioteca de rota** — é a única rota com
+> parâmetro do ciclo 1, e a decisão se revisa na T-031. AC-5 e AC-6, que só
+> existem no servidor, ganharam teste em `api/tests/server/test_t016_ac.py`:
+> abrir uma view **não devolve dado**, e o bloco fora do catálogo de quem abre
+> some. Lista de arquivos da tarefa corrigida ([A-36](./ACHADOS.md)).
 
 > **T-011 fechou.** Os 8 ACs passaram a ser verificados **por HTTP contra o app
 > real** — antes, três deles eram `inspect.getsource` afirmando que o handler

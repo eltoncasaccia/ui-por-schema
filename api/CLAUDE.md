@@ -165,6 +165,21 @@ que é o que o [ADR-0017](../docs/adr/0017-registry-servidor-views-cliente.md) e
 
 ---
 
+## Anatomia de um comando de escrita
+
+A outra metade, e a que este arquivo não descreve: **componente descreve, comando
+executa.** Um comando são três peças — o schema num módulo-folha
+(`commands/entradas/`), o executável (`commands/`) e o `CommandDef` que o
+componente publica — e quatro decisões que o tipo obriga: `requires`,
+`idempotent`, `etag_de`, `confirm`.
+
+Comando novo? Use a skill **`comando-novo`**. Ela tem a forma, o que o pipeline
+já faz por você, as armadilhas de saldo (a view materializada **não** é fonte —
+achado A-20) e os testes negativos obrigatórios. **Leia um exemplo, não os
+cinco** — a skill diz qual, pela forma do seu comando.
+
+---
+
 ## Erros
 
 `ErroDominio` tem duas faces, e a distinção é de segurança, não de estilo:

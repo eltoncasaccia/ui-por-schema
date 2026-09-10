@@ -9,9 +9,14 @@ Um componente do catálogo tem **duas metades obrigatórias**
 ([ADR-0017](../../../docs/adr/0017-registry-servidor-views-cliente.md)):
 registro na API e view no cliente. Entregar uma só quebra o CI.
 
-Faltam 12 componentes para o ciclo 1 fechar. O teto do catálogo é 25
-([ADR-0011](../../../docs/adr/0011-teto-de-catalogo.md)) e o build quebra acima
-disso — passar do teto é discussão de escopo, não de código.
+**São 23 registrados, e W3 e W4 fecharam** — nenhum componente do ciclo 1 está
+pendente. O teto do catálogo é 25 ([ADR-0011](../../../docs/adr/0011-teto-de-catalogo.md))
+e o build quebra acima disso: sobra folga para **2**, e a T-044
+(`relatorio_movimentacao`) já reserva uma. Passar do teto é discussão de escopo,
+não de código.
+
+> Este número sai do BOARD §2, e é para ser reconferido lá — não daqui. Ele já
+> esteve errado: dizia "faltam 12" com a onda inteira entregue.
 
 ---
 

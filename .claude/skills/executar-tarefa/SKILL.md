@@ -71,8 +71,16 @@ justificável; é sinal de que o corte de tarefas está errado.
 `api/src/estoque/application/registry/indice.py`, `web/src/views/indice.ts`,
 `web/src/generated/*`. Rode `make gerar-indice` e `make types`.
 
-**Imite o que já existe.** Achado o arquivo mais parecido com o que você vai
-escrever, siga o estilo, a densidade de comentário e o idioma dele.
+**Imite o que já existe — UM arquivo, não a família.** Achado o mais parecido com
+o que você vai escrever, siga o estilo, a densidade de comentário e o idioma
+dele. Ler os cinco irmãos para inferir o padrão custa uma fração da sessão e não
+ensina mais que o primeiro: as duas skills abaixo já destilam o padrão e dizem
+**qual** exemplar abrir.
+
+| A tarefa… | Skill |
+|---|---|
+| registra componente do catálogo | **`componente-novo`** (os dois lados, ADR-0017) |
+| registra comando de escrita (W4) | **`comando-novo`** (schema-folha, pipeline, testes negativos) |
 
 **Pergunte antes** ([ADR-0028](../../../docs/adr/0028-processo-de-decisao.md))
 se for acrescentar dependência ou container, mudar contrato congelado, ou

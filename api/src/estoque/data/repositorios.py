@@ -100,6 +100,14 @@ class RepoProdutoSQL:
             r["id"]: _para_produto(dict(r), ctx) for r in (await self._c.execute(q)).mappings()
         }
 
+    async def por_ean(self, ean: str, ctx: ContextoDados) -> Produto | None:
+        """T-048. Passa pelo MESMO `_para_produto` que `por_id`: a omissao de
+        custo (RN-A02) vive no tradutor, num lugar so'. Um caminho novo que
+        montasse o `Produto` a mao seria a segunda chance de esquecer."""
+        q = sa.select(m.produto).where(m.produto.c.ean == ean)
+        r = (await self._c.execute(q)).mappings().first()
+        return _para_produto(dict(r), ctx) if r else None
+
 
 class RepoMovimentoSQL:
     def __init__(self, conn: AsyncConnection) -> None:

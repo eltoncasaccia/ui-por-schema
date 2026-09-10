@@ -5,7 +5,8 @@
 | **Status** | **CONGELADO** a partir da conclusão de T-004 |
 | **Autoridade** | Normativo. Código que divergir daqui está errado, não o contrário |
 | **Alteração** | Só por ADR novo + tarefa de contrato. Nunca em tarefa de feature |
-| **Revisão** | 2.2 — `registry/`, `commands/` e `schema/` passaram para `application/` ([ADR-0031](../adr/0031-ports-and-adapters.md)). **Só caminho mudou**: nenhuma assinatura, nenhum tipo, nenhum campo |
+| **Revisão** | 2.3 — `RepoProduto.por_ean` acrescentado ([T-048](./T-048-porta-produto-por-ean.md), achado [A-37](./ACHADOS.md)). **Aditiva**: nenhuma assinatura existente mudou, nenhum chamador quebrou. Ver §4 |
+| | 2.2 — `registry/`, `commands/` e `schema/` passaram para `application/` ([ADR-0031](../adr/0031-ports-and-adapters.md)). **Só caminho mudou**: nenhuma assinatura, nenhum tipo, nenhum campo |
 | | 2.1 — provedor e modo de saída viraram configuração ([ADR-0025](../adr/0025-agnosticismo-de-provedor.md)); composição vazia passou a ser resposta válida |
 
 > **Por que este documento existe.** Trabalho paralelo em várias sessões só é
@@ -213,6 +214,24 @@ class ContextoDados:
 **A porta aplica o escopo de unidade e remove campo restrito.** Não é
 responsabilidade do chamador lembrar de filtrar: `RN-A01` e `RN-A02` são aplicados
 aqui, e testados aqui.
+
+### `RepoProduto.por_ean` — revisão 2.3 ([T-048](./T-048-porta-produto-por-ean.md))
+
+```python
+class RepoProduto(Protocol):
+    async def por_id(self, produto_id: str, ctx: ContextoDados) -> Produto | None: ...
+    async def por_ids(self, ids: Sequence[str], ctx: ContextoDados) -> dict[str, Produto]: ...
+    async def por_ean(self, ean: str, ctx: ContextoDados) -> Produto | None: ...   # 2.3
+```
+
+A busca pelo identificador **externo** — o que o leitor de código de barras
+devolve (`US-02`, `RNF-02`). É a única da porta que **não intersecta escopo de
+unidade**: produto não pertence a unidade (`RN-P01`), e filtrar aqui esconderia
+do conferente um produto legítimo que ele tem na mão. A omissão de custo
+(`RN-A02`) continua valendo, porque ela é por **ator**, não por unidade.
+
+Bem definida porque `produto.ean` é `UNIQUE` desde a migração `0006`: sem a
+restrição, `Produto | None` seria mentira — a busca devolveria "algum".
 
 ---
 

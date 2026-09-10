@@ -3,7 +3,7 @@
 Registro do que a execução descobriu e o documento não previa: conflito entre
 regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 
-> **Próximo número: `A-37`.** Está aqui para ninguém precisar abrir o arquivo
+> **Próximo número: `A-38`.** Está aqui para ninguém precisar abrir o arquivo
 > só para descobrir o número seguinte.
 
 **Este arquivo só tem o que ainda exige ação.** Os 30 achados já fechados foram

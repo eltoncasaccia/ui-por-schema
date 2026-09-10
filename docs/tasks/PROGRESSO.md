@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**36 concluídas · 2 parciais · 9 não iniciadas** · 20 de 24 componentes previstos.
+**37 concluídas · 2 parciais · 9 não iniciadas** · 20 de 24 componentes previstos.
 **W0, W1, W2 e W3 fechadas.** As duas parciais que restam são de W5 (T-032, T-033).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -124,6 +124,7 @@ está pronto.
 | T-044 | `relatorio_movimentacao` | ⬜ | ADR-0029 |
 | T-045 | Borda HTTP por router | ✅ | ADR-0032 — `app.py` de 817 → 134 linhas; contrato 5 do import-linter, com teste negativo; 467 testes, mesma contagem |
 | T-046 | Mín/máx por produto e unidade (`RN-P06`) | ⬜ | A-30 — sem armazenamento; é também tarefa de contrato (CONTRATOS §4) |
+| T-048 | `RepoProduto.por_ean` (tarefa de contrato) | ✅ | A-37 — a `US-02` pede o leitor de código de barras e não havia busca por EAN em lugar nenhum. Porta + adaptador + fake + `UNIQUE (produto.ean)` na migração `0006`. Bateria única fake↔banco. **Destrava a T-026 (AC-8)**. CONTRATOS rev. 2.3 |
 | T-047 | Repos de recebimento e temperatura | ✅ | A-32 — `RepoRecebimentoSQL`/`RepoTemperaturaSQL`, `deps.py` sem `None`, seed com 6 recebimentos, bateria de escopo fake↔real. Desbloqueou T-022 e T-023 |
 
 ---

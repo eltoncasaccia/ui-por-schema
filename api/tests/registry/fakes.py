@@ -279,6 +279,13 @@ class FakeRepoProduto:
     async def por_ids(self, ids: Sequence[str], ctx: ContextoDados) -> dict[str, Produto]:
         return {i: self._visivel(PRODUTOS[i], ctx) for i in set(ids) if i in PRODUTOS}
 
+    async def por_ean(self, ean: str, ctx: ContextoDados) -> Produto | None:
+        """T-048. Passa pelo MESMO `_visivel` dos outros dois: um fake que
+        esquecesse a omissao de custo aqui deixaria a suite verde sobre o
+        vazamento (achado A-11)."""
+        p = next((x for x in PRODUTOS.values() if x.ean == ean), None)
+        return self._visivel(p, ctx) if p else None
+
 
 class FakeRepoMovimento:
     def _visiveis(self, ctx: ContextoDados) -> list[Movimento]:

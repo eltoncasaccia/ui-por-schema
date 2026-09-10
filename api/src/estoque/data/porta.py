@@ -62,6 +62,20 @@ class RepoLote(Protocol):
 class RepoProduto(Protocol):
     async def por_id(self, produto_id: str, ctx: ContextoDados) -> Produto | None: ...
     async def por_ids(self, ids: Sequence[str], ctx: ContextoDados) -> dict[str, Produto]: ...
+    async def por_ean(self, ean: str, ctx: ContextoDados) -> Produto | None:
+        """Busca pelo identificador EXTERNO — o que o leitor de codigo de barras
+        devolve (T-048, `US-02`, `RNF-02`).
+
+        E' a primeira busca do sistema por um identificador que vem do mundo
+        fisico, e por isso a unica que NAO intersecta escopo de unidade: produto
+        nao pertence a unidade (`RN-P01`), e filtrar aqui esconderia do
+        conferente um produto legitimo que ele tem na mao.
+
+        O que continua valendo e' a omissao de custo (`RN-A02`), que e' por
+        ATOR e nao por unidade. Bem definido porque `produto.ean` e' UNIQUE
+        desde a migracao 0006.
+        """
+        ...
 
 
 class RepoMovimento(Protocol):

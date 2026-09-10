@@ -160,6 +160,8 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | [T-045](./T-045-borda-http-por-router.md) | **Borda HTTP por router** — `app.py` tinha 817 linhas e 4 tarefas escreviam nele ([ADR-0032](../adr/0032-borda-http-por-router.md)) | E | M | — | ✅ |
 
+| [T-048](./T-048-porta-produto-por-ean.md) | **`RepoProduto.por_ean`** — o leitor de código de barras não tinha para onde apontar ([A-37](./ACHADOS.md)). **Tarefa de contrato**, aditiva: CONTRATOS §4 rev. 2.3 | A | P | T-007, T-036 | ✅ |
+
 | [T-046](./T-046-minimo-maximo-por-unidade.md) | **Mín/máx por produto e unidade** (`RN-P06`) — sem armazenamento no sistema; é também tarefa de contrato (CONTRATOS §4). Aberta pela T-019 ([A-30](./ACHADOS.md)) | A | M | T-002, T-007, T-036, T-006 | ⬜ |
 
 ### W5 — Garantias e fechamento · até 4 sessões

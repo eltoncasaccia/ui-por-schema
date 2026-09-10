@@ -7,7 +7,11 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**35 concluídas · 2 parciais · 10 não iniciadas** · 20 de 24 componentes previstos.
+**35 concluídas · 3 parciais · 9 não iniciadas** · 20 de 24 componentes previstos.
+
+> Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
+> delas (dizia "2 parciais" com três linhas 🟡 na tabela). Para reconferir:
+> `awk -F'|' '/^\| T-0[0-9][0-9] \|/ {print $4}' PROGRESSO.md | sort | uniq -c`.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -50,7 +54,7 @@ está pronto.
 | T-009 | Motor de permissão e escopo | ✅ | — |
 | T-010 | Trilha de auditoria | ✅ | — |
 | T-037 | Autenticação, sessão, CSRF | ✅ | CSRF e rate limit entregues em T-040 |
-| T-011 | Servidor FastAPI | 🟡 | `Idempotency-Key` e `If-Match` **implementados na T-025** (rota `/api/comandos/{nome}`, com teste de borda). AC-3 e AC-4 da T-011 passam a valer; os demais ACs dela não foram reconferidos nesta sessão |
+| T-011 | Servidor FastAPI | ✅ | **8 ACs verificados por HTTP** contra o app real (`tests/server/`, 4 arquivos novos, 40 testes). AC-3/AC-4 vinham da T-025. **AC-6 exigiu implementar `CS-06`**, que não existia ([A-34](./ACHADOS.md)): teto por ator no endpoint do assistente, antes da chamada ao modelo. AC-8 no recorte "leitura de dado de domínio" ([A-35](./ACHADOS.md)). Cada proteção sabotada de propósito para provar que o teste quebra |
 | T-012 | Registry runtime e catálogo por ator | ✅ | — |
 | T-013 | Validador de schema | ✅ | — |
 | T-014 | Adapter de modelo e trace | ✅ | ampliado pelo ADR-0025 |
@@ -103,7 +107,7 @@ está pronto.
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
 | T-032 | Suíte de avaliação | 🟡 | 17 casos dos ~40; roda os dois modos; sem série histórica |
-| T-033 | Segurança CS-01 a CS-06 | 🟡 | CS-01/02/03 cobertos; **CS-04 e CS-06 não**; falta `R-003` |
+| T-033 | Segurança CS-01 a CS-06 | 🟡 | CS-01/02/03/05/06 cobertos — CS-01, CS-03 e CS-06 ganharam teste **de borda HTTP** na T-011; **CS-04 continua nunca testado** (o de menor confiança do release); falta `R-003` |
 | T-031 | Telas com rota | ⬜ | não há roteador no cliente |
 | T-038 | Gestão de usuários | ⬜ | — |
 | T-034 | Relatório de fechamento | ⬜ | — |
@@ -144,9 +148,9 @@ movem estoque, com auditoria e recusa negativa testadas.
 
 | | Estado |
 |---|---|
-| CS-01 schema forjado rejeitado | ✅ testado |
+| CS-01 schema forjado rejeitado | ✅ testado **pelo endpoint** (T-011 AC-2): componente fora do catálogo, valor de enum filtrado e unidade fora do escopo, cada um com o contraponto de quem pode |
 | CS-02 catálogo filtrado | ✅ testado |
-| CS-03 negativa não revela existência | ✅ testado |
+| CS-03 negativa não revela existência | ✅ testado **byte a byte na resposta HTTP** (T-011 AC-7), em `lote_detalhe` e `recebimento_detalhe`. Limite conhecido: canal lateral de **tempo** não é medido |
 | CS-04 injeção via dado do banco | ⬜ **nunca testado** — é o de menor confiança |
 | CS-05 resposta do assistente auditada | ✅ |
-| CS-06 rate limit por ator | 🟡 login coberto (T-040); falta o endpoint do assistente |
+| CS-06 rate limit por ator | ✅ **o endpoint do assistente passou a ter teto** (T-011, achado [A-34](./ACHADOS.md)): 30 por ator e 120 por IP em 5 min, conferidos antes da chamada ao modelo, recusa auditada. O login já tinha o dele (T-040) — são duas proteções, e só uma existia |

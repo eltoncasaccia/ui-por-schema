@@ -41,12 +41,21 @@ Legenda: `⬜ disponível` · `🔵 em andamento` · `🔴 bloqueada` · `🟡 e
 | [T-009](./T-009-motor-de-permissao.md) | Motor de permissão e escopo | B | M | T-004 | ✅ |
 | [T-010](./T-010-auditoria.md) | Trilha de auditoria append-only | B | M | T-004 | ✅ |
 | [T-037](./T-037-autenticacao.md) | **Autenticação, sessão, CSRF** | B | G | T-004, T-036 | ✅ |
-| [T-011](./T-011-servidor.md) | Servidor FastAPI, autorização por registro | B | G | T-009, T-010, T-037 | 🟡 |
+| [T-011](./T-011-servidor.md) | Servidor FastAPI, autorização por registro | B | G | T-009, T-010, T-037 | ✅ |
 | [T-012](./T-012-catalogo.md) | Registry runtime e catálogo por ator | C | M | T-004, T-009 | ✅ |
 | [T-013](./T-013-validador-schema.md) | Validador de schema e revalidação | C | M | T-012 | ✅ |
 | [T-014](./T-014-adapter-modelo.md) | Adapter Claude e Execution Trace | C | M | T-004 | ✅ |
 | [T-015](./T-015-motor-de-render.md) | Motor de render e política de layout | D | M | T-039 | ✅ |
 | [T-016](./T-016-query-e-viewkey.md) | TanStack Query, `viewId`, rotas | D | M | T-013, T-015 | 🟡 |
+
+> **T-011 fechou.** Os 8 ACs passaram a ser verificados **por HTTP contra o app
+> real** — antes, três deles eram `inspect.getsource` afirmando que o handler
+> existe no código. **`CS-06` não existia** (achado [A-34](./ACHADOS.md)): a
+> T-040 entregou rate limit no *login* e o rotulou CS-06, mas o requisito é o
+> endpoint do assistente — implementado aqui, com teto por ator conferido antes
+> de falar com o modelo. AC-8 verificado no recorte "leitura de dado de domínio"
+> ([A-35](./ACHADOS.md)). As quatro proteções foram sabotadas de propósito e os
+> testes reprovaram nas quatro.
 
 ### W2 — Furo de risco · 1 sessão
 

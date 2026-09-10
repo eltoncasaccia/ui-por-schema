@@ -85,28 +85,86 @@ Liberar quarentena (T-027).
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Não existe caminho, nem por requisição forjada, que crie lote com
+> **Nenhum teste de comando passa por interface.** Cada um chama o pipeline
+> direto, que é o que uma requisição forjada faz — a única forma de provar
+> `RN-A03` e o AC-1, que fala de "requisição forjada" com todas as letras.
+
+- [x] **AC-1** Não existe caminho, nem por requisição forjada, que crie lote com
       status diferente de `quarentena`. *(negativo — `RN-R01`)*
-- [ ] **AC-2** Validade < 6 meses é recusada; com autorização do RT registrada, é
+      — três camadas: (1) `extra="forbid"` nos dois schemas, então `status`
+      forjado é **recusado** e não ignorado — no corpo **e** dentro do item;
+      (2) o `INSERT` escreve `"quarentena"` literal; (3) receber num lote que já
+      existe e **saiu** da quarentena é recusado com `conflito`, senão a
+      mercadoria cairia em estoque liberado por outro caminho. Com o contraponto:
+      receber de novo no mesmo lote **em quarentena** é legítimo e não duplica.
+- [x] **AC-2** Validade < 6 meses é recusada; com autorização do RT registrada, é
       aceita. *(`RN-L07`)*
-- [ ] **AC-3** Termolábil sem temperatura de chegada é recusado. *(negativo —
+      — e a trilha guarda **quais itens** dependeram da autorização, além do
+      texto dela. "Houve autorização" sem dizer de quê não é auditável.
+- [x] **AC-3** Termolábil sem temperatura de chegada é recusado. *(negativo —
       `RN-F01`)*
-- [ ] **AC-4** Termolábil destinado a unidade seca é recusado. *(negativo —
+      — com os dois contrapontos: com temperatura passa, e produto comum não
+      precisa dela (exigir de todos treinaria o conferente a digitar qualquer
+      número).
+- [x] **AC-4** Termolábil destinado a unidade seca é recusado. *(negativo —
       `RN-P02`)*
-- [ ] **AC-5** Controlado destinado a unidade sem sala-cofre é recusado. *(negativo
+- [x] **AC-5** Controlado destinado a unidade sem sala-cofre é recusado. *(negativo
       — `RN-P03`)*
-- [ ] **AC-6** Divergência conclui o recebimento **e** cria pendência. *(`RN-R04`)*
-- [ ] **AC-7** Rafael, Marco e Sandra **não** conseguem registrar recebimento, nem
+      — as unidades do teste têm propriedades **opostas** de propósito
+      (`cd-matriz` seca **com** cofre, `cd-refrigerado` fria **sem** cofre), para
+      cada regra ter um destino que aceita e um que recusa.
+- [x] **AC-6** Divergência conclui o recebimento **e** cria pendência. *(`RN-R04`)*
+      — o recebimento fica `conferido` com `divergencia = true`. Não impede.
+- [x] **AC-7** Rafael, Marco e Sandra **não** conseguem registrar recebimento, nem
       por requisição direta ao endpoint. *(negativo — matriz)*
-- [ ] **AC-8** O fluxo completo é executável **sem digitação** quando há código de
+      — um teste por persona, não um `for`: com dois recusados e um esquecido, o
+      laço ainda ficaria verde. **Nem o Diretor** — papel não é nível, é
+      conjunto. Com o contraponto de Cleide e Ivo passando.
+- [x] **AC-8** O fluxo completo é executável **sem digitação** quando há código de
       barras. Teste de navegação por teclado/leitor. *(`RNF-02`)*
-- [ ] **AC-9** `tamanho: 'inteira'` e não é composto junto de outros blocos.
+      — destravado pela [T-048](./T-048-porta-produto-por-ean.md). O `ean` é
+      **param do componente**: o leitor dispara, o cliente repede os dados com
+      `ean=<lido>`, o `load` resolve por `RepoProduto.por_ean`. Sem rota nova.
+      Os quatro testes que fazem a mão livre existir: foco no scan ao abrir,
+      Enter acrescenta o item sem clique, Enter **não** envia o formulário, e o
+      foco **volta** para o scan — este último é o que separa "funciona na
+      demonstração" de "funciona na esteira".
+- [x] **AC-9** `tamanho: 'inteira'` e não é composto junto de outros blocos.
       *(ADR-0005)*
+      — e o `CommandDef` não carrega função nenhuma (ADR-0002), e aponta para o
+      **mesmo** schema do comando executável.
 
 ## Definição de pronto — adicional
-- [ ] Contagem de catálogo no BOARD: **+1**.
+- [x] Contagem de catálogo no BOARD: **+1** (20 → 21 registrados; teto 25).
 
 ## Armadilhas
 
 Este é o formulário que testa o ADR-0005 na prática. Se a tentação de quebrá-lo em
 blocos compostos aparecer, ela é exatamente o que o ADR proíbe.
+
+**Respeitado:** `tamanho="inteira"`, um `ComponentDef` só, e as quatro etapas
+(nota → itens → conferência → confirmação) vivem dentro de uma view React, que é
+onde estado entre etapas e foco pertencem.
+
+## A camada que não é falsificável sozinha — registro
+
+O AC-1 tem três camadas, e **só duas são testáveis isoladamente**. Sabotar o
+`INSERT` (trocar o `"quarentena"` literal por `getattr(item, "status", ...)`)
+**não reprova nada**, porque o `extra="forbid"` impede o campo de chegar. Isso é
+defesa em profundidade funcionando — e é também o motivo de a camada 2 não ter
+teste próprio.
+
+O que dá para afirmar é o que a sustenta: **não existe campo de status em schema
+nenhum**, e os dois recusam campo extra. Esse teste existe, e cai no dia em que
+alguém acrescentar um `status` — antes de o `INSERT` ter chance de usá-lo.
+
+## Fora de escopo, e por quê
+
+- **`lote.recebimento_id`** ("lotes gerados"). Segue sem schema, descopado desde
+  a T-047 ([A-32](./ACHADOS.md)). Os lotes são criados e a trilha registra quais
+  foram, em `valor_novo.lotes` — o que falta é a coluna que ligaria os dois para
+  consulta.
+- **O formulário avisar antes sobre `RN-P02`/`RN-P03`.** Exigiria `RepoUnidade`,
+  que não existe na porta, e seria segunda tarefa de contrato numa entrega só.
+  O comando recusa com mensagem que nomeia a regra, e por ADR-0004 o cliente
+  nunca foi a garantia. Anotado como limite conhecido.

@@ -26,7 +26,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 |---|---|---|
 | [A-19](./ACHADOS.md) | A lista de motivos de **saída** (quatro, derivados do enum) está certa? `RN-M05` exige uma lista fechada e não há nenhuma em documento | T-029 |
 | [A-23](./ACHADOS.md) | O livro de controlados **exportável** (`RN-C05`) entra no ciclo 1? Custa +1 no catálogo e uma tarefa | `RN-C05` |
-| [A-33](./ACHADOS.md) | O `status` do recebimento basta como "conferência registrada", ou `RN-R03` exige integridade e validade como itens separados, com coluna? | T-026 |
+| [A-33](./ACHADOS.md) | O `status` do recebimento basta como "conferência registrada", ou `RN-R03` exige integridade e validade como itens separados, com coluna? | ~~T-026~~ — ela fechou sem a resposta: o checklist de `RN-R03` já existe na **liberação** (T-027, `EntradaLiberacao`). O que segue em aberto é o `recebimento_detalhe` **exibir** os itens conferidos, e uma auditoria de `RN-R03` ponta a ponta |
 | [A-35](./ACHADOS.md) | Auditar **navegação** (catálogo, identidade) é exigência regulatória, ou basta auditar leitura de dado? | recorte de `CS-05` |
 
 ---
@@ -138,11 +138,20 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | Id | Tarefa | Componentes | Tam. | Depende | Status |
 |---|---|---|---|---|---|
 | [T-025](./T-025-pipeline-de-comando.md) | Pipeline de comando e confirmação | *(nenhum — ver nota)* | G | T-011, T-015 | ✅ |
-| [T-026](./T-026-recebimento-registrar.md) | Registrar recebimento | `recebimento_registrar` | G | T-025, T-022 | ⬜ |
+| [T-026](./T-026-recebimento-registrar.md) | Registrar recebimento | `recebimento_registrar` | G | T-025, T-022, T-048 | ✅ |
 | [T-027](./T-027-quarentena-e-status.md) | Quarentena e status | `quarentena_liberar` `lote_status_acao` | G | T-025, T-018 | ✅ |
 | [T-028](./T-028-saida-fefo.md) | Saída com FEFO | `movimento_saida` | G | T-025, T-008 | ✅ |
 | [T-029](./T-029-estorno-descarte.md) | Estorno e descarte | `movimento_estorno` `movimento_descarte` | M | T-025, T-024 | ⬜ |
 | [T-030](./T-030-controlado-autorizar.md) | Dupla identificação `CA-04` | `controlado_autorizar` | G | T-028, T-024 | ✅ |
+
+> **T-026 fechou, e com ela a `US-02`.** O leitor de código de barras funciona:
+> o `ean` é **param do componente**, o `load` resolve por `RepoProduto.por_ean`
+> ([T-048](./T-048-porta-produto-por-ean.md)), e a tela mantém o foco no scan
+> entre leituras — que é o que separa "funciona na demonstração" de "funciona na
+> esteira". `RN-R01` em três camadas, e as nove regras citadas com par negativo.
+> **Fora de escopo, anotado:** `lote.recebimento_id` segue sem schema ([A-32](./ACHADOS.md)),
+> e o formulário não avisa sobre `RN-P02`/`RN-P03` antes porque exigiria
+> `RepoUnidade` — o comando recusa, e por ADR-0004 o cliente nunca foi a garantia.
 
 > **`confirm_action` saiu do catálogo** (achado A-05). Confirmação é decisão do
 > motor de render diante de `CommandDef.confirm`, não composição que o modelo
@@ -188,14 +197,14 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 20** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 21** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
 `quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028),
 `controlado_autorizar` (T-030), `movimento_lista` `auditoria_trilha` (T-024),
 `produto_ficha` `produto_saldo_por_unidade` (T-019), `rastreabilidade` (T-021),
-`recebimento_lista` `recebimento_detalhe` (T-022) e `temperatura_historico`
-`temperatura_excursoes` (T-023).
-**4 de escrita, teto 25.**
+`recebimento_lista` `recebimento_detalhe` (T-022), `temperatura_historico`
+`temperatura_excursoes` (T-023) e `recebimento_registrar` (T-026).
+**5 de escrita, teto 25.**
 
 **23 ao final, folga de 2.** Toda tarefa que registra componente atualiza esta tabela no
 mesmo commit. Acima de 25 o build quebra, e a discussão é de escopo.

@@ -2040,6 +2040,132 @@
       }
     },
     {
+      "id": "recebimento_registrar",
+      "label": "Registrar recebimento",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "RecebimentoRegistrarProdutoLido": {
+            "description": "O que o leitor resolveu, já com o que a classe do produto exige.\n\n`exige_temperatura` e `exige_rt` são calculados **no servidor**, a partir da\nclasse. Se fossem decididos no cliente, um formulário adulterado marcaria o\ntermolábil como dispensando temperatura — e a interface é payload\nnão-confiável como qualquer outro (ADR-0004). A recusa real acontece no\ncomando de qualquer forma; isto aqui é para a tela não pedir errado.",
+            "properties": {
+              "classe": {
+                "enum": [
+                  "comum",
+                  "controlado",
+                  "termolabil",
+                  "antimicrobiano"
+                ],
+                "type": "string"
+              },
+              "ean": {
+                "type": "string"
+              },
+              "exige_rt": {
+                "type": "boolean"
+              },
+              "exige_temperatura": {
+                "type": "boolean"
+              },
+              "fabricante": {
+                "type": "string"
+              },
+              "nome": {
+                "type": "string"
+              },
+              "produto_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "produto_id",
+              "ean",
+              "nome",
+              "fabricante",
+              "classe",
+              "exige_temperatura",
+              "exige_rt"
+            ],
+            "title": "RecebimentoRegistrarProdutoLido",
+            "type": "object"
+          },
+          "RecebimentoRegistrarUnidadeDestino": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "nome": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "nome"
+            ],
+            "title": "RecebimentoRegistrarUnidadeDestino",
+            "type": "object"
+          }
+        },
+        "description": "Sem custo, para papel nenhum (CA-05, ADR-0020).\n\n`Produto` carrega custo para quem tem `custo.ler`, e `ProdutoLido` não o\ndeclara — o que não entra no viewmodel não chega ao navegador.",
+        "properties": {
+          "ean_nao_encontrado": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "lido": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RecebimentoRegistrarProdutoLido"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "obrigatorios_do_item": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "unidade_sugerida": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unidades": {
+            "items": {
+              "$ref": "#/$defs/RecebimentoRegistrarUnidadeDestino"
+            },
+            "type": "array"
+          },
+          "validade_minima_dias": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "unidades",
+          "unidade_sugerida",
+          "validade_minima_dias",
+          "obrigatorios_do_item"
+        ],
+        "title": "VMRecebimentoRegistrar",
+        "type": "object"
+      }
+    },
+    {
       "id": "temperatura_excursoes",
       "label": "Excursões de temperatura",
       "tamanho": "inteira",

@@ -12,11 +12,13 @@ contrato 3 do import-linter e' o que garante isso — nao a disciplina.
 from estoque.application.commands import (
     autorizacao,
     lote,
+    recebimento,
     saida,
 )
 
 __all__ = [
     "autorizacao",
     "lote",
+    "recebimento",
     "saida",
 ]

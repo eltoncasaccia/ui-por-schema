@@ -28,6 +28,7 @@ from typing import Any
 import sqlalchemy as sa
 
 from estoque.application.commands.entradas.recebimento import (
+    DIAS_VALIDADE_MINIMA,
     EntradaRecebimento,
     ItemRecebido,
 )
@@ -37,12 +38,6 @@ from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados
 from estoque.domain.erros import ErroDominio, nao_autorizado
 from estoque.domain.tipos import Produto
-
-# RN-L07: "validade inferior a 6 meses e' recusada, salvo autorizacao expressa
-# do RT". Seis meses contados em dias corridos a partir de `ctx.agora` — nunca
-# de `date.today()`, que daria ao comando uma nocao de hoje diferente da que a
-# auditoria registrou (RN-M04).
-DIAS_VALIDADE_MINIMA = 180
 
 
 class _Tx:

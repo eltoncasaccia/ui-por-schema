@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**37 concluídas · 2 parciais · 9 não iniciadas** · 20 de 24 componentes previstos.
+**38 concluídas · 2 parciais · 8 não iniciadas** · 21 de 24 componentes previstos.
 **W0, W1, W2 e W3 fechadas.** As duas parciais que restam são de W5 (T-032, T-033).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -85,7 +85,7 @@ está pronto.
 | | Tarefa | Estado |
 |---|---|---|
 | T-025 | Pipeline de comando | ✅ |
-| T-026 | Registrar recebimento | ⬜ |
+| T-026 | Registrar recebimento | ✅ |
 | T-027 | Quarentena e status | ✅ |
 | T-028 | Saída com FEFO | ✅ |
 | T-029 | Estorno e descarte | ⬜ |
@@ -99,9 +99,9 @@ está pronto.
 > (`api/tests/commands/test_ac1_barreira.py`). Cada um foi confirmado vermelho
 > com a violação introduzida de propósito.
 >
-> O que ainda falta: **3 dos 7 comandos** — T-026 (recebimento), T-029 (estorno e
-> descarte). Quatro estão prontos: liberar quarentena, mudar status, dar saída e
-> autorizar controlado.
+> O que ainda falta: **T-029** (estorno e descarte). Cinco comandos prontos:
+> liberar quarentena, mudar status, dar saída, autorizar controlado e registrar
+> recebimento.
 
 ## W5 — Garantias
 

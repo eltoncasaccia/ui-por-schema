@@ -467,6 +467,43 @@ export interface RecebimentoListaLinhaRecebimento {
 }
 
 /**
+ * Sem custo, para papel nenhum (CA-05, ADR-0020).
+ *
+ * `Produto` carrega custo para quem tem `custo.ler`, e `ProdutoLido` não o
+ * declara — o que não entra no viewmodel não chega ao navegador.
+ */
+export interface VMRecebimentoRegistrar {
+  ean_nao_encontrado?: string | null
+  lido?: RecebimentoRegistrarProdutoLido | null
+  obrigatorios_do_item: string[]
+  unidade_sugerida: string | null
+  unidades: RecebimentoRegistrarUnidadeDestino[]
+  validade_minima_dias: number
+}
+/**
+ * O que o leitor resolveu, já com o que a classe do produto exige.
+ *
+ * `exige_temperatura` e `exige_rt` são calculados **no servidor**, a partir da
+ * classe. Se fossem decididos no cliente, um formulário adulterado marcaria o
+ * termolábil como dispensando temperatura — e a interface é payload
+ * não-confiável como qualquer outro (ADR-0004). A recusa real acontece no
+ * comando de qualquer forma; isto aqui é para a tela não pedir errado.
+ */
+export interface RecebimentoRegistrarProdutoLido {
+  classe: 'comum' | 'controlado' | 'termolabil' | 'antimicrobiano'
+  ean: string
+  exige_rt: boolean
+  exige_temperatura: boolean
+  fabricante: string
+  nome: string
+  produto_id: string
+}
+export interface RecebimentoRegistrarUnidadeDestino {
+  id: string
+  nome: string
+}
+
+/**
  * Sem custo (CA-05): nada aqui busca produto por preco, so' por nome.
  */
 export interface VMTemperaturaExcursoes {
@@ -572,6 +609,7 @@ export type ComponentId =
   | 'rastreabilidade'
   | 'recebimento_detalhe'
   | 'recebimento_lista'
+  | 'recebimento_registrar'
   | 'temperatura_excursoes'
   | 'temperatura_historico'
   | 'vencimento_grafico'
@@ -595,6 +633,7 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'rastreabilidade',
   'recebimento_detalhe',
   'recebimento_lista',
+  'recebimento_registrar',
   'temperatura_excursoes',
   'temperatura_historico',
   'vencimento_grafico',
@@ -619,6 +658,7 @@ export interface ViewModels {
   rastreabilidade: VMRastreabilidade
   recebimento_detalhe: VMRecebimentoDetalhe
   recebimento_lista: VMRecebimentoLista
+  recebimento_registrar: VMRecebimentoRegistrar
   temperatura_excursoes: VMTemperaturaExcursoes
   temperatura_historico: VMTemperaturaHistorico
   vencimento_grafico: VMVencimentoGrafico
@@ -645,6 +685,7 @@ export const TAMANHOS: Record<ComponentId, string> = {
   rastreabilidade: 'inteira',
   recebimento_detalhe: 'inteira',
   recebimento_lista: 'inteira',
+  recebimento_registrar: 'inteira',
   temperatura_excursoes: 'inteira',
   temperatura_historico: 'alta',
   vencimento_grafico: 'inteira',

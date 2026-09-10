@@ -27,6 +27,16 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from estoque.domain.identidade import UnidadeId
 
+# RN-L07: "validade inferior a 6 meses e' recusada, salvo autorizacao expressa
+# do RT". Seis meses em dias corridos.
+#
+# **Mora na FOLHA, e nao no comando**, porque os dois lados precisam dela: o
+# comando para recusar, e o componente do registry para a tela avisar antes. O
+# registry NAO pode importar `commands/recebimento.py` — ele usa sqlalchemy, e o
+# contrato 2 do import-linter proibe `registry -> sqlalchemy` inclusive por
+# caminho indireto. Duplicar o numero seria pior: os dois divergiriam.
+DIAS_VALIDADE_MINIMA = 180
+
 
 class ItemRecebido(BaseModel):
     """Uma linha da nota. Vira UM lote em quarentena e UM movimento de entrada."""

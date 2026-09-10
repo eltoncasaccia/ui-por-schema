@@ -16,6 +16,53 @@ o cliente fica dependente da equipe para perguntar o que já está no banco.
 
 Este componente troca 300 relatórios possíveis por ~164 tokens de catálogo.
 
+## Antes de começar — o que já está decidido
+
+**Skill:** `componente-novo` (cobre os dois lados e os testes obrigatórios).
+**Imite dois arquivos, e só dois:**
+
+- `registry/componentes/estoque_indicador.py` — tem o `RequiresPorValor` montado
+  e testado, **e** o caminho do custo (`repos.produto.por_ids(...)` seguido da
+  multiplicação, nas linhas do `valor_em_estoque`). É o precedente exato do seu
+  `metrica: valor`.
+- `registry/componentes/movimento_lista.py` — leitura de movimento com recorte de
+  período, que é a sua fonte.
+
+**A fonte é `RepoMovimento.listar(ctx, *, unidade_id, tipo, status, de, ate)`.**
+Conferido no adaptador real: `de` e `ate` **são** aplicados (diferente do
+`por_cliente`, que é o [A-31](./ACHADOS.md)).
+
+## Duas coisas que a tarefa não previa, e mudam o plano
+
+**1. `RepoMovimento.listar` trunca em 500 no adaptador real.** Há um
+`.limit(500)` fixo. Um relatório de 365 dias agrupado por produto leria 500
+movimentos e apresentaria o total como se fossem todos — **um número errado com
+cara de certo**, que é o pior resultado possível para um relatório.
+
+> **Recomendação:** não contorne no componente. Ou a T-042 resolve o limite na
+> porta antes (ela já vai encontrar essa divergência fake↔real), ou esta tarefa
+> **declara o truncamento no viewmodel** — um campo `truncado: bool` e a tela
+> dizendo "amostra de 500 movimentos", nunca um total silenciosamente errado.
+> Decidir isso é o **primeiro** passo da tarefa, não o último.
+
+**2. `metrica: valor` atravessa três entidades e a porta não ajuda.** O custo
+está em `Produto`; o movimento só conhece `lote_id`. O caminho é
+`movimento → lote → produto`, e **`RepoLote` não tem `por_ids`** — só `por_id`
+(um a um), `listar` e `saldos`.
+
+> **Recomendação:** uma chamada a `repos.lote.listar(ctx.dados, unidade_id=...)`
+> e indexar em memória, depois `produto.por_ids` sobre os `produto_id` distintos
+> — dois acessos, sem N+1 e **sem mudar contrato**. O relatório já é escopado,
+> então o conjunto é limitado.
+> A alternativa é acrescentar `RepoLote.por_ids` à porta, o que torna esta uma
+> **tarefa de contrato** (CONTRATOS §4, congelado, hoje em rev. 2.3) e muda o
+> tamanho dela. Se escolher esse caminho, **pergunte antes** (ADR-0028).
+
+**Paginação não é param.** `Pagina` é preocupação de transporte e chega por
+`ctx.pagina` (ver `definir.py`); o modelo não decide quantas linhas cabem. A
+armadilha "agregação sem teto", lá embaixo, se resolve por aí — e o viewmodel
+diz que paginou.
+
 ## Arquivos de propriedade exclusiva
 
 **Lado servidor**
@@ -90,6 +137,10 @@ ela representa.
 - [ ] **AC-8** A `description` do componente **não cita** `valor` como métrica
       disponível. *(a prosa não pode vazar o que o enum filtrou — invariante
       encontrada em `test_descricao_nunca_enumera_valor_de_enum_filtrado`)*
+- [ ] **AC-9** Um período que ultrapassa o teto de leitura do repositório é
+      **declarado** no viewmodel, não silenciado: o total nunca é apresentado
+      como completo quando a leitura foi truncada. *(negativo — ver "duas coisas
+      que a tarefa não previa", item 1)*
 
 ## Definição de pronto — adicional
 

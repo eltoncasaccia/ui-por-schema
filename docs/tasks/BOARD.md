@@ -195,6 +195,25 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | [T-033](./T-033-testes-de-seguranca.md) | Segurança CS-01 a CS-06 | E | G | W3, W4 | 🟡 |
 | [T-034](./T-034-fechamento.md) | Relatório de fechamento | E | M | T-031, T-032, T-033 | ⬜ |
 
+> **As quatro tarefas abertas foram revisadas em 2026-09-10** — arquivos, listas
+> fechadas, qual exemplar imitar e o que já está provado em outro lugar. O que a
+> revisão mudou, e que ninguém descobriria sem executar:
+>
+> - **T-031 abre com uma pergunta:** não há biblioteca de rota no projeto, e ela
+>   acrescenta 8 rotas com parâmetro e histórico. Adotar `react-router-dom` é
+>   dependência nova, e dependência se pergunta antes (ADR-0028). **A tarefa não
+>   começa sem essa resposta.** A rota `/controlados` entrou na lista, agora que
+>   a W4 fechou; estorno e descarte ficaram de fora, com o motivo escrito.
+> - **T-042 ganhou escopo:** o conserto do `por_cliente` (A-31) é dela, porque é
+>   o adaptador. E ela vai encontrar o [A-39](./ACHADOS.md).
+> - **T-044 tem dois furos que a tarefa não previa:** o teto de 500 do
+>   `RepoMovimento.listar` (A-39) e o caminho do custo, que atravessa três
+>   entidades sem `RepoLote.por_ids`. Os dois com recomendação registrada.
+> - **T-046 tem precedente exato na T-048** — migração `0007`, CONTRATOS rev.
+>   2.4 — e a faixa passa a ser exibida em `produto_saldo_por_unidade`, não em
+>   `produto_ficha`: `RN-P06` é por par (produto, unidade), e a ficha não tem
+>   eixo de unidade.
+
 ---
 
 ## 2. Contagem de catálogo

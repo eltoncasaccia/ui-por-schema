@@ -32,10 +32,38 @@ Adicionar um método a `RepoProduto` altera CONTRATOS §4, que é congelado. Est
 tarefa **é** a tarefa de contrato — trata a mudança de §4 explicitamente, não
 "de passagem". Nenhuma tarefa de feature pode fazer isso no lugar.
 
+## Antes de começar — o que já está decidido
+
+**Existe um precedente exato, e é recente:** a [T-048](./T-048-porta-produto-por-ean.md)
+acrescentou `RepoProduto.por_ean` e fez a mesma travessia — migração, `porta.py`,
+`repositorios.py`, fake, bateria fake↔banco e revisão de CONTRATOS §4. **Leia a
+T-048 e o `api/tests/data/test_produto_por_ean.py`; não leia mais nada** para
+descobrir a forma.
+
+| Fato | Valor conferido em 2026-09-10 |
+|---|---|
+| última migração | `0006_ean_unico.py` → a sua é **`0007`** |
+| revisão de CONTRATOS | está em **2.3** (T-048) → a sua é **2.4**, aditiva |
+| unidades reais | `cd-matriz` · `cd-refrigerado` · `filial-uberlandia` — as duas primeiras ficam em Ribeirão Preto, a terceira é a filial |
+| bateria fake↔banco | `api/tests/data/test_produto_por_ean.py`: `Protocol` local + `_bateria(impl)` + dois testes |
+
+**A faixa é exibida em `produto_saldo_por_unidade`, não em `produto_ficha`.** A
+tarefa dizia "e/ou" e isso é decisão, não estilo: `RN-P06` é por **par** (produto,
+unidade), e `produto_ficha` é a ficha do produto — ela não tem eixo de unidade
+onde pendurar duas faixas diferentes. `produto_saldo_por_unidade` já lista uma
+linha por unidade, e é lá que "abaixo do mínimo" quer dizer alguma coisa.
+Consequência: o AC-7 da T-019 passa a ser verificado **naquele** componente.
+
+**Os valores do seed são invenção sua, e precisam ser registrados.** Não há
+mín/máx em documento nenhum (é o próprio A-30). Escolha valores plausíveis para
+os produtos que já existem no seed, ponha-os no `seed/**` com um comentário
+dizendo que são arbitrados, e anote no fechamento — para o cliente poder
+corrigi-los sem arqueologia.
+
 ## Arquivos de propriedade exclusiva
 
 ```
-api/migrations/versions/00NN_minimo_maximo_por_unidade.py
+api/migrations/versions/0007_minimo_maximo_por_unidade.py
 api/tests/data/test_minimo_maximo.py
 ```
 
@@ -65,10 +93,11 @@ api/src/estoque/application/registry/componentes/produto_saldo_por_unidade.py ex
 - Campo/estrutura no domínio, método na `RepoProduto` que devolve a faixa por
   unidade **já intersectada com o escopo do ator** (`RN-A01`), como todo o resto
   da porta.
-- Seed determinístico: Uberlândia com faixa diferente de Ribeirão para o mesmo
-  produto — é o exemplo do próprio `RN-P06`.
-- `produto_ficha` (variante padrão) e/ou `produto_saldo_por_unidade` passam a
-  exibir mín/máx por unidade, com marcação de "abaixo do mínimo".
+- Seed determinístico: `filial-uberlandia` com faixa **diferente** de `cd-matriz`
+  para o mesmo produto — é o exemplo do próprio `RN-P06`, e é o que faz o AC-1
+  poder falhar.
+- `produto_saldo_por_unidade` passa a exibir mín/máx por unidade, com marcação de
+  "abaixo do mínimo" (ver a decisão registrada acima).
 - Revisão de CONTRATOS §4 com nota de versão.
 
 ### Não faz
@@ -85,8 +114,9 @@ de reposição / curva de consumo — é roadmap, não `RN-P06`.
 - [ ] **AC-3** O método novo da porta tem o mesmo comportamento no fake e no
       repositório real — entra na bateria da T-042 se ela já existir, ou traz o
       seu par de testes.
-- [ ] **AC-4** `produto_ficha` / `produto_saldo_por_unidade` exibem a faixa e a
-      marcação de "abaixo do mínimo", e o AC-7 da T-019 passa a ser verificável.
+- [ ] **AC-4** `produto_saldo_por_unidade` exibe a faixa e a marcação de "abaixo
+      do mínimo", e o AC-7 da T-019 passa a ser verificável — **inclusive o
+      negativo**: um produto dentro da faixa não vem marcado.
 - [ ] **AC-5** CONTRATOS §4 revisado, com nota de versão e data. O `import-linter`
       e a bijeção continuam verdes.
 - [ ] **AC-6** `CHECK (maximo >= minimo)` recusa uma linha inválida — provado no

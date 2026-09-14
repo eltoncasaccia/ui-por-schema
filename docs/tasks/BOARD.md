@@ -206,8 +206,20 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 > `?produto_id=` para link direto. Detalhe em
 > [T-031](./T-031-telas-com-rota.md).
 | [T-032](./T-032-suite-de-avaliacao.md) | Suíte de avaliação, 40 perguntas | E | G | T-017, W3 | 🟡 |
-| [T-033](./T-033-testes-de-seguranca.md) | Segurança CS-01 a CS-06 | E | G | W3, W4 | 🟡 |
+| [T-033](./T-033-testes-de-seguranca.md) | Segurança CS-01 a CS-06 | E | G | W3, W4 | ✅ |
 | [T-034](./T-034-fechamento.md) | Relatório de fechamento | E | M | T-031, T-032, T-033 | ⬜ |
+
+> **T-033 fechou, e o CS-04 passou.** Nenhum dado do banco chega ao modelo:
+> prompt e JSON Schema idênticos **byte a byte** com e sem dado hostil — inclusive
+> no nome do próprio ator —, canário provando que o dado estava no caminho dele,
+> e a mesma igualdade com `qwen2.5:7b` real. CS-01/02/05 ganharam o que faltava
+> (schema gigante, catálogo exato por persona, custo plantado na trilha real).
+> Quatro proteções sabotadas, quatro vermelhos. **Dois achados sem dono**, com
+> recomendação: [A-42](./ACHADOS.md) — `titulo` sem teto, e é onde o modelo real
+> obedece à injeção colada na pergunta (tarefa de contrato, CONTRATOS §7) — e
+> [A-43](./ACHADOS.md) — escrita composta com leitura é aceita porque a checagem
+> do ADR-0005 em `validar.py:113` nunca dispara (vira emenda de ADR). Relatório:
+> [R-003](../relatorios/R-003-seguranca-ciclo-1.md). **T-034 espera só a T-032.**
 
 > **As quatro tarefas abertas foram revisadas em 2026-09-10** — arquivos, listas
 > fechadas, qual exemplar imitar e o que já está provado em outro lugar. O que a

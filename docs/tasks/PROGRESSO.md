@@ -7,12 +7,16 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**39 concluídas · 2 parciais · 7 não iniciadas** · 23 de 24 componentes previstos.
-**W0, W1, W2, W3 e W4 fechadas.** As duas parciais que restam são de W5 (T-032, T-033).
+**44 concluídas · 1 parcial · 6 não iniciadas** · 23 de 24 componentes previstos.
+**W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
-> delas (dizia "2 parciais" com três linhas 🟡 na tabela). Para reconferir:
-> `awk -F'|' '/^\| T-0[0-9][0-9] \|/ {print $4}' PROGRESSO.md | sort | uniq -c`.
+> delas duas vezes — dizia "2 parciais" com três linhas 🟡, e depois "39
+> concluídas" com 43 linhas ✅. Para reconferir:
+> `LC_ALL=C awk -F'|' '/^\| T-0[0-9][0-9] \|/ {print $4}' PROGRESSO.md | LC_ALL=C sort | LC_ALL=C uniq -c`.
+> **O `LC_ALL=C` não é enfeite:** sem ele, o `sort`/`uniq` do macOS colaciona os
+> emojis como iguais e devolve uma linha só, "51 ✅" — foi assim que a contagem
+> errada passou pela conferência.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -116,7 +120,7 @@ está pronto.
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
 | T-032 | Suíte de avaliação | 🟡 | 17 casos dos ~40; roda os dois modos; sem série histórica |
-| T-033 | Segurança CS-01 a CS-06 | 🟡 | CS-01/02/03/05/06 cobertos — CS-01, CS-03 e CS-06 ganharam teste **de borda HTTP** na T-011; **CS-04 continua nunca testado** (o de menor confiança do release); falta `R-003` |
+| T-033 | Segurança CS-01 a CS-06 | ✅ | **6 ACs verificados** (AC-6 vacuamente — o CS-04 passou). CS-04: prompt e JSON Schema idênticos byte a byte com e sem dado hostil no banco — inclusive o nome do próprio ator —, canário provando que o dado estava na tela dele, e igualdade confirmada com `qwen2.5:7b` real. Acrescentados: schema gigante (CS-01), catálogo exato das 7 personas (CS-02), composição auditada e custo plantado na trilha real (CS-05). 4 sabotagens, 4 vermelhos. Achados [A-42](./ACHADOS.md) (`titulo` sem teto, `xfail` strict) e [A-43](./ACHADOS.md) (escrita composta aceita). [R-003](../relatorios/R-003-seguranca-ciclo-1.md) |
 | T-031 | Telas com rota | ✅ | **6 ACs verificados, AC-3 em branco (medição é da T-034).** `react-router-dom` adotado — `app/layout/Roteador.tsx` autocontido (próprio `BrowserRouter`), 8 rotas em `app/layout/rotasOperacao.tsx` (tabela única: alimenta o roteador e a navegação lateral). AC-1 provado por igualdade de HTML entre a rota e `Composicao` direta. AC-4 verificado com catálogo mockado e contra o servidor real (Cleide sem `quarentena_liberar`, Helena com). AC-5 idem, incl. `curl` autenticado contra o container. `/saida` sem `:id` na URL mas `movimento_saida.produto_id` é obrigatório — sem componente de busca de produto no catálogo; resolvido com identificador digitado/colado + `?produto_id=`, ver nota no arquivo da tarefa. Tocou `App.tsx` e `PainelNavegacao.tsx` fora da lista original (justificado no arquivo da tarefa) |
 | T-038 | Gestão de usuários | ⬜ | — |
 | T-034 | Relatório de fechamento | ⬜ | — |
@@ -161,9 +165,9 @@ movem estoque, com auditoria e recusa negativa testadas.
 
 | | Estado |
 |---|---|
-| CS-01 schema forjado rejeitado | ✅ testado **pelo endpoint** (T-011 AC-2): componente fora do catálogo, valor de enum filtrado e unidade fora do escopo, cada um com o contraponto de quem pode |
-| CS-02 catálogo filtrado | ✅ testado |
+| CS-01 schema forjado rejeitado | ✅ testado **pelo endpoint** (T-011 AC-2): componente fora do catálogo, valor de enum filtrado e unidade fora do escopo, cada um com o contraponto de quem pode. T-033: **schema gigante** (13 blocos, 13 params) e escrita forjada recusados em `POST /api/views`. **Não passa:** `titulo` de 1 MB é aceito ([A-42](./ACHADOS.md), `xfail` strict) |
+| CS-02 catálogo filtrado | ✅ testado — e, desde a T-033, o **conjunto exato** das 7 personas congelado, e nenhum valor de custo no catálogo serializado dos 4 papéis sem `custo.ler` |
 | CS-03 negativa não revela existência | ✅ testado **byte a byte na resposta HTTP** (T-011 AC-7), em `lote_detalhe` e `recebimento_detalhe`. Limite conhecido: canal lateral de **tempo** não é medido |
-| CS-04 injeção via dado do banco | ⬜ **nunca testado** — é o de menor confiança |
-| CS-05 resposta do assistente auditada | ✅ |
+| CS-04 injeção via dado do banco | ✅ **passou** (T-033): prompt e JSON Schema idênticos byte a byte com e sem dado hostil — produto, complemento, cliente, endereço e o nome do próprio ator —, com canário, e confirmado com `qwen2.5:7b` real. O modelo obedece à injeção **colada na pergunta** só no título ([A-42](./ACHADOS.md)); nos blocos, a validação barra. [R-003](../relatorios/R-003-seguranca-ciclo-1.md) |
+| CS-05 resposta do assistente auditada | ✅ — T-033: composição vira evento com o bloco recusado; custo **plantado** na tabela `auditoria` real não sai pela trilha (Helena e Sandra). Filtro é por nome de chave — limite em R-003 §4 |
 | CS-06 rate limit por ator | ✅ **o endpoint do assistente passou a ter teto** (T-011, achado [A-34](./ACHADOS.md)): 30 por ator e 120 por IP em 5 min, conferidos antes da chamada ao modelo, recusa auditada. O login já tinha o dele (T-040) — são duas proteções, e só uma existia |

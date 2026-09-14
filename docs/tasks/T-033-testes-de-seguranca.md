@@ -19,9 +19,21 @@ completo.
 ## Arquivos de propriedade exclusiva
 
 ```
-tests/seguranca/*.cs.test.ts   tests/seguranca/fixtures-hostis.ts
+api/tests/server/test_cs01_schema_gigante.py
+api/tests/server/test_cs04_injecao_via_dado.py
+api/tests/server/test_cs05_assistente_auditado_e_trilha_sem_custo.py
+api/tests/registry/test_cs02_catalogo_exato.py
 docs/relatorios/R-003-seguranca-ciclo-1.md
 ```
+
+> **Lista corrigida na execução.** A original pedia `tests/seguranca/*.cs.test.ts`
+> e `fixtures-hostis.ts` — TypeScript, na raiz, de antes de o
+> [ADR-0016](../adr/0016-api-python-cliente-typescript.md) pôr o assistente em
+> Python. Os CS existentes já seguiam CONTRATOS §10 (`test_cs<NN>_*.py`), e os de
+> borda precisam do `borda.py` de `api/tests/server/`. As fixtures hostis moram
+> no próprio teste do CS-04: são seis strings, não um módulo. Os arquivos de
+> CS-01/03/06 da T-011 **não foram tocados** — o que faltava entrou em arquivo
+> novo.
 
 ## Escopo
 
@@ -59,18 +71,54 @@ Limite por ator dispara `limite` e é auditado.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Os seis requisitos têm suíte própria, executando contra o sistema
+- [x] **AC-1** Os seis requisitos têm suíte própria, executando contra o sistema
       completo — não contra mocks de camada.
-- [ ] **AC-2** Toda asserção é **negativa**: o ataque é tentado e recusado.
-- [ ] **AC-3** CS-03 compara o **corpo serializado**, não o objeto — diferença de
+      *Borda HTTP contra o app e o Postgres reais (CS-01/03/04/05/06); registry
+      real, sem fake (CS-02). Duble de modelo só onde o modelo não é o objeto
+      (CS-06, CS-04 estrutural — que tem par com modelo real). Inventário em
+      [R-003 §1](../relatorios/R-003-seguranca-ciclo-1.md).*
+- [x] **AC-2** Toda asserção é **negativa**: o ataque é tentado e recusado.
+      *Cada teste de ataque afirma a recusa. Os positivos que existem são
+      contrapontos nomeados como tal — sem eles, uma recusa universal passaria.*
+- [x] **AC-3** CS-03 compara o **corpo serializado**, não o objeto — diferença de
       ordem de chaves ou header a mais reprova.
-- [ ] **AC-4** CS-04 executa com o modelo **real**, não com o mock. Composição com
+      *`test_cs03_negativa_identica.py` (T-011) compara `r.content` e os
+      cabeçalhos não voláteis; verde no `make check` desta entrega.*
+- [x] **AC-4** CS-04 executa com o modelo **real**, não com o mock. Composição com
       e sem o dado hostil é comparada.
-- [ ] **AC-5** Relatório `R-003` publica o resultado dos seis, incluindo o que
+      *`qwen2.5:7b` via Ollama: três perguntas com e sem o dado hostil, composição
+      idêntica; seis textos hostis na própria pergunta, nenhum privilégio. Liga com
+      `CS04_MODELO_REAL=1` — fora do CI, que não tem modelo.*
+- [x] **AC-5** Relatório `R-003` publica o resultado dos seis, incluindo o que
       **não** passou.
-- [ ] **AC-6** Se CS-04 falhar: **achado registrado no BOARD com decisão explícita**
+      *[R-003](../relatorios/R-003-seguranca-ciclo-1.md): A-42 e A-43 em §3, com o
+      mesmo destaque; limites em §4.*
+- [x] **AC-6** Se CS-04 falhar: **achado registrado no BOARD com decisão explícita**
       — corrigir no ciclo, aceitar com mitigação, ou revisar ADR-0012. Falha em
       CS-04 **não bloqueia o release** por si só (PRD §8).
+      *Vacuamente: o CS-04 passou. Os dois achados que a suíte encontrou fora
+      dele foram registrados no BOARD e no ACHADOS, com recomendação, assim mesmo.*
+
+## Fechamento — 2026-09-14
+
+**O CS-04 passou, e o cuidado foi para não passar por acidente.** O dado hostil
+foi posto onde o ator alcança — inclusive no **nome do próprio ator**, lido do
+banco na mesma requisição que chama o modelo —; um canário lê o dado pela API
+na mesma execução; o marcador é novo a cada vez, porque `movimento` é
+append-only e acumula; e a comparação é do prompt e do JSON Schema **byte a
+byte**, na porta do adaptador.
+
+Quatro proteções sabotadas de propósito, quatro testes vermelhos: rota enfiando
+`ator.nome` na pergunta (CS-04), filtro de custo sem `custo`/`centavos` (CS-05),
+`MAX_BLOCOS = 13` (CS-01), `auditoria_trilha` exigindo só `lote.ler` (CS-02).
+
+**Não fez, e por quê:**
+- `titulo` sem teto ([A-42](./ACHADOS.md)) não foi corrigido: é restrição nova
+  em contrato congelado (CONTRATOS §7). Fica `xfail(strict=True)`.
+- A checagem morta de `validar.py:113` ([A-43](./ACHADOS.md)) não foi apagada:
+  o arquivo é da T-013, e a leitura certa do ADR-0005 é decisão de ADR.
+- CS-04 não rodou nos modelos de produção do R-001 (gastaria token; a prova
+  estrutural não depende do modelo).
 
 ## Armadilhas
 

@@ -12,7 +12,7 @@ from estoque.application.schema.viewkey import novo_view_id, view_key
 from estoque.auditoria import registro as aud
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
-from estoque.server.deps import ator_ou_falhar, motor, ok, tamanho
+from estoque.server.deps import ator_ou_falhar, bloco_resposta, motor, ok
 
 rotas = APIRouter()
 
@@ -96,9 +96,6 @@ async def abrir_view(view_id: str, sessao: str | None = Cookie(default=None)) ->
         {
             "view_id": view_id,
             "schema": schema.model_dump(),
-            "blocos": [
-                {"tipo": b.tipo, "params": b.params, "tamanho": tamanho(b.tipo)}
-                for b in schema.blocos
-            ],
+            "blocos": [bloco_resposta(b) for b in schema.blocos],
         }
     )

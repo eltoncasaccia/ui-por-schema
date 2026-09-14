@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { dispararComando } from '../render/comando'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { Tom } from '../ui/estados'
 import type { View } from './tipos'
@@ -345,7 +346,28 @@ export const view: View<'recebimento_registrar'> = ({ vm }) => {
 
         {/* ----------------------------------------- etapa 4 · confirmação */}
         <div style={{ marginTop: 16 }}>
-          <button type="button" className="btn btn-primario" disabled={!podeEnviar}>
+          <button type="button" className="btn btn-primario" disabled={!podeEnviar}
+            onClick={(e) => {
+              dispararComando(e.currentTarget, {
+                acao: 'recebimento_registrar',
+                corpo: {
+                  unidade_id: unidade,
+                  nota_fiscal: notaFiscal,
+                  fornecedor,
+                  itens: itens.map((i) => ({
+                    produto_id: i.produto_id,
+                    numero: i.numero,
+                    fabricacao: i.fabricacao,
+                    validade: i.validade,
+                    quantidade: Number(i.quantidade),
+                    quantidade_nota: i.quantidade_nota ? Number(i.quantidade_nota) : null,
+                  })),
+                  temperatura_chegada_c: exigeTemperatura ? Number(temperatura) : null,
+                  rt_id: exigeRt ? rt : null,
+                  autorizacao_validade_rt: curtos.length > 0 ? autorizacao : null,
+                },
+              })
+            }}>
             Confirmar recebimento
           </button>
           <p className="fraco" style={{ fontSize: 12, margin: '8px 0 0' }}>

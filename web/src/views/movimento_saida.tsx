@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { dispararComando } from '../render/comando'
 import { SITUACAO, classeTexto } from '../ui/estados'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { View } from './tipos'
@@ -31,6 +32,8 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
   const [motivo, setMotivo] = useState<Motivo | ''>('')
   const [justificativa, setJustificativa] = useState('')
   const [quantidade, setQuantidade] = useState('')
+  const [clienteId, setClienteId] = useState('')
+  const [notaFiscal, setNotaFiscal] = useState('')
 
   const trocou = escolhido !== null && escolhido !== vm.proposta?.lote_id
   const opcao = vm.motivos.find((m) => m.valor === motivo)
@@ -179,6 +182,8 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
                   </label>
                   <input
                     id="cliente-saida"
+                    value={clienteId}
+                    onChange={(e) => setClienteId(e.target.value)}
                     style={{ width: '100%', marginTop: 6, font: 'inherit' }}
                   />
                 </div>
@@ -188,6 +193,8 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
                   </label>
                   <input
                     id="nota-saida"
+                    value={notaFiscal}
+                    onChange={(e) => setNotaFiscal(e.target.value)}
                     style={{ width: '100%', marginTop: 6, font: 'inherit' }}
                   />
                 </div>
@@ -195,7 +202,21 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
             )}
 
             <div style={{ marginTop: 16 }}>
-              <button type="button" disabled={!podeEnviar}>
+              <button type="button" disabled={!podeEnviar}
+                onClick={(e) => {
+                  if (!escolhido || !motivo) return
+                  dispararComando(e.currentTarget, {
+                    acao: 'movimento_saida',
+                    corpo: {
+                      lote_id: escolhido,
+                      quantidade: qtd,
+                      motivo,
+                      justificativa_fefo: trocou ? justificativa : null,
+                      cliente_id: opcao?.exige_destinatario ? clienteId : null,
+                      nota_fiscal: opcao?.exige_destinatario ? notaFiscal : null,
+                    },
+                  })
+                }}>
                 {vm.exige_autorizacao ? 'Enviar para autorização' : 'Registrar saída'}
               </button>
             </div>

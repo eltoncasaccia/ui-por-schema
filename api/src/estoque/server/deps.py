@@ -15,6 +15,7 @@ from argon2 import PasswordHasher
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
 from estoque.application.registry.registry import buscar
+from estoque.application.schema.contrato import Bloco
 from estoque.assistant.langfuse_obs import criar as criar_observador
 from estoque.assistant.observador import Observador, ObservadorNulo
 from estoque.data.porta import Repositorios
@@ -76,3 +77,30 @@ class Tx:
 def tamanho(tipo: str) -> str:
     c = buscar(tipo)
     return c.tamanho if c else "inteira"
+
+
+def bloco_resposta(b: Bloco) -> dict[str, Any]:
+    """O bloco tal como atravessa a rede — CONTRATOS §6/§8.
+
+    `comandos` so aparece quando o componente DECLARA `commands`: ausencia, nao
+    dict vazio, e' o que deixa os 15 componentes de leitura do jeito que
+    sempre estiveram (T-049, achado A-40). Sem `schema` do `CommandDef` — o
+    servidor revalida a entrada de qualquer forma (RN-A03), e mandar o schema
+    seria mandar dado que a view nunca le.
+    """
+    c = buscar(b.tipo)
+    d: dict[str, Any] = {
+        "tipo": b.tipo,
+        "params": b.params,
+        "tamanho": c.tamanho if c else "inteira",
+    }
+    if c and c.commands:
+        d["comandos"] = {
+            nome: {
+                "endpoint": cmd.endpoint,
+                "confirm": cmd.confirm,
+                "idempotent": cmd.idempotent,
+            }
+            for nome, cmd in c.commands.items()
+        }
+    return d

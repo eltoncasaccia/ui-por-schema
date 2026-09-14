@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { dispararComando } from '../render/comando'
 import { classeTexto } from '../ui/estados'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { View } from './tipos'
@@ -167,7 +168,14 @@ export const view: View<'movimento_estorno'> = ({ vm }) => {
             </div>
 
             <div style={{ marginTop: 16 }}>
-              <button type="button" disabled={!podeEnviar}>
+              <button type="button" disabled={!podeEnviar}
+                onClick={(e) => {
+                  if (!escolhido || !motivo) return
+                  dispararComando(e.currentTarget, {
+                    acao: 'movimento_estorno',
+                    corpo: { movimento_id: escolhido, motivo, complemento },
+                  })
+                }}>
                 Registrar estorno
               </button>
             </div>

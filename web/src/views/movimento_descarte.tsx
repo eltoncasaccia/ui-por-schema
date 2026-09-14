@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { dispararComando } from '../render/comando'
 import { classeTexto } from '../ui/estados'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { View } from './tipos'
@@ -158,7 +159,19 @@ export const view: View<'movimento_descarte'> = ({ vm }) => {
             </div>
 
             <div style={{ marginTop: 16 }}>
-              <button type="button" disabled={!podeEnviar}>
+              <button type="button" disabled={!podeEnviar}
+                onClick={(e) => {
+                  if (!escolhido || !motivo) return
+                  dispararComando(e.currentTarget, {
+                    acao: 'movimento_descarte',
+                    corpo: {
+                      lote_id: escolhido,
+                      motivo,
+                      justificativa,
+                      segunda_identificacao_id: segunda,
+                    },
+                  })
+                }}>
                 Registrar descarte
               </button>
             </div>

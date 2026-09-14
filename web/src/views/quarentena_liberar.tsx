@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { dispararComando } from '../render/comando'
 import { SITUACAO, classeTexto } from '../ui/estados'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { View } from './tipos'
@@ -37,6 +38,18 @@ export const view: View<'quarentena_liberar'> = ({ vm }) => {
 
   function alternar(campo: Campo) {
     setMarcados((m) => ({ ...m, [campo]: !m[campo] }))
+  }
+
+  // `campo` já vem do servidor com o mesmo nome do field de `EntradaLiberacao`
+  // (`integridade_conferida`, etc.) — nenhuma tradução aqui, de propósito: uma
+  // segunda lista de nomes é o achado A-11 outra vez.
+  function decidir(el: Element, decisao: 'liberar' | 'reprovar') {
+    const conferidos: Record<string, boolean> = {}
+    for (const item of vm.conferencia) conferidos[item.campo] = !!marcados[item.campo]
+    dispararComando(el, {
+      acao: 'lote_liberar_quarentena',
+      corpo: { lote_id: vm.lote_id, decisao, justificativa, ...conferidos },
+    })
   }
 
   return (
@@ -126,10 +139,12 @@ export const view: View<'quarentena_liberar'> = ({ vm }) => {
         </div>
 
         <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
-          <button type="button" disabled={!podeLiberar} data-acao="liberar">
+          <button type="button" disabled={!podeLiberar} data-acao="liberar"
+            onClick={(e) => decidir(e.currentTarget, 'liberar')}>
             Liberar
           </button>
-          <button type="button" disabled={!podeReprovar} data-acao="reprovar">
+          <button type="button" disabled={!podeReprovar} data-acao="reprovar"
+            onClick={(e) => decidir(e.currentTarget, 'reprovar')}>
             Reprovar
           </button>
         </div>

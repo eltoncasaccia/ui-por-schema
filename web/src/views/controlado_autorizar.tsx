@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { dispararComando } from '../render/comando'
 import { classeTexto } from '../ui/estados'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { View } from './tipos'
@@ -126,10 +127,24 @@ export const view: View<'controlado_autorizar'> = ({ vm }) => {
             </div>
 
             <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
-              <button type="button" disabled={!habilitado} data-decisao="autorizar">
+              <button type="button" disabled={!habilitado} data-decisao="autorizar"
+                onClick={(e) => {
+                  if (!alvo) return
+                  dispararComando(e.currentTarget, {
+                    acao: 'controlado_autorizar',
+                    corpo: { movimento_id: alvo.movimento_id, decisao: 'autorizar', motivo },
+                  })
+                }}>
                 Autorizar
               </button>
-              <button type="button" disabled={!habilitado} data-decisao="recusar">
+              <button type="button" disabled={!habilitado} data-decisao="recusar"
+                onClick={(e) => {
+                  if (!alvo) return
+                  dispararComando(e.currentTarget, {
+                    acao: 'controlado_autorizar',
+                    corpo: { movimento_id: alvo.movimento_id, decisao: 'recusar', motivo },
+                  })
+                }}>
                 Recusar
               </button>
             </div>

@@ -23,7 +23,7 @@ from estoque.assistant.fabrica import criar_adaptador
 from estoque.auditoria import registro as aud
 from estoque.auth.limite import Limitador
 from estoque.domain.erros import ErroDominio
-from estoque.server.deps import CFG, OBS, ator_ou_falhar, motor, ok, tamanho
+from estoque.server.deps import CFG, OBS, ator_ou_falhar, bloco_resposta, motor, ok
 
 rotas = APIRouter()
 
@@ -126,10 +126,7 @@ async def compor(
     return ok(
         {
             "schema": schema.model_dump() if schema else None,
-            "blocos": [
-                {"tipo": b.tipo, "params": b.params, "tamanho": tamanho(b.tipo)}
-                for b in (schema.blocos if schema else ())
-            ],
+            "blocos": [bloco_resposta(b) for b in (schema.blocos if schema else ())],
         },
         trace=r.trace.resumo(),
     )

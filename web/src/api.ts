@@ -47,7 +47,15 @@ export interface EntradaCatalogo {
   examples: string[]
   params: Record<string, ParamInfo>
 }
-export interface Bloco { tipo: string; params: Record<string, unknown>; tamanho: string }
+export interface ComandoDoBloco { endpoint: string; confirm: boolean; idempotent: boolean }
+export interface Bloco {
+  tipo: string
+  params: Record<string, unknown>
+  tamanho: string
+  // Só presente quando o componente DECLARA `commands` (CONTRATOS §6/§8) —
+  // ausência, não objeto vazio, é o que distingue leitura de escrita.
+  comandos?: Record<string, ComandoDoBloco>
+}
 export interface TraceApi {
   origem: string; modelo: string; modo: string; schema_valido: boolean
   aceitos: string[]; rejeitados: [string, string][]
@@ -101,5 +109,14 @@ export const api = {
       // `pagina` vai FORA de `params`: paginação é transporte, e o modelo
       // nunca escolhe quantas linhas cabem nem por onde continuar.
       body: JSON.stringify({ params, pagina: { limite: 20, cursor: cursor ?? null } }),
+    }),
+  // `endpoint` já vem completo em `Bloco.comandos` (CONTRATOS §6/§8) — o
+  // cliente só chama, nunca monta a rota. `chave` é gerada por quem dispara,
+  // não aqui: uma retentativa da MESMA tentativa reaproveita a mesma chave.
+  comando: <T,>(endpoint: string, corpo: Record<string, unknown>, chave: string, etag?: string) =>
+    chamar<T>(endpoint, {
+      method: 'POST',
+      headers: { 'Idempotency-Key': chave, ...(etag ? { 'If-Match': etag } : {}) },
+      body: JSON.stringify(corpo),
     }),
 }

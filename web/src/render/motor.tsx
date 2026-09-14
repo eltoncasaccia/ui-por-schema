@@ -11,9 +11,12 @@
  * 3. `sem_acesso` é decisão DAQUI. O modelo nunca soube que existe, e a
  *    mensagem não revela o que seria mostrado (ADR-0014).
  */
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useRef, useState } from 'react'
 import { ErroApi, api, type Bloco } from '../api'
 import type { ComponentId } from '../generated/componentes'
+import { EVENTO_COMANDO, chaveIdempotencia, type DetalheComando } from './comando'
+import { classeTexto } from '../ui/estados'
 import { VIEWS } from '../views/indice'
 import { useScrollInfinito } from '../ui/useScrollInfinito'
 
@@ -36,6 +39,18 @@ function paginado(d: unknown): d is { linhas: unknown[]; cursor: string | null; 
   return typeof d === 'object' && d !== null && 'tem_mais' in d && 'linhas' in d
 }
 
+/** Uma tentativa de comando em curso — armada, em voo, ou com erro. */
+interface Tentativa {
+  acao: string
+  endpoint: string
+  corpo: Record<string, unknown>
+  // Uma por INVOCAÇÃO (T-049 AC-3), reaproveitada por qualquer retentativa
+  // desta MESMA tentativa (AC-8) — nunca regenerada aqui.
+  chave: string
+  enviando: boolean
+  erro: string | null
+}
+
 function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
   const q = useInfiniteQuery({
     // A identidade do ator entra na chave, obrigatoriamente: sem isso o cache
@@ -51,6 +66,64 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
     () => { if (q.hasNextPage && !q.isFetchingNextPage) void q.fetchNextPage() },
     Boolean(q.hasNextPage),
   )
+
+  // O canal de escrita (T-049). A view despacha `comando`; este contêiner é
+  // quem escuta, quem chama a rede e quem decide se um segundo clique é
+  // exigido primeiro — a view nunca soube que rede existe.
+  const [tentativa, setTentativa] = useState<Tentativa | null>(null)
+  const qc = useQueryClient()
+
+  const enviar = useCallback(
+    (t: Tentativa) => {
+      setTentativa({ ...t, enviando: true, erro: null })
+      api.comando(t.endpoint, t.corpo, t.chave)
+        .then(() => {
+          setTentativa(null)
+          // O que a tela mostra (saldo, status) mudou — a MESMA leitura que a
+          // rota tradicional e o assistente usam precisa refletir isso.
+          void qc.invalidateQueries({ queryKey: [atorId, bloco.tipo, bloco.params] })
+        })
+        .catch((e: unknown) => {
+          const msg = e instanceof ErroApi ? e.message : 'Não foi possível concluir.'
+          // Nada de estado otimista: o `vm` da leitura não é tocado, então a
+          // tela continua mostrando o que mostrava antes do clique (AC-4).
+          setTentativa((cur) => (cur && cur.chave === t.chave ? { ...cur, enviando: false, erro: msg } : cur))
+        })
+    },
+    [qc, atorId, bloco.tipo, bloco.params],
+  )
+
+  // `enviar` e `bloco.comandos` mudam de identidade a cada render; o listener
+  // não pode. Um ref por trás resolve sem reataching a cada render — e sem
+  // depender de `useEffect`, que só reage a MUDANÇA de dependência, não ao
+  // contêiner aparecer pela primeira vez depois do `Esqueleto` (o bug que a
+  // primeira versão desta tarefa tinha: o nó só existe depois do carregamento
+  // inicial, e as dependências do efeito não mudam nesse instante).
+  const enviarAtual = useRef(enviar)
+  enviarAtual.current = enviar
+  const comandosAtual = useRef(bloco.comandos)
+  comandosAtual.current = bloco.comandos
+  const ligado = useRef<{ el: Element; fn: (ev: Event) => void } | null>(null)
+
+  const contRef = useCallback((el: HTMLDivElement | null) => {
+    if (ligado.current) {
+      ligado.current.el.removeEventListener(EVENTO_COMANDO, ligado.current.fn)
+      ligado.current = null
+    }
+    if (!el) return
+    function aoComando(ev: Event): void {
+      const { acao, corpo } = (ev as CustomEvent<DetalheComando>).detail
+      const cmd = comandosAtual.current?.[acao]
+      if (!cmd) return
+      const t: Tentativa = { acao, endpoint: cmd.endpoint, corpo, chave: chaveIdempotencia(), enviando: false, erro: null }
+      // `confirm: true` arma e espera o segundo clique (AC-2) — um só nunca
+      // escreve. `confirm: false` segue direto.
+      if (cmd.confirm) setTentativa(t)
+      else enviarAtual.current(t)
+    }
+    el.addEventListener(EVENTO_COMANDO, aoComando)
+    ligado.current = { el, fn: aoComando }
+  }, [])
 
   // `bloco.tipo` é string na borda; o mapa é indexado por ComponentId.
   // O `in` estreita o tipo e cobre o caso de id que a API tem e o cliente não.
@@ -81,14 +154,37 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
     : primeira
 
   return (
-    <>
+    <div ref={contRef}>
       <View vm={vm} />
+      {tentativa && (
+        <div className="cartao cartao-corpo" role="status" style={{ marginTop: 8 }}>
+          {tentativa.erro ? (
+            <>
+              <p className={classeTexto('ruim')}>{tentativa.erro}</p>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button type="button" className="btn" onClick={() => setTentativa(null)}>Cancelar</button>
+                <button type="button" className="btn btn-primario" onClick={() => enviar(tentativa)}>Tentar novamente</button>
+              </div>
+            </>
+          ) : tentativa.enviando ? (
+            <p className="vazio">Enviando…</p>
+          ) : (
+            <>
+              <p>Confirmar esta ação?</p>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button type="button" className="btn" onClick={() => setTentativa(null)}>Cancelar</button>
+                <button type="button" className="btn btn-primario" onClick={() => enviar(tentativa)}>Confirmar</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
       {q.hasNextPage && (
         <div ref={sentinela} className="sentinela" aria-hidden="true">
           {q.isFetchingNextPage ? 'carregando mais…' : ''}
         </div>
       )}
-    </>
+    </div>
   )
 }
 

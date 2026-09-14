@@ -383,6 +383,30 @@ class RespostaErro(BaseModel):
 - Todo erro passa por um serializador único que **descarta `detalhe_interno`**.
 - Todo acesso — leitura inclusive — gera auditoria (`RN-D05`).
 
+### 8.1 `Bloco` na resposta — rev. 2.5 (T-049)
+
+Distinto do `Bloco` do §7 (o que o **modelo produz**, `tipo`+`params`, `extra`
+`forbid` por ADR-0001). Este é o que **atravessa de volta**, em
+`GET /api/views/{id}` e `POST /api/assistente/compor` — `server/deps.py:
+bloco_resposta`:
+
+```ts
+interface Bloco {
+  tipo: string
+  params: Record<string, unknown>
+  tamanho: string
+  // Só presente quando o componente DECLARA `commands` (achado A-40) —
+  // ausência, não objeto vazio, distingue leitura de escrita.
+  comandos?: Record<string, { endpoint: string; confirm: boolean; idempotent: boolean }>
+}
+```
+
+Sem `schema` do comando — o servidor revalida a entrada de qualquer forma
+(`RN-A03`). **Não carrega `etag`**: nenhuma leitura devolve etag hoje, e 6 dos 7
+comandos exigem `If-Match` para escrever — achado [A-41](./ACHADOS.md), tarefa
+[T-050](./T-050-etag-na-leitura.md). Até ela fechar, só `recebimento_registrar`
+(sem `etag_de`) completa o ciclo por este caminho.
+
 ---
 
 ## 9. Catálogo — 22 componentes

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { dispararComando } from '../render/comando'
 import { SITUACAO, classeTexto } from '../ui/estados'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { View } from './tipos'
@@ -126,7 +127,14 @@ export const view: View<'lote_status_acao'> = ({ vm }) => {
         </div>
 
         <div style={{ marginTop: 16 }}>
-          <button type="button" disabled={escolhida === null || !justificado} data-acao={escolhida ?? ''}>
+          <button type="button" disabled={escolhida === null || !justificado} data-acao={escolhida ?? ''}
+            onClick={(e) => {
+              if (!escolhida) return
+              dispararComando(e.currentTarget, {
+                acao: 'lote_status',
+                corpo: { lote_id: vm.lote_id, acao: escolhida, justificativa },
+              })
+            }}>
             Aplicar
           </button>
         </div>

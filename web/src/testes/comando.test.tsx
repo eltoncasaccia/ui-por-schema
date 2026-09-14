@@ -13,6 +13,10 @@
  *   AC-3  cada tentativa tem uma `Idempotency-Key` própria
  *   AC-4  erro do servidor não apaga o que a tela mostrava
  *   AC-8  retry da MESMA tentativa reaproveita a mesma chave
+ *
+ * T-050 (etag): `api.etagAtual` é o que devolve o etag da última leitura — o
+ * mock devolve um valor fixo, para o teste afirmar que ele chega a
+ * `api.comando` sem o cliente ter que fazer round trip nenhum.
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -20,12 +24,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Bloco } from '../api'
 import type { ViewModel } from '../generated/componentes'
 
+const ETAG = 'etag-fixo-do-teste'
 const dados = vi.fn<(tipo: string, params: Record<string, unknown>) => Promise<unknown>>()
-const comando = vi.fn<(endpoint: string, corpo: Record<string, unknown>, chave: string) => Promise<unknown>>()
+const comando = vi.fn<
+  (endpoint: string, corpo: Record<string, unknown>, chave: string, etag?: string) => Promise<unknown>
+>()
+const etagAtual = vi.fn<(tipo: string, params: Record<string, unknown>) => string | undefined>(
+  () => ETAG,
+)
 
 vi.mock('../api', async (original) => {
   const real = await original<typeof import('../api')>()
-  return { ...real, api: { dados, comando } }
+  return { ...real, api: { dados, comando, etagAtual } }
 })
 
 const { Composicao } = await import('../render/motor')
@@ -78,6 +88,8 @@ function envolver(ui: React.ReactNode) {
 beforeEach(() => {
   dados.mockReset()
   comando.mockReset()
+  etagAtual.mockReset()
+  etagAtual.mockReturnValue(ETAG)
   dados.mockResolvedValue(vm())
 })
 
@@ -114,6 +126,18 @@ describe('AC-1 · o segundo clique chama o endpoint certo', () => {
       decisao: 'liberar',
       justificativa: 'conferência completa, embalagem íntegra',
     })
+  })
+})
+
+describe('T-050 · o etag da última leitura chega ao If-Match', () => {
+  it('o quarto argumento de api.comando é o etag de api.etagAtual', async () => {
+    comando.mockResolvedValue({})
+    await abrirEJustificar()
+    fireEvent.click(screen.getByRole('button', { name: 'Liberar' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirmar' }))
+
+    await waitFor(() => expect(comando).toHaveBeenCalledTimes(1))
+    expect(comando.mock.calls[0]![3]).toBe(ETAG)
   })
 })
 

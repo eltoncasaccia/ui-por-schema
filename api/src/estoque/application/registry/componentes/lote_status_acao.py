@@ -20,6 +20,7 @@ from datetime import date
 from pydantic import BaseModel
 
 from estoque.application.commands.entradas.lote import AcaoStatus, EntradaStatus
+from estoque.application.etag import etag_lote
 from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
 from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
 from estoque.application.registry.registry import registrar
@@ -197,6 +198,10 @@ COMPONENTE = registrar(
         tamanho="inteira",
         load=carregar,
         select=projetar,
+        # T-050: o mesmo etag que `commands/lote.py:_etag_do_lote` recalcula ao
+        # gravar — sem isto o `If-Match` que `lote_status` exige nunca tem o
+        # que comparar.
+        etag=lambda d: etag_lote(d.lote),
         commands={
             "lote_status": CommandDef(
                 endpoint="/api/comandos/lote_status",

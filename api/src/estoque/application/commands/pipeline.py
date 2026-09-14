@@ -23,8 +23,6 @@ O que este modulo NAO faz: comandos concretos. Eles se registram aqui (T-026 a
 T-030). O pipeline nao conhece nenhum pelo nome.
 """
 
-import hashlib
-import json
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import Any
@@ -41,6 +39,7 @@ from estoque.application.commands.tipos import (
     Resultado,
     sem_segredo,
 )
+from estoque.application.etag import etag_de_valores
 from estoque.auditoria import registro as aud
 from estoque.auditoria.registro import Origem
 from estoque.autorizacao.motor import autorizar_ou_falhar
@@ -82,15 +81,8 @@ def registrados() -> Mapping[str, Comando]:
 
 
 # -------------------------------------------------------------------- etags
-def etag_de_valores(valores: Mapping[str, Any]) -> str:
-    """Etag do estado atual de uma entidade.
-
-    Derivado do conteudo, e nao de um contador: um contador exigiria coluna nova
-    em toda tabela e um lugar a mais para esquecer de incrementar. Derivado do
-    conteudo, o etag esta certo por construcao.
-    """
-    bruto = json.dumps(dict(sorted(valores.items())), separators=(",", ":"), default=str)
-    return hashlib.sha256(bruto.encode("utf-8")).hexdigest()[:32]
+# `etag_de_valores` mora em `application/etag.py` — e' o modulo neutro que
+# `registry/` tambem importa (T-050), sem SQLAlchemy no caminho.
 
 
 def _impressao(corpo: Mapping[str, Any]) -> str:

@@ -47,6 +47,10 @@ interface Tentativa {
   // Uma por INVOCAÇÃO (T-049 AC-3), reaproveitada por qualquer retentativa
   // desta MESMA tentativa (AC-8) — nunca regenerada aqui.
   chave: string
+  // Lido no instante em que a tentativa é armada (T-050) — o mesmo valor
+  // segue em qualquer retentativa desta tentativa; mudar de etag no meio é
+  // outra tentativa, com outra chave.
+  etag: string | undefined
   enviando: boolean
   erro: string | null
 }
@@ -76,7 +80,7 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
   const enviar = useCallback(
     (t: Tentativa) => {
       setTentativa({ ...t, enviando: true, erro: null })
-      api.comando(t.endpoint, t.corpo, t.chave)
+      api.comando(t.endpoint, t.corpo, t.chave, t.etag)
         .then(() => {
           setTentativa(null)
           // O que a tela mostra (saldo, status) mudou — a MESMA leitura que a
@@ -103,6 +107,8 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
   enviarAtual.current = enviar
   const comandosAtual = useRef(bloco.comandos)
   comandosAtual.current = bloco.comandos
+  const blocoAtual = useRef(bloco)
+  blocoAtual.current = bloco
   const ligado = useRef<{ el: Element; fn: (ev: Event) => void } | null>(null)
 
   const contRef = useCallback((el: HTMLDivElement | null) => {
@@ -115,7 +121,20 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
       const { acao, corpo } = (ev as CustomEvent<DetalheComando>).detail
       const cmd = comandosAtual.current?.[acao]
       if (!cmd) return
-      const t: Tentativa = { acao, endpoint: cmd.endpoint, corpo, chave: chaveIdempotencia(), enviando: false, erro: null }
+      // T-050: o etag lido na ÚLTIMA leitura deste bloco — `undefined` para
+      // os comandos que ainda não têm etag na leitura (achado A-41, o resto
+      // fica para T-051). O servidor recusa com "If-Match obrigatorio" nesse
+      // caso, exatamente como fazia antes desta tarefa.
+      const etag = api.etagAtual(blocoAtual.current.tipo, blocoAtual.current.params)
+      const t: Tentativa = {
+        acao,
+        endpoint: cmd.endpoint,
+        corpo,
+        chave: chaveIdempotencia(),
+        etag,
+        enviando: false,
+        erro: null,
+      }
       // `confirm: true` arma e espera o segundo clique (AC-2) — um só nunca
       // escreve. `confirm: false` segue direto.
       if (cmd.confirm) setTentativa(t)

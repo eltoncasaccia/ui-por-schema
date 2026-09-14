@@ -20,7 +20,10 @@ function tokenCsrf(): string {
   return m?.[1] ?? ''
 }
 
-async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
+async function chamarComMeta<T>(
+  caminho: string,
+  init?: RequestInit,
+): Promise<{ dados: T; meta: Record<string, unknown> }> {
   const r = await fetch(caminho, {
     ...init,
     credentials: 'same-origin',
@@ -34,7 +37,20 @@ async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
   })
   const corpo = (await r.json()) as Resposta<T>
   if (!corpo.ok) throw new ErroApi(corpo.erro.codigo, corpo.erro.mensagem)
-  return corpo.dados
+  return { dados: corpo.dados, meta: corpo.meta }
+}
+
+async function chamar<T>(caminho: string, init?: RequestInit): Promise<T> {
+  return (await chamarComMeta<T>(caminho, init)).dados
+}
+
+// T-050: o etag mais recente lido para cada (tipo, params) — a chave que uma
+// escrita seguinte do MESMO bloco usa no `If-Match`. Não é cache de dado,
+// só do metadado de concorrência; o dado em si continua vindo do TanStack
+// Query, sem duplicação (ADR-0008).
+const etagPorChave = new Map<string, string>()
+function chaveEtag(tipo: string, params: Record<string, unknown>): string {
+  return `${tipo}:${JSON.stringify(params)}`
 }
 
 export interface Persona { email: string; nome: string; papel: string }
@@ -103,13 +119,21 @@ export const api = {
     // O trace vem em `meta`: é instrumentação da execução, não dado da view.
     return { ...corpo.dados, trace: corpo.meta['trace'] as TraceApi }
   },
-  dados: <T,>(id: string, params: Record<string, unknown>, cursor?: string | null) =>
-    chamar<T>(`/api/componentes/${id}/dados`, {
+  dados: async <T,>(id: string, params: Record<string, unknown>, cursor?: string | null) => {
+    const { dados, meta } = await chamarComMeta<T>(`/api/componentes/${id}/dados`, {
       method: 'POST',
       // `pagina` vai FORA de `params`: paginação é transporte, e o modelo
       // nunca escolhe quantas linhas cabem nem por onde continuar.
       body: JSON.stringify({ params, pagina: { limite: 20, cursor: cursor ?? null } }),
-    }),
+    })
+    // Só a PRIMEIRA página tem o etag da entidade-alvo do comando — páginas
+    // seguintes (cursor != null) são continuação de uma listagem e não têm
+    // por que sobrescrever o etag já guardado.
+    const etag = meta['etag']
+    if (cursor == null && typeof etag === 'string') etagPorChave.set(chaveEtag(id, params), etag)
+    return dados
+  },
+  etagAtual: (tipo: string, params: Record<string, unknown>) => etagPorChave.get(chaveEtag(tipo, params)),
   // `endpoint` já vem completo em `Bloco.comandos` (CONTRATOS §6/§8) — o
   // cliente só chama, nunca monta a rota. `chave` é gerada por quem dispara,
   // não aqui: uma retentativa da MESMA tentativa reaproveita a mesma chave.

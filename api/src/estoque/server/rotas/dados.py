@@ -67,6 +67,9 @@ async def dados(
             pagina=Pagina(limite=corpo.pagina.limite, cursor=corpo.pagina.cursor),
         )
         carga = await comp.load(params, ctx)
+        # T-050: o MESMO etag que a escrita recalcula para o `If-Match` — sem
+        # isto, comando com `etag_de` nunca tem o que comparar (achado A-41).
+        etag = comp.etag(carga) if comp.etag else None
         # ADR-0020: `select` roda AQUI. So' o viewmodel atravessa a rede.
         vm = comp.select(carga)
 
@@ -79,4 +82,4 @@ async def dados(
             entidade=componente_id,
             valor_novo={"params": corpo.params},
         )
-    return ok(vm.model_dump(mode="json"))
+    return ok(vm.model_dump(mode="json"), etag=etag)

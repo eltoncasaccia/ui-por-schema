@@ -185,13 +185,14 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | [T-046](./T-046-minimo-maximo-por-unidade.md) | **Mín/máx por produto e unidade** (`RN-P06`) — sem armazenamento no sistema; é também tarefa de contrato (CONTRATOS §4). Aberta pela T-019 ([A-30](./ACHADOS.md)) | A | M | T-002, T-007, T-036, T-006 | ⬜ |
 | [T-049](./T-049-dispatcher-de-comando.md) | **Dispatcher de comando no cliente** — nenhum botão de escrita chama o servidor. Tarefa de contrato (CONTRATOS §6/§8). Aberta pela leitura da T-031 ([A-40](./ACHADOS.md)) | B/D | G | T-011, T-025..T-030 | ✅ |
-| [T-050](./T-050-etag-na-leitura.md) | **Etag na leitura** — 6 dos 7 comandos exigem `If-Match` e nenhuma leitura devolve etag. Aberta testando a T-049 contra o servidor real ([A-41](./ACHADOS.md)) | A/C | G | T-049 | ⬜ |
+| [T-050](./T-050-etag-na-leitura.md) | **Etag na leitura** — 6 dos 7 comandos exigem `If-Match` e nenhuma leitura devolve etag. Aberta testando a T-049 contra o servidor real ([A-41](./ACHADOS.md)) | A/C | G | T-049 | ✅ |
+| [T-051](./T-051-etag-multiplo-e-porta.md) | **Etag por candidato, e porta de `RepoMovimento`** — `movimento_saida` (múltiplo), `controlado_autorizar`/`movimento_estorno` (porta faltando). Cortada da T-050 no levantamento | A/C | G | T-050 | ⬜ |
 
 ### W5 — Garantias e fechamento · até 4 sessões
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-031](./T-031-telas-com-rota.md) | Superfície tradicional: telas com rota | D | G | T-026, T-027, T-028, T-049, **T-050** | ⬜ |
+| [T-031](./T-031-telas-com-rota.md) | Superfície tradicional: telas com rota | D | G | T-026, T-027, T-028, T-049, T-050, **T-051** (parcial — ver nota) | ⬜ |
 | [T-038](./T-038-gestao-de-usuarios.md) | **Gestão de usuários** (fora do catálogo) | D | M | T-037, T-031 | ⬜ |
 | [T-032](./T-032-suite-de-avaliacao.md) | Suíte de avaliação, 40 perguntas | E | G | T-017, W3 | 🟡 |
 | [T-033](./T-033-testes-de-seguranca.md) | Segurança CS-01 a CS-06 | E | G | W3, W4 | 🟡 |
@@ -215,8 +216,14 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 >   **T-049 fechou** — testado com mock e depois contra o servidor real — e
 >   revelou uma segunda: 6 dos 7 comandos exigem `If-Match`, e nenhuma leitura
 >   devolve etag. Achado [A-41](./ACHADOS.md), tarefa
->   [T-050](./T-050-etag-na-leitura.md), que passa a bloquear a T-031 para
->   `quarentena_liberar`, `movimento_saida` e `controlado_autorizar`.
+>   [T-050](./T-050-etag-na-leitura.md). **T-050 fechou** para
+>   `quarentena_liberar` e `lote_status_acao` (etag simples, sobre um
+>   `Lote`); o levantamento achou que `movimento_saida` precisa de etag POR
+>   CANDIDATO (a pessoa escolhe o lote na tela, depois da leitura) e
+>   `controlado_autorizar`/`movimento_estorno` precisam de método novo em
+>   `RepoMovimento` — dois problemas de formato diferentes, cortados para
+>   [T-051](./T-051-etag-multiplo-e-porta.md). **A rota `/quarentena/:loteId`
+>   já está destrancada; `/saida` e `/controlados` esperam a T-051.**
 > - **T-042 ganhou escopo:** o conserto do `por_cliente` (A-31) é dela, porque é
 >   o adaptador. E ela vai encontrar o [A-39](./ACHADOS.md).
 > - **T-044 tem dois furos que a tarefa não previa:** o teto de 500 do

@@ -26,8 +26,9 @@ from typing import Any
 import sqlalchemy as sa
 
 from estoque.application.commands.entradas.lote import EntradaLiberacao, EntradaStatus
-from estoque.application.commands.pipeline import etag_de_valores, registrar
+from estoque.application.commands.pipeline import registrar
 from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.etag import etag_lote
 from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados
 from estoque.data.repositorios import RepoLoteSQL, RepoProdutoSQL
@@ -71,18 +72,14 @@ async def _produto_do_lote(lote: Lote, ctx: ContextoComando) -> Produto | None:
 
 async def _etag_do_lote(entrada: Any, ctx: ContextoComando) -> str | None:
     """Etag do estado corrente. `None` quando o lote nao existe ou esta' fora
-    do escopo — o pipeline traduz para `nao_encontrado`, sem distinguir."""
+    do escopo — o pipeline traduz para `nao_encontrado`, sem distinguir.
+
+    A formula mora em `application/etag.py:etag_lote` — a MESMA que a leitura
+    usa para devolver `meta.etag` (T-050). Duas copias divergiriam em silencio
+    (achado A-11) e todo `If-Match` passaria a falhar sem concorrencia nenhuma.
+    """
     lote = await RepoLoteSQL(ctx.conn).por_id(entrada.lote_id, _contexto_de_dados(ctx))
-    if lote is None:
-        return None
-    return etag_de_valores(
-        {
-            "id": lote.id,
-            "status": lote.status,
-            "validade": lote.validade,
-            "endereco": lote.endereco,
-        }
-    )
+    return etag_lote(lote) if lote else None
 
 
 async def _gravar_status(lote: Lote, novo: str, ctx: ContextoComando) -> None:

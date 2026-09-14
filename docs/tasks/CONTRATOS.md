@@ -402,10 +402,25 @@ interface Bloco {
 ```
 
 Sem `schema` do comando — o servidor revalida a entrada de qualquer forma
-(`RN-A03`). **Não carrega `etag`**: nenhuma leitura devolve etag hoje, e 6 dos 7
-comandos exigem `If-Match` para escrever — achado [A-41](./ACHADOS.md), tarefa
-[T-050](./T-050-etag-na-leitura.md). Até ela fechar, só `recebimento_registrar`
-(sem `etag_de`) completa o ciclo por este caminho.
+(`RN-A03`). **O `Bloco` em si não carrega `etag`** — quem carrega é
+`meta.etag` da resposta de `POST /api/componentes/{id}/dados` (rev. 2.6,
+T-050), só quando `ComponentDef.etag` está definido:
+
+```python
+# server/rotas/dados.py
+etag = comp.etag(carga) if comp.etag else None
+return ok(vm.model_dump(mode="json"), etag=etag)
+```
+
+`achado A-41`: 6 dos 7 comandos exigem `If-Match` para escrever, e nenhuma
+leitura devolvia etag. **T-050 fechou `quarentena_liberar` e
+`lote_status_acao`** (etag simples, sobre um `Lote`, calculado por
+`application/etag.py:etag_lote` — o mesmo módulo que a escrita usa, para o
+hash nunca divergir entre os dois lados). `movimento_saida` (etag por
+CANDIDATO escolhido na tela, não por bloco) e `controlado_autorizar`/
+`movimento_estorno` (a porta não expõe as colunas que o etag usa) seguem em
+[T-051](./T-051-etag-multiplo-e-porta.md). `recebimento_registrar` nunca
+precisou — é criação, sem `etag_de`.
 
 ---
 

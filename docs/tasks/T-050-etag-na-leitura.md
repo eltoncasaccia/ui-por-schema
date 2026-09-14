@@ -6,7 +6,7 @@
 | **Trilha** | A/C |
 | **Tamanho** | **G**, com risco de crescer — ver "o que não está resolvido" |
 | **Depende de** | T-049 |
-| **Bloqueia** | **T-031**, para `quarentena_liberar`, `movimento_saida` e `controlado_autorizar` |
+| **Bloqueia** | **T-031**, para `quarentena_liberar` (fechado aqui) — `movimento_saida` e `controlado_autorizar` seguem bloqueados por [T-051](./T-051-etag-multiplo-e-porta.md) |
 | **ADRs** | [0002](../adr/0002-plano-render-plano-escrita.md), [0020](../adr/0020-select-no-servidor.md) |
 | **Achado de origem** | [A-41](./ACHADOS.md) |
 
@@ -86,72 +86,88 @@ definição, num módulo neutro, que os dois lados importam.**
    mapa `{queryKey → etag mais recente}` atualizado a cada resposta de
    `/dados` que trouxer `meta.etag`, lido por `enviar()` no momento do POST.
 
-## O que NÃO está resolvido — leia antes de estimar
+## O que foi entregue, e o que a execução cortou
 
-`_etag_do_movimento` (`commands/autorizacao.py`) e `_etag_do_original`
-(`commands/estorno.py`) **não** usam `RepoMovimento` — fazem `sa.select()`
-direto, lendo colunas (`autorizador_id`, o flag de já-estornado) que **nenhum
-método da porta expõe hoje**. Para `controlado_autorizar` e
-`movimento_estorno` alcançarem o mesmo tratamento, `data/porta.py` precisa de
-um método novo em `RepoMovimento` — isto é **tarefa de contrato** dentro desta
-tarefa (CONTRATOS §4), do mesmo tipo que a T-048 abriu para `RepoProduto`.
-`movimento_descarte` não foi conferido — comece por ele antes de estimar o
-resto.
+Levantamento feito ANTES de escrever (como esta seção já pedia): os seis
+comandos **não têm o mesmo formato de etag**, e forçar todos na mesma
+tarefa teria sido o corte errado.
 
-**Se esse levantamento mostrar que os seis não cabem numa tarefa G**, corte
-por comando (esta tarefa faz `quarentena_liberar` + `lote_status_acao` +
-`movimento_saida`, que já destranca a T-031; os outros três — sem rota do
-T-031 hoje — ganham uma T-051) em vez de inflar esta. **Pare e sinalize** essa
-divisão antes de escrever, não durante.
+- **`quarentena_liberar` e `lote_status_acao`** — os dois cujo `_etag_do_lote`
+  é só sobre o `Lote` (`id`, `status`, `validade`, `endereco`), e cujo `D` do
+  `load()` já carrega o `Lote` inteiro (`d.lote`), sem consulta extra. **Os
+  dois fecharam nesta tarefa.**
+- **`movimento_saida`** — `_etag_da_saida` soma **`saldo`** ao dict (uma
+  consulta assíncrona extra, `_saldo(lote.id, ctx)`), E o `lote_id` do etag
+  não vem de `params` como nos outros dois: vem de qual candidato (`proposta`
+  ou uma das `alternativas`) a PESSOA escolhe na tela, depois da leitura. Um
+  etag por bloco não serve — precisa de um etag por LINHA candidata no
+  viewmodel, formato que `ComponentDef.etag: Callable[[D], str]` (um só,
+  fixo) não cobre. **Cortado para [T-051](./T-051-etag-multiplo-e-porta.md).**
+- **`controlado_autorizar` e `movimento_estorno`** — `_etag_do_movimento`
+  (`commands/autorizacao.py`) e `_etag_do_original` (`commands/estorno.py`)
+  não usam `RepoMovimento`: fazem `sa.select()` direto, lendo colunas
+  (`autorizador_id`, o flag de já-estornado) que **nenhum método da porta
+  expõe hoje**. Precisam de método novo em `data/porta.py` — tarefa de
+  contrato dentro da próxima. **Cortado para T-051.**
+- **`movimento_descarte`** — não conferido; T-051 começa por ele antes de
+  estimar o resto.
+
+T-031 usa `quarentena_liberar` na rota `/quarentena/:loteId` — **essa rota já
+está destrancada.** `/saida` e `/controlados` continuam esperando a T-051.
 
 ## Arquivos de propriedade exclusiva
 
 ```
 api/src/estoque/application/etag.py                (novo)
 api/src/estoque/application/commands/lote.py
-api/src/estoque/application/commands/saida.py
 api/src/estoque/application/commands/pipeline.py    (só a remoção/reexport)
 api/src/estoque/application/registry/definir.py
 api/src/estoque/application/registry/componentes/quarentena_liberar.py
 api/src/estoque/application/registry/componentes/lote_status_acao.py
-api/src/estoque/application/registry/componentes/movimento_saida.py
 api/src/estoque/server/rotas/dados.py
-api/tests/registry/test_t050_etag_na_leitura.py
+api/tests/server/test_t050_etag_na_leitura.py
 
 web/src/api.ts
 web/src/render/motor.tsx
-web/src/render/comando.ts
+web/src/testes/etag.test.ts
+web/src/testes/comando.test.tsx   (T-049, ajustado ao 4º argumento de api.comando)
 
-docs/tasks/CONTRATOS.md   (§8 — nota de revisão)
+docs/tasks/CONTRATOS.md   (§8.1 — nota de revisão)
 ```
 
-> `controlado_autorizar`, `movimento_estorno`, `movimento_descarte` e a
-> extensão de `RepoMovimento` (se a divisão da seção anterior mandar deixá-los
-> de fora) ficam para uma T-051 — não redeclare os arquivos deles aqui até essa
-> decisão estar tomada.
+> `commands/saida.py`, `commands/autorizacao.py`, `commands/estorno.py`,
+> `commands/descarte.py`, `data/porta.py` (novo método de `RepoMovimento`) e
+> `render/comando.ts` **não foram tocados** — ficam para a
+> [T-051](./T-051-etag-multiplo-e-porta.md), que os declara.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** `GET /api/componentes/{id}/dados` (ou o caminho escolhido) devolve
-      `meta.etag` para `quarentena_liberar`, `lote_status_acao` e
-      `movimento_saida`, e o valor bate com o que `_etag_do_lote`/`_etag_da_saida`
-      calculam no momento da escrita — testado com o MESMO lote, lido e depois
-      escrito, sem passo manual no meio.
-- [ ] **AC-2** O etag muda quando o estado subjacente muda (liberar um lote muda
-      o etag de uma leitura seguinte) e permanece igual quando nada mudou —
-      o par positivo/negativo do que faz `If-Match` significar algo.
-- [ ] **AC-3** Escrever com um etag **desatualizado** (lido antes de outra
-      pessoa mudar o lote) devolve `conflito`, e nada é aplicado. *(negativo —
-      é o que este metadado existe para provar)*
-- [ ] **AC-4** Os três fluxos do achado A-40/T-049 completam de ponta a ponta
-      contra o servidor real: abrir a tela, clicar, confirmar, e a escrita
-      é aceita — sem `If-Match obrigatorio`. Repita o `curl` que a T-049
-      registrou; ele deve devolver `ok: true` agora.
-- [ ] **AC-5** `application.registry` continua sem importar `commands.pipeline`
-      nem `commands.lote`/`commands.saida` — só `application.etag`. Verificado
-      pelo `lint-imports` (contrato 2), sabotando de propósito uma vez.
-- [ ] **AC-6** `etag_de_valores` existe num lugar só; `commands/pipeline.py` não
-      tem uma segunda cópia da fórmula do hash.
+- [x] **AC-1** `POST /api/componentes/{id}/dados` devolve `meta.etag` para
+      `quarentena_liberar` e `lote_status_acao`, e o valor bate com o que
+      `_etag_do_lote` calcula no momento da escrita — testado com o MESMO
+      lote, lido e depois escrito, sem passo manual no meio
+      (`test_ac1_leitura_devolve_etag_para_os_dois_componentes`). **Em branco
+      para `movimento_saida`, `controlado_autorizar`, `movimento_estorno`,
+      `movimento_descarte`** — cortados para T-051, ver acima.
+- [x] **AC-2** O etag muda quando o estado subjacente muda (liberar um lote
+      muda o etag de uma leitura seguinte) e permanece igual quando nada
+      mudou (`test_ac2_etag_estavel_sem_escrita_e_muda_depois_dela`).
+- [x] **AC-3** Escrever com um etag **desatualizado** (lido antes de outra
+      pessoa mudar o lote) devolve `conflito`, e nada é aplicado —
+      `test_ac3_etag_desatualizado_e_recusado_e_nada_e_aplicado`: uma segunda
+      escrita com o etag velho recusa, e o `SELECT status FROM lote` depois
+      confirma que o estado da primeira escrita não foi tocado. *(negativo)*
+- [x] **AC-4** O fluxo de `quarentena_liberar` completa de ponta a ponta
+      contra o servidor real, no container Docker reconstruído (não só
+      pytest): login de Helena por `curl`, leitura devolvendo etag, escrita
+      com `If-Match` aceita (`status: liberado`) — e uma segunda tentativa com
+      o etag já usado devolve `conflito`. É o mesmo `curl` que a T-049
+      registrou como falha; agora completa.
+- [x] **AC-5** `application.registry` continua sem importar
+      `commands.pipeline` nem `commands.lote` — só `application.etag`.
+      `lint-imports` (contrato 2) segue `KEPT` sem alteração no verificador.
+- [x] **AC-6** `etag_de_valores` existe só em `application/etag.py`;
+      `commands/pipeline.py` importa de lá, sem segunda cópia da fórmula.
 
 ## Armadilhas
 

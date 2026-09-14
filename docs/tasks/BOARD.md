@@ -192,8 +192,19 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-031](./T-031-telas-com-rota.md) | Superfície tradicional: telas com rota | D | G | T-026, T-027, T-028, T-049, T-050, T-051 | ⬜ |
+| [T-031](./T-031-telas-com-rota.md) | Superfície tradicional: telas com rota | D | G | T-026, T-027, T-028, T-049, T-050, T-051 | ✅ |
 | [T-038](./T-038-gestao-de-usuarios.md) | **Gestão de usuários** (fora do catálogo) | D | M | T-037, T-031 | ⬜ |
+
+> **T-031 fechou.** `react-router-dom` adotado só para as 8 rotas de operação
+> (`app/layout/Roteador.tsx`, `BrowserRouter` autocontido) — `/` e `/v/:viewId`
+> continuam sob o `useRotaView` da T-016, inalterado. AC-1 provado por
+> **igualdade de HTML** entre a rota e o assistente com o bloco equivalente, não
+> só "os dois usam a mesma função". Achado sem entrada em `ACHADOS.md` (não é
+> ambiguidade de regra): `movimento_saida.produto_id` é obrigatório e `/saida`
+> não tem `:id` — não há busca de produto no catálogo do ciclo 1, e a tela pede
+> o id digitado (mesmo padrão de `lote_detalhe`/`quarentena_liberar`), com
+> `?produto_id=` para link direto. Detalhe em
+> [T-031](./T-031-telas-com-rota.md).
 | [T-032](./T-032-suite-de-avaliacao.md) | Suíte de avaliação, 40 perguntas | E | G | T-017, W3 | 🟡 |
 | [T-033](./T-033-testes-de-seguranca.md) | Segurança CS-01 a CS-06 | E | G | W3, W4 | 🟡 |
 | [T-034](./T-034-fechamento.md) | Relatório de fechamento | E | M | T-031, T-032, T-033 | ⬜ |

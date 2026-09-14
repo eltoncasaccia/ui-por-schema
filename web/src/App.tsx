@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api, ErroApi, type Bloco, type Eu } from './api'
+import { Roteador } from './app/layout/Roteador'
 import { caminhoDaView, irPara, useRotaView } from './app/rotas'
 import { limparAoSair } from './estado/cache'
 import { sessao, useSessao, viewKeyLocal } from './estado/sessao'
@@ -182,7 +183,7 @@ export function App() {
         {painel && estreito && <button className="veu" onClick={() => setPainel(null)} aria-label="Fechar painel" />}
         {painel && (
           <aside className="lateral" style={estreito ? undefined : { width: lateral.largura, flex: 'none' }}>
-            {painel === 'navegacao' && <PainelNavegacao atual={itemAtual} aoAbrir={abrirDoMenu} />}
+            {painel === 'navegacao' && <PainelNavegacao atual={itemAtual} aoAbrir={abrirDoMenu} atorId={eu.id} />}
             {painel === 'fixadas' && <PainelFixadas aoAbrir={(t, b) => abrir(t, b)} />}
             {painel === 'recebidas' && (
               <PainelRecebidas eu={eu} aoAbrir={abrirRecebida} />
@@ -215,7 +216,10 @@ export function App() {
           </div>
         )}
         {!erroRota && (
-          <Workspace eu={eu} aoCompartilhar={() => atual && setCompartilhando(atual.id)} />
+          <Roteador
+            eu={eu}
+            workspace={<Workspace eu={eu} aoCompartilhar={() => atual && setCompartilhando(atual.id)} />}
+          />
         )}
 
         {assistente && !estreito && (

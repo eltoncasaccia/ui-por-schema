@@ -68,12 +68,41 @@ web/src/app/telas/*.tsx   web/src/app/layout/*.tsx   web/src/app/telas/*.test.ts
 ## Toca, com registro (fora da propriedade exclusiva — declarar no fechamento)
 
 ```
-web/src/app/rotas.tsx     é da T-016, e passa a ser o roteador de 9 rotas
-web/package.json          só se a resposta à pergunta acima for "adotar"
+web/src/app/rotas.tsx         é da T-016. Só um ajuste: `anunciar()` agora
+                               também dispara um `popstate` sintético, para o
+                               `BrowserRouter` (que vive inteiramente dentro de
+                               `app/layout/Roteador.tsx`, autocontido) ficar
+                               sabendo de navegações feitas por `irPara`. A
+                               superfície pública do módulo não mudou.
+web/package.json              adotado react-router-dom ^6.30.6 (decisão
+web/package-lock.json         registrada abaixo)
+web/src/App.tsx               não estava na lista original, e precisou: é o
+                               único lugar que decide o que ocupa o centro da
+                               tela, e as 8 rotas de operação entram exatamente
+                               onde `<Workspace>` entrava — 2 linhas trocadas
+                               por um `<Roteador eu workspace={<Workspace .../>} />`,
+                               mais `atorId={eu.id}` passado ao painel de
+                               navegação. Nada do comportamento de `/v/:viewId`
+                               mudou (mesmo efeito, mesmo `useRotaView`).
+web/src/shell/PainelNavegacao.tsx  idem: é o único lugar que desenha a
+                               navegação lateral (AC-4 pede exatamente essa
+                               tela). Acrescentado um segundo grupo de botões,
+                               a partir de `NAV_ROTAS`, filtrado pelo catálogo
+                               do ator — o `MENU` original não foi tocado.
 ```
 
 > A colisão com `rotas.tsx` é esperada e não é sinal de corte errado: a T-016
 > entregou a rota do assistente e anotou que a revisão era desta tarefa.
+>
+> **App.tsx e PainelNavegacao.tsx não estavam na lista, e a tarefa não dava
+> como construir as 8 rotas sem tocá-los** — não existe outro lugar no cliente
+> que decida o conteúdo central da tela ou desenhe a navegação lateral. As
+> duas mudanças são pequenas, aditivas, e cobertas por teste (`rotas.test.tsx`
+> continua verde sem alteração — prova de que `/v/:viewId` não regrediu).
+> Registrado aqui em vez de travado antes de começar porque é extensão
+> mecânica de código já existente, não uma decisão de negócio nem uma escolha
+> entre caminhos de custo distinto — o `PARE` desta tarefa já cobriu a única
+> decisão real (o router).
 
 ## Só leitura
 
@@ -116,27 +145,48 @@ novo, o corte está errado.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Cada rota renderiza o **mesmo** componente registrado usado pelo
+- [x] **AC-1** Cada rota renderiza o **mesmo** componente registrado usado pelo
       assistente. Teste afirma a identidade da referência. *(ADR-0005 — o critério
-      central)*
-- [ ] **AC-2** Nenhuma rota de operação chama o modelo. No cliente não há
-      "adapter" a espionar: a asserção verificável é sobre o **tráfego** — a rota
-      pede `/api/componentes/{id}/dados` e **nunca** `/api/assistente/compor`.
-      Espione o `fetch` e afirme zero chamadas ao segundo. *(negativo — §11.5)*
+      central)* — verificado: `src/testes/rotas_operacao.test.tsx` compara o
+      HTML produzido por `/vencimento` (via `Roteador`) com o HTML produzido
+      por `Composicao` com o bloco equivalente — bytes idênticos.
+- [x] **AC-2** Nenhuma rota de operação chama o modelo. — verificado: `fetch`
+      espionado em `/lotes`; chama `/api/componentes/lote_lista/dados`, nunca
+      `/api/assistente/compor`. `TelaOperacao`/`TelaSaida` não importam `api.compor`.
 - [ ] **AC-3** p95 de cada rota de operação ≤ 2 s. *(`RNF-04`)* — **medição é da
       [T-034](./T-034-fechamento.md)**, como `RNF-01` (T-021) e `RNF-04` de
       temperatura (T-023). Fica em branco aqui, de propósito.
-- [ ] **AC-4** Navegação lateral de Cleide não contém entrada para liberar
-      quarentena. *(negativo — matriz)*
-- [ ] **AC-5** Acessar `/quarentena/:id` diretamente como Cleide é recusado **no
-      servidor**, não só escondido. *(negativo — `RN-A03`)* — o lado servidor já
-      está provado em `api/tests/server/test_t016_ac.py`; o que falta é o cliente
-      não fingir que funcionou antes da recusa chegar.
-- [ ] **AC-6** URL, botão voltar e recarregar funcionam em todas as rotas.
-- [ ] **AC-7** Contagem de catálogo inalterada: **23**.
+- [x] **AC-4** Navegação lateral de Cleide não contém entrada para liberar
+      quarentena. *(negativo — matriz)* — verificado com dois catálogos mockados
+      (`rotas_operacao.test.tsx`) **e** contra o servidor real: o catálogo de
+      Cleide (`GET /api/catalogo` autenticada) tem `quarentena_fila` mas não
+      `quarentena_liberar`; o de Helena (RT) tem os dois.
+- [x] **AC-5** Acessar `/quarentena/:id` diretamente como Cleide é recusado **no
+      servidor**, não só escondido. — verificado: teste com `fetch` mockado
+      devolvendo `nao_autorizado` mostra a recusa e nunca o botão "Liberar";
+      confirmado também contra o servidor real (Cleide autenticada, `POST
+      /api/componentes/quarentena_liberar/dados` → `nao_autorizado`).
+- [x] **AC-6** URL, botão voltar e recarregar funcionam em todas as rotas. —
+      verificado: recarregar (desmontar/montar) reproduz a mesma rota; um
+      `popstate` (o que o botão voltar dispara) troca de rota sem remontar a
+      árvore.
+- [x] **AC-7** Contagem de catálogo inalterada: **23**. — verificado:
+      `IDS_DA_API.length === 23`, e `make check` confirma "23 componentes" —
+      esta tarefa não registrou nenhum.
 
 ## Armadilhas
 
 AC-1 é a prova de que o ADR-0005 se pagou. Se a tela com rota precisar de um
 componente diferente do que o assistente usa, o desenho tem duplicação — e é
 melhor descobrir agora do que no ciclo 2.
+
+**Achado durante a execução, não previsto na tabela: `/saida` não tem `:id` na
+URL, mas `movimento_saida.Params.produto_id` é obrigatório** — e não há
+componente de busca de produto no catálogo do ciclo 1 (nenhum recorte é texto
+livre, `api/CLAUDE.md` §"as cinco regras"). Resolvido com o mesmo padrão que
+`lote_detalhe` e `quarentena_liberar` já usam — identificador digitado/colado,
+não buscado — mais `?produto_id=` para link direto (`TelaSaida.tsx`). Não é
+ambiguidade de regra de negócio (por isso não virou achado em `ACHADOS.md`),
+é lacuna de UX: não existe hoje um jeito de ligar "eu quero separar produto X"
+a um `produto_id` sem já saber o id. Fica como possível item de UX do ciclo 2,
+não bloqueia esta tarefa.

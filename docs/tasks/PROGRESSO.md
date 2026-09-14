@@ -117,7 +117,7 @@ está pronto.
 |---|---|---|---|
 | T-032 | Suíte de avaliação | 🟡 | 17 casos dos ~40; roda os dois modos; sem série histórica |
 | T-033 | Segurança CS-01 a CS-06 | 🟡 | CS-01/02/03/05/06 cobertos — CS-01, CS-03 e CS-06 ganharam teste **de borda HTTP** na T-011; **CS-04 continua nunca testado** (o de menor confiança do release); falta `R-003` |
-| T-031 | Telas com rota | ⬜ | decisão de router tomada (react-router-dom); T-049, T-050 e T-051 fecharam — as 4 rotas de escrita (`/quarentena/:loteId`, `/saida`, `/controlados`, `/recebimento/novo`) estão destrancadas |
+| T-031 | Telas com rota | ✅ | **6 ACs verificados, AC-3 em branco (medição é da T-034).** `react-router-dom` adotado — `app/layout/Roteador.tsx` autocontido (próprio `BrowserRouter`), 8 rotas em `app/layout/rotasOperacao.tsx` (tabela única: alimenta o roteador e a navegação lateral). AC-1 provado por igualdade de HTML entre a rota e `Composicao` direta. AC-4 verificado com catálogo mockado e contra o servidor real (Cleide sem `quarentena_liberar`, Helena com). AC-5 idem, incl. `curl` autenticado contra o container. `/saida` sem `:id` na URL mas `movimento_saida.produto_id` é obrigatório — sem componente de busca de produto no catálogo; resolvido com identificador digitado/colado + `?produto_id=`, ver nota no arquivo da tarefa. Tocou `App.tsx` e `PainelNavegacao.tsx` fora da lista original (justificado no arquivo da tarefa) |
 | T-038 | Gestão de usuários | ⬜ | — |
 | T-034 | Relatório de fechamento | ⬜ | — |
 

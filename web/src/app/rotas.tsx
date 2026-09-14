@@ -1,12 +1,12 @@
 /**
  * A rota `/v/:viewId` — o endereço **público** de uma composição (ADR-0021).
  *
- * **Por que sem biblioteca de rota.** O ciclo 1 tem uma rota com parâmetro. Um
- * router seria dependência nova para substituir um `match` em `location.pathname`,
- * e dependência é decisão que se pergunta antes (ADR-0028). Quando a T-031
- * trouxer as telas com rota, a escolha se revisa com mais de um caso na mão —
- * e a superfície daqui (`viewIdDaUrl`, `irPara`, `useRotaView`) é pequena o
- * bastante para ser reimplementada por cima de um router sem tocar no resto.
+ * **A T-031 trouxe `react-router-dom`** para as 8 rotas de operação
+ * (`app/layout/Roteador.tsx`) — a superfície daqui não mudou, como a nota
+ * original previa: `/v/:viewId` continua resolvido inteiramente por este
+ * módulo e por `App.tsx`, sem passar pelo router novo (que só cuida das rotas
+ * de operação e cai no `*` para tudo o mais). O único ajuste foi em
+ * `anunciar()`, abaixo — ver o comentário lá.
  *
  * **`viewKey` nunca entra aqui, e não é detalhe.** Ela é hash do schema
  * canonicalizado: em URL seria adivinhável por quem conhece a canonicalização,
@@ -44,6 +44,12 @@ function assinar(aoMudar: () => void): () => void {
 
 function anunciar(): void {
   dispatchEvent(new Event(EVENTO_ROTA))
+  // `pushState`/`replaceState` não disparam `popstate` sozinhos — só o
+  // botão voltar do navegador dispara nativamente. O `BrowserRouter` da T-031
+  // (`app/layout/Roteador.tsx`) só escuta `popstate` nativo, não `EVENTO_ROTA`;
+  // sem este despacho sintético, `irPara`/`substituirPor` navegariam a URL sem
+  // o router perceber.
+  dispatchEvent(new PopStateEvent('popstate'))
 }
 
 /** Empurra um endereço novo no histórico — o botão "voltar" continua valendo. */

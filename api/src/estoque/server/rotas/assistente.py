@@ -92,25 +92,32 @@ async def compor(
             raise ErroDominio("invalido", str(e)) from e
 
         modo = "restrito" if corpo.modo == "restrito" else "livre"
-        r = await adaptador.compor(corpo.pergunta, cat, modo=modo)  # type: ignore[arg-type]
-        if r.trace.erro:
-            raise ErroDominio("invalido", "O assistente nao respondeu. Tente de novo.")
-
-        try:
-            bruto = extrair_json(r.bruto)
-        except ValueError:
-            r.trace.erro = "resposta sem JSON"
-            bruto = None
-
-        resultado = validar_schema(bruto, ator) if bruto is not None else None
-        r.trace.aceitos = resultado.aceitos if resultado else []
-        r.trace.rejeitados = (
-            [(x.tipo, x.motivo) for x in resultado.rejeitados] if resultado else []
-        )
-
-        # Telemetria externa. Nunca levanta — e a auditoria abaixo, que e'
+        # T-043: a observacao ENVOLVE o trabalho, entao a duracao de cada span e'
+        # a real. Telemetria nunca levanta — e a auditoria abaixo, que e'
         # requisito regulatorio, nao depende dela.
-        OBS.composicao(trace=r.trace, ator_id=ator.id, papel=ator.papel, catalogo=len(cat))
+        with OBS.ao_vivo(pergunta=corpo.pergunta, ator_id=ator.id, papel=ator.papel) as obs:
+            with obs.etapa("gerar-composicao") as etapa:
+                r = await adaptador.compor(corpo.pergunta, cat, modo=modo)  # type: ignore[arg-type]
+                etapa.detalhar(trace=r.trace)
+            if r.trace.erro:
+                obs.concluir(trace=r.trace, catalogo=len(cat))
+                raise ErroDominio("invalido", "O assistente nao respondeu. Tente de novo.")
+
+            with obs.etapa("validar-schema") as etapa:
+                try:
+                    bruto = extrair_json(r.bruto)
+                except ValueError:
+                    r.trace.erro = "resposta sem JSON"
+                    bruto = None
+
+                resultado = validar_schema(bruto, ator) if bruto is not None else None
+                r.trace.aceitos = resultado.aceitos if resultado else []
+                r.trace.rejeitados = (
+                    [(x.tipo, x.motivo) for x in resultado.rejeitados] if resultado else []
+                )
+                etapa.detalhar(trace=r.trace)
+
+            obs.concluir(trace=r.trace, catalogo=len(cat))
 
         # RN-D05 / CS-05: a resposta do assistente e' auditada, com o que foi
         # aceito E o que foi rejeitado.

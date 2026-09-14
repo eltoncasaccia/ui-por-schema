@@ -136,7 +136,9 @@ tarefa **T-043**.
 - Nenhuma chamada ao observador levanta para fora.
 - `make eval` recusa rodar com o adaptador mock.
 - ✅ Execução real conferida em 2026-09-08, com o trace buscado de volta pela API.
-- **Pendente:** duração real de span — exige instrumentação ao vivo (T-043).
+- ✅ Duração real de span na rota do assistente (T-043, 2026-09-14): `ao_vivo`
+  envolve o trabalho, testado com cliente falso e relógio real. A eval segue
+  pós-fato, marcada como artificial. **Não conferido contra a nuvem.**
 
 ## Referências
 - [PRD-001 §9](../prd/PRD-001-ciclo-1.md) · [ADR-0013](./0013-suite-de-avaliacao.md)

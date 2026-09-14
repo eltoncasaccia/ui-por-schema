@@ -176,7 +176,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | [T-040](./T-040-csrf-e-rate-limit.md) | **CSRF e rate limit** — segurança prometida e ausente | B | M | T-037 | ✅ |
 | [T-041](./T-041-ci.md) | CI no GitHub Actions | E | P | T-001 | ✅ |
 | [T-042](./T-042-contract-test-repositorios.md) | **Contract test** fake ↔ repositório real — bateria única, 12 métodos cobertos, fecha A-11 e A-31, decide A-39 | A | M | T-007 | ✅ |
-| T-043 | Instrumentação ao vivo do pipeline do assistente (duração real de span) | C | M | T-011 | ⬜ |
+| [T-043](./T-043-instrumentacao-ao-vivo.md) | Instrumentação ao vivo do pipeline do assistente (duração real de span) — tarefa escrita na execução; fecha A-10 | C | M | T-011 | ✅ |
 | [T-044](./T-044-relatorio-movimentacao.md) | `relatorio_movimentacao` — relatório parametrizado ([ADR-0029](../adr/0029-relatorio-como-componente.md)) | C | M | T-024 | ✅ |
 
 | [T-045](./T-045-borda-http-por-router.md) | **Borda HTTP por router** — `app.py` tinha 817 linhas e 4 tarefas escreviam nele ([ADR-0032](../adr/0032-borda-http-por-router.md)) | E | M | — | ✅ |

@@ -41,7 +41,7 @@ não se perder.
 
 | # | Achado | Tarefa |
 |---|---|---|
-| A-10 | Observador do LangFuse com três defeitos, mudos por causa do `except` | **T-043** |
+| — | Nenhum aberto: A-10, A-11, A-30, A-31 e A-39 fecharam em 2026-09-14 | — |
 ---
 
 ## 3. Abertos, anotados como limite conhecido
@@ -63,10 +63,10 @@ não serem redescobertas como se fossem novidade.
 
 ## 4. Resolvidos
 
-**37 achados**, com o texto inteiro em
+**38 achados**, com o texto inteiro em
 [`docs/relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md).
 
-Os ids continuam citáveis: `A-01` a `A-07` (auditoria A-001), `A-02b` a `A-09`
+Os ids continuam citáveis: `A-01` a `A-07` (auditoria A-001), `A-02b` a `A-10`
 (auditoria A-002), `A-11` (auditoria de testes), e `A-12`, `A-13`, `A-15` a
 `A-18`, `A-20`, `A-21`, `A-24` a `A-27`, `A-29`, `A-30`, `A-31`, `A-32`, `A-34`, `A-36`,
 `A-37`, `A-39`, `A-40`, `A-41` (execução).

@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**48 concluídas · 1 parcial · 2 não iniciadas** · 24 de 24 componentes previstos.
+**49 concluídas · 1 parcial · 1 não iniciada** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -132,7 +132,7 @@ está pronto.
 | T-040 | CSRF e rate limit | ✅ | A-02, A-03 — **fechados** |
 | T-041 | CI no GitHub Actions | ✅ | A-07 — com Postgres, e portão que reprova teste pulado |
 | T-042 | Contract test fake ↔ repositório real | ✅ | A-11 e A-31 **fechados**, A-39 decidido (teto no adaptador, fake trunca igual). 5 ACs; escopo sabotado no real e no fake, os dois vermelhos |
-| T-043 | Instrumentação ao vivo do LangFuse | ⬜ | A-10 |
+| T-043 | Instrumentação ao vivo do LangFuse | ✅ | A-10 **fechado**. Tarefa escrita na execução (só existia a linha). Rota do assistente com spans ao vivo — duração real, provada com cliente falso e relógio real; os três defeitos do A-10 ganharam teste. Não conferido contra a nuvem |
 | T-044 | `relatorio_movimentacao` | ✅ | ADR-0029 — 9 ACs; leitura cortada declarada (`truncado`), A-39 fechado. Catálogo 24, folga 1. Cenário 10 à mão fica para o eval |
 | T-045 | Borda HTTP por router | ✅ | ADR-0032 — `app.py` de 817 → 134 linhas; contrato 5 do import-linter, com teste negativo; 467 testes, mesma contagem |
 | T-046 | Mín/máx por produto e unidade (`RN-P06`) | ✅ | A-30 **fechado**. Tabela `produto_unidade` (0007), `RepoProduto.faixas` com escopo, CONTRATOS 2.4. Faixa e "abaixo do mínimo" em `produto_saldo_por_unidade`; fecha o AC-7 da T-019. Valores do seed **arbitrados** |

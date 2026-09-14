@@ -564,6 +564,30 @@ export interface RecebimentoRegistrarUnidadeDestino {
 }
 
 /**
+ * Custo so' aparece com `metrica: valor`, e ja' agregado (AC-3).
+ */
+export interface VMRelatorioMovimentacao {
+  cursor?: string | null
+  eixo: string
+  escopo: string
+  grupos: number
+  linhas: RelatorioMovimentacaoLinha[]
+  metrica: 'quantidade' | 'movimentos' | 'valor'
+  metrica_rotulo: string
+  recorte: string
+  tem_mais?: boolean
+  total: number
+  truncado: boolean
+  unidade_medida: 'unidades' | 'movimentos' | 'centavos'
+}
+export interface RelatorioMovimentacaoLinha {
+  chave: string
+  movimentos: number
+  numero: number
+  rotulo: string
+}
+
+/**
  * Sem custo (CA-05): nada aqui busca produto por preco, so' por nome.
  */
 export interface VMTemperaturaExcursoes {
@@ -672,6 +696,7 @@ export type ComponentId =
   | 'recebimento_detalhe'
   | 'recebimento_lista'
   | 'recebimento_registrar'
+  | 'relatorio_movimentacao'
   | 'temperatura_excursoes'
   | 'temperatura_historico'
   | 'vencimento_grafico'
@@ -698,6 +723,7 @@ export const IDS_DA_API: readonly ComponentId[] = [
   'recebimento_detalhe',
   'recebimento_lista',
   'recebimento_registrar',
+  'relatorio_movimentacao',
   'temperatura_excursoes',
   'temperatura_historico',
   'vencimento_grafico',
@@ -725,6 +751,7 @@ export interface ViewModels {
   recebimento_detalhe: VMRecebimentoDetalhe
   recebimento_lista: VMRecebimentoLista
   recebimento_registrar: VMRecebimentoRegistrar
+  relatorio_movimentacao: VMRelatorioMovimentacao
   temperatura_excursoes: VMTemperaturaExcursoes
   temperatura_historico: VMTemperaturaHistorico
   vencimento_grafico: VMVencimentoGrafico
@@ -754,6 +781,7 @@ export const TAMANHOS: Record<ComponentId, string> = {
   recebimento_detalhe: 'inteira',
   recebimento_lista: 'inteira',
   recebimento_registrar: 'inteira',
+  relatorio_movimentacao: 'inteira',
   temperatura_excursoes: 'inteira',
   temperatura_historico: 'alta',
   vencimento_grafico: 'inteira',

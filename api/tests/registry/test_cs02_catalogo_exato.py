@@ -31,6 +31,7 @@ OPERACAO = frozenset(
         "lote_movimentos",
         "movimento_lista",
         "recebimento_detalhe",
+        "relatorio_movimentacao",
         "recebimento_lista",
         "temperatura_excursoes",
         "temperatura_historico",

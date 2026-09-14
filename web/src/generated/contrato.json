@@ -2461,6 +2461,114 @@
       }
     },
     {
+      "id": "relatorio_movimentacao",
+      "label": "Relatório de movimentação",
+      "tamanho": "inteira",
+      "viewmodel": {
+        "$defs": {
+          "RelatorioMovimentacaoLinha": {
+            "properties": {
+              "chave": {
+                "type": "string"
+              },
+              "movimentos": {
+                "type": "integer"
+              },
+              "numero": {
+                "type": "integer"
+              },
+              "rotulo": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "chave",
+              "rotulo",
+              "numero",
+              "movimentos"
+            ],
+            "title": "RelatorioMovimentacaoLinha",
+            "type": "object"
+          }
+        },
+        "description": "Custo so' aparece com `metrica: valor`, e ja' agregado (AC-3).",
+        "properties": {
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "eixo": {
+            "type": "string"
+          },
+          "escopo": {
+            "type": "string"
+          },
+          "grupos": {
+            "type": "integer"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/$defs/RelatorioMovimentacaoLinha"
+            },
+            "type": "array"
+          },
+          "metrica": {
+            "enum": [
+              "quantidade",
+              "movimentos",
+              "valor"
+            ],
+            "type": "string"
+          },
+          "metrica_rotulo": {
+            "type": "string"
+          },
+          "recorte": {
+            "type": "string"
+          },
+          "tem_mais": {
+            "default": false,
+            "type": "boolean"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "truncado": {
+            "type": "boolean"
+          },
+          "unidade_medida": {
+            "enum": [
+              "unidades",
+              "movimentos",
+              "centavos"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "eixo",
+          "metrica",
+          "metrica_rotulo",
+          "unidade_medida",
+          "total",
+          "grupos",
+          "escopo",
+          "recorte",
+          "truncado",
+          "linhas"
+        ],
+        "title": "VMRelatorioMovimentacao",
+        "type": "object"
+      }
+    },
+    {
       "id": "temperatura_excursoes",
       "label": "Excursões de temperatura",
       "tamanho": "inteira",

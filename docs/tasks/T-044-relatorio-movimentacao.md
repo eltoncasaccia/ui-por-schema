@@ -119,33 +119,52 @@ ela representa.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** `agrupar_por` fora do enum é rejeitado na validação.
+- [x] **AC-1** `agrupar_por` fora do enum é rejeitado na validação.
       *(negativo — risco R-5)*
-- [ ] **AC-2** Para Cleide, Helena, Ivo e Odair, o valor `valor` **não aparece**
+- [x] **AC-2** Para Cleide, Helena, Ivo e Odair, o valor `valor` **não aparece**
       no enum de `metrica` do catálogo; para Marco, Rafael e Sandra, aparece.
       *(negativo — `CA-05`, ADR-0003)*
-- [ ] **AC-3** Com `metrica` diferente de `valor`, o viewmodel **não contém
+      *Corrigido: Rafael não tem `movimento.ler`, então o componente inteiro sai
+      do catálogo dele — o `requires` base vence. Testado assim.*
+- [x] **AC-3** Com `metrica` diferente de `valor`, o viewmodel **não contém
       custo** — nem para quem tem `custo.ler`. *(ADR-0020)*
-- [ ] **AC-4** Odair, agrupando por `unidade`, vê **apenas Uberlândia** — mesmo
+- [x] **AC-4** Odair, agrupando por `unidade`, vê **apenas Uberlândia** — mesmo
       passando `unidade_id` de outra unidade. *(negativo — `CA-06`, `RN-A01`)*
-- [ ] **AC-5** Os cinco eixos produzem agregação correta sobre o mesmo conjunto:
+- [x] **AC-5** Os cinco eixos produzem agregação correta sobre o mesmo conjunto:
       a soma de `quantidade` é **idêntica** nos cinco. *(a conta fecha por
       qualquer caminho, ou o agrupamento está errado)*
-- [ ] **AC-6** `select` é puro: duas chamadas sobre a mesma carga dão o mesmo.
-- [ ] **AC-7** Relatório vazio (período sem movimento) devolve viewmodel válido
+- [x] **AC-6** `select` é puro: duas chamadas sobre a mesma carga dão o mesmo.
+- [x] **AC-7** Relatório vazio (período sem movimento) devolve viewmodel válido
       com `total: 0` — **não** erro, e **não** lista de outro período.
-- [ ] **AC-8** A `description` do componente **não cita** `valor` como métrica
+      *Testado com recorte sem movimento (`tipo: descarte`, que o fixture não
+      tem).*
+- [x] **AC-8** A `description` do componente **não cita** `valor` como métrica
       disponível. *(a prosa não pode vazar o que o enum filtrou — invariante
       encontrada em `test_descricao_nunca_enumera_valor_de_enum_filtrado`)*
-- [ ] **AC-9** Um período que ultrapassa o teto de leitura do repositório é
+- [x] **AC-9** Um período que ultrapassa o teto de leitura do repositório é
       **declarado** no viewmodel, não silenciado: o total nunca é apresentado
       como completo quando a leitura foi truncada. *(negativo — ver "duas coisas
       que a tarefa não previa", item 1)*
+      *`truncado` + "amostra" no recorte, com contraponto. O teto do componente
+      espelha `LIMITE_MOVIMENTOS` (importá-lo traria `sqlalchemy` ao registry,
+      contrato 2); um teste prova que os dois são iguais.*
+
+## Fechamento — 2026-09-14
+
+Decisões: truncamento **declarado** (a T-042 já tinha posto o teto na porta
+real e no fake); `valor` por `lote.listar` + `produto.por_ids`, sem mudar
+contrato. Só movimentos `efetivado` entram (`RN-M06`). Paginação por
+`ctx.pagina`, com cursor na chave do último grupo.
+
+**Não feito:** o cenário 10 de CENARIOS.md (execução à mão com o assistente)
+ficou para a rodada de eval.
 
 ## Definição de pronto — adicional
 
-- [ ] Contagem de catálogo no BOARD §5 atualizada: **24, folga 1**
-- [ ] Entrou no teste de catálogo por persona (T-012 AC-1)
+- [x] Contagem de catálogo no BOARD §5 atualizada: **24, folga 1**
+- [x] Entrou no teste de catálogo por persona (T-012 AC-1)
+      *No conjunto exato por persona do CS-02 (`test_cs02_catalogo_exato.py`),
+      que reprova componente a mais ou a menos para cada uma das sete.*
 - [ ] Cenário 10 de [CENARIOS.md](../CENARIOS.md) executado à mão, e o resultado
       registrado lá — inclusive o que **falhou**
 

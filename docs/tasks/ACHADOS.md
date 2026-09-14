@@ -43,7 +43,6 @@ não se perder.
 |---|---|---|
 | A-10 | Observador do LangFuse com três defeitos, mudos por causa do `except` | **T-043** |
 | A-30 | `RN-P06` (mín/máx por unidade) não tem armazenamento nenhum | **T-046** |
-| A-39 | **`RepoMovimento.listar` trunca em 500 no adaptador real e o fake não trunca.** Divergência de contrato da família do A-11, achada na revisão de tarefas de 2026-09-10 sem nenhum teste apontando. Quem ler 365 dias recebe 500 movimentos e um total com cara de completo — e é justamente o que a **T-044** vai fazer | **Decidido na T-042:** o teto fica no adaptador (`LIMITE_MOVIMENTOS`), o fake trunca igual, e a bateria prova que sobram os mais recentes · **T-044** declara o corte no viewmodel |
 
 ---
 
@@ -66,13 +65,13 @@ não serem redescobertas como se fossem novidade.
 
 ## 4. Resolvidos
 
-**35 achados**, com o texto inteiro em
+**36 achados**, com o texto inteiro em
 [`docs/relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md).
 
 Os ids continuam citáveis: `A-01` a `A-07` (auditoria A-001), `A-02b` a `A-09`
 (auditoria A-002), `A-11` (auditoria de testes), e `A-12`, `A-13`, `A-15` a
 `A-18`, `A-20`, `A-21`, `A-24` a `A-27`, `A-29`, `A-31`, `A-32`, `A-34`, `A-36`,
-`A-37`, `A-40`, `A-41` (execução).
+`A-37`, `A-39`, `A-40`, `A-41` (execução).
 
 ---
 

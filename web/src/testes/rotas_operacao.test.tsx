@@ -217,7 +217,8 @@ describe('AC-6 · URL, voltar e recarregar', () => {
 // --- AC-7 · contagem de catálogo inalterada -----------------------------------
 
 describe('AC-7 · catálogo inalterado', () => {
-  it('continua em 23 — esta tarefa não registra componente nenhum', () => {
-    expect(IDS_DA_API.length).toBe(23)
+  // A T-031 não registrou nenhum; o 24º é `relatorio_movimentacao`, da T-044.
+  it('continua em 24 — as telas com rota não acrescentam componente', () => {
+    expect(IDS_DA_API.length).toBe(24)
   })
 })

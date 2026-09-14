@@ -177,7 +177,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | [T-041](./T-041-ci.md) | CI no GitHub Actions | E | P | T-001 | ✅ |
 | [T-042](./T-042-contract-test-repositorios.md) | **Contract test** fake ↔ repositório real — bateria única, 12 métodos cobertos, fecha A-11 e A-31, decide A-39 | A | M | T-007 | ✅ |
 | T-043 | Instrumentação ao vivo do pipeline do assistente (duração real de span) | C | M | T-011 | ⬜ |
-| [T-044](./T-044-relatorio-movimentacao.md) | `relatorio_movimentacao` — relatório parametrizado ([ADR-0029](../adr/0029-relatorio-como-componente.md)) | C | M | T-024 | ⬜ |
+| [T-044](./T-044-relatorio-movimentacao.md) | `relatorio_movimentacao` — relatório parametrizado ([ADR-0029](../adr/0029-relatorio-como-componente.md)) | C | M | T-024 | ✅ |
 
 | [T-045](./T-045-borda-http-por-router.md) | **Borda HTTP por router** — `app.py` tinha 817 linhas e 4 tarefas escreviam nele ([ADR-0032](../adr/0032-borda-http-por-router.md)) | E | M | — | ✅ |
 
@@ -268,7 +268,7 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 > **T-044 acrescenta +1 ao catálogo: 24, folga 1.** Um segundo relatório estoura
 > o teto de 25 e vira discussão de escopo (ADR-0011).
 
-**Registrados hoje: 23** — `fila_vencimento` `estoque_indicador` `vencimento_grafico`
+**Registrados hoje: 24** — `relatorio_movimentacao` (T-044), `fila_vencimento` `estoque_indicador` `vencimento_grafico`
 (T-020), `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` (T-018),
 `quarentena_liberar` `lote_status_acao` (T-027), `movimento_saida` (T-028),
 `controlado_autorizar` (T-030), `movimento_lista` `auditoria_trilha` (T-024),
@@ -278,8 +278,8 @@ Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)), verificado por `RNF-08
 `movimento_estorno` `movimento_descarte` (T-029).
 **7 de escrita, teto 25.**
 
-**23 registrados, folga de 2 — e a W4 fechou, então este é o número final do
-ciclo 1** (a menos que a T-044 entre: `relatorio_movimentacao` faria 24, folga 1).
+**24 registrados, folga de 1** — a T-044 entrou com `relatorio_movimentacao`.
+Um segundo relatório estoura o teto e vira discussão de escopo (ADR-0011).
 Toda tarefa que registra componente atualiza esta tabela no mesmo commit. Acima
 de 25 o build quebra, e a discussão é de escopo.
 

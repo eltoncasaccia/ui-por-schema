@@ -25,6 +25,7 @@ import { view as rastreabilidade } from './rastreabilidade'
 import { view as recebimento_detalhe } from './recebimento_detalhe'
 import { view as recebimento_lista } from './recebimento_lista'
 import { view as recebimento_registrar } from './recebimento_registrar'
+import { view as relatorio_movimentacao } from './relatorio_movimentacao'
 import { view as temperatura_excursoes } from './temperatura_excursoes'
 import { view as temperatura_historico } from './temperatura_historico'
 import { view as vencimento_grafico } from './vencimento_grafico'
@@ -58,6 +59,7 @@ export const VIEWS: Record<ComponentId, (props: { vm: any }) => JSX.Element> = {
   recebimento_detalhe,
   recebimento_lista,
   recebimento_registrar,
+  relatorio_movimentacao,
   temperatura_excursoes,
   temperatura_historico,
   vencimento_grafico,

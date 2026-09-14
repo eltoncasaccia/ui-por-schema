@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**46 concluídas · 1 parcial · 4 não iniciadas** · 24 de 24 componentes previstos.
+**47 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -122,7 +122,7 @@ está pronto.
 | T-032 | Suíte de avaliação | 🟡 | 17 casos dos ~40; roda os dois modos; sem série histórica |
 | T-033 | Segurança CS-01 a CS-06 | ✅ | **6 ACs verificados** (AC-6 vacuamente — o CS-04 passou). CS-04: prompt e JSON Schema idênticos byte a byte com e sem dado hostil no banco — inclusive o nome do próprio ator —, canário provando que o dado estava na tela dele, e igualdade confirmada com `qwen2.5:7b` real. Acrescentados: schema gigante (CS-01), catálogo exato das 7 personas (CS-02), composição auditada e custo plantado na trilha real (CS-05). 4 sabotagens, 4 vermelhos. Achados [A-42](./ACHADOS.md) (`titulo` sem teto, `xfail` strict) e [A-43](./ACHADOS.md) (escrita composta aceita). [R-003](../relatorios/R-003-seguranca-ciclo-1.md) |
 | T-031 | Telas com rota | ✅ | **6 ACs verificados, AC-3 em branco (medição é da T-034).** `react-router-dom` adotado — `app/layout/Roteador.tsx` autocontido (próprio `BrowserRouter`), 8 rotas em `app/layout/rotasOperacao.tsx` (tabela única: alimenta o roteador e a navegação lateral). AC-1 provado por igualdade de HTML entre a rota e `Composicao` direta. AC-4 verificado com catálogo mockado e contra o servidor real (Cleide sem `quarentena_liberar`, Helena com). AC-5 idem, incl. `curl` autenticado contra o container. `/saida` sem `:id` na URL mas `movimento_saida.produto_id` é obrigatório — sem componente de busca de produto no catálogo; resolvido com identificador digitado/colado + `?produto_id=`, ver nota no arquivo da tarefa. Tocou `App.tsx` e `PainelNavegacao.tsx` fora da lista original (justificado no arquivo da tarefa) |
-| T-038 | Gestão de usuários | ⬜ | — |
+| T-038 | Gestão de usuários | ✅ | 6 ACs por HTTP contra o banco real. `POST /api/usuarios/{id}` (CA-08 proíbe `PATCH`), ninguém altera o próprio acesso, desativar derruba a sessão na hora. Sem entrada na navegação lateral |
 | T-034 | Relatório de fechamento | ⬜ | — |
 
 ## Tarefas abertas pela auditoria

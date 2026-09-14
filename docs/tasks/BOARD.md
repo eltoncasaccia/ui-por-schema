@@ -193,7 +193,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
 | [T-031](./T-031-telas-com-rota.md) | Superfície tradicional: telas com rota | D | G | T-026, T-027, T-028, T-049, T-050, T-051 | ✅ |
-| [T-038](./T-038-gestao-de-usuarios.md) | **Gestão de usuários** (fora do catálogo) | D | M | T-037, T-031 | ⬜ |
+| [T-038](./T-038-gestao-de-usuarios.md) | **Gestão de usuários** (fora do catálogo) — `POST`, não `PATCH` (CA-08) | D | M | T-037, T-031 | ✅ |
 
 > **T-031 fechou.** `react-router-dom` adotado só para as 8 rotas de operação
 > (`app/layout/Roteador.tsx`, `BrowserRouter` autocontido) — `/` e `/v/:viewId`

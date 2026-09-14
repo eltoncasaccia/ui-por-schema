@@ -374,7 +374,7 @@ class RespostaErro(BaseModel):
 | `/api/view/{view_id}` | GET | revalida schema contra o catálogo **do requisitante** |
 | `/api/componentes/{id}/dados` | POST | `requires` do componente, por registro |
 | `/api/comandos/{nome}` | POST | `requires` do command + CSRF + `Idempotency-Key` |
-| `/api/usuarios` | GET/PATCH | `usuario.gerenciar` — só tela, fora do catálogo |
+| `/api/usuarios` · `/api/usuarios/{id}` | GET · POST | `usuario.gerenciar` — só tela, fora do catálogo. **POST, não PATCH** (T-038): a varredura do CA-08 recusa verbo que substitui ou apaga em toda a borda |
 
 **Regras da borda:**
 

@@ -61,3 +61,4 @@ modules =
     estoque.server.rotas.compartilhamento
     estoque.server.rotas.dados
     estoque.server.rotas.comandos
+    estoque.server.rotas.usuarios

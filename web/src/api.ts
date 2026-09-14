@@ -85,8 +85,19 @@ export interface Recebida {
   id: number; view_id: string; mensagem: string | null; de: string; criado_em: string
 }
 export interface ViewAberta { view_id: string; schema: unknown; blocos: Bloco[] }
+export interface UsuarioAdmin {
+  id: string; nome: string; email: string; papel: string | null; unidades: string[]; ativo: boolean
+}
+export type MudancaUsuario = Partial<Pick<UsuarioAdmin, 'papel' | 'unidades' | 'ativo'>>
 
 export const api = {
+  // T-038 — fora do catálogo. POST, não PATCH: a varredura do CA-08 recusa
+  // verbo que substitui ou apaga em toda a borda.
+  usuarios: () => chamar<UsuarioAdmin[]>('/api/usuarios'),
+  alterarUsuario: (id: string, mudanca: MudancaUsuario) =>
+    chamar<Required<MudancaUsuario>>(`/api/usuarios/${id}`, {
+      method: 'POST', body: JSON.stringify(mudanca),
+    }),
   criarView: (titulo: string, schema: unknown) =>
     chamar<{ view_id: string; view_key: string }>('/api/views', {
       method: 'POST', body: JSON.stringify({ titulo, schema }),

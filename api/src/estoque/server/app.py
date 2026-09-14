@@ -41,6 +41,7 @@ from estoque.server.rotas import (
     compartilhamento,
     dados,
     saude,
+    usuarios,
     views,
 )
 
@@ -135,5 +136,15 @@ async def _erro(_: Request, e: ErroDominio) -> JSONResponse:
 
 # A ordem nao importa para o roteamento — cada rota traz o proprio caminho
 # completo. Importa para quem le: e' o mapa da borda, do publico ao privativo.
-for _mod in (saude, auth, catalogo, assistente, views, compartilhamento, dados, comandos):
+for _mod in (
+    saude,
+    auth,
+    catalogo,
+    assistente,
+    views,
+    compartilhamento,
+    dados,
+    comandos,
+    usuarios,
+):
     app.include_router(_mod.rotas)

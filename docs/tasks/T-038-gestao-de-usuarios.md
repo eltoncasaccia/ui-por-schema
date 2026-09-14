@@ -38,15 +38,36 @@ app.*
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Só Marco (Diretor) tem `usuario.gerenciar`. Todos os outros são
+- [x] **AC-1** Só Marco (Diretor) tem `usuario.gerenciar`. Todos os outros são
       recusados **no servidor**, com requisição direta. *(negativo)*
-- [ ] **AC-2** Usuário é **desativado, nunca excluído**; a trilha continua
+      *Os cinco papéis, por HTTP, no `GET` e no `POST`; o alvo não muda.*
+- [x] **AC-2** Usuário é **desativado, nunca excluído**; a trilha continua
       resolvendo o nome. *(negativo — `RN-A06`)*
-- [ ] **AC-3** Atribuir papel gera auditoria com valor anterior e novo.
-- [ ] **AC-4** Ninguém consegue atribuir a si próprio um papel. *(negativo —
+      *Não há `DELETE` em `/api/usuarios*`; o desativado continua no banco e na
+      lista, com o nome.*
+- [x] **AC-3** Atribuir papel gera auditoria com valor anterior e novo.
+- [x] **AC-4** Ninguém consegue atribuir a si próprio um papel. *(negativo —
       separação de funções)*
-- [ ] **AC-5** Contagem de catálogo **inalterada: 22**. Nenhum componente novo.
-- [ ] **AC-6** Desativar usuário derruba a sessão dele imediatamente.
+      *Mais largo que o AC: ninguém altera o próprio papel, unidades nem ativação.*
+- [x] **AC-5** Contagem de catálogo **inalterada: 22**. Nenhum componente novo.
+      *O número era de antes da T-044: inalterada em **24**. Nenhum id com
+      `usuario` no catálogo do Diretor, que tem a permissão.*
+- [x] **AC-6** Desativar usuário derruba a sessão dele imediatamente.
+      *Já era verdade por construção: `ator_da_sessao` relê `ativo` a cada
+      requisição. Testado: 200 antes, 401 logo depois.*
+
+## Fechamento — 2026-09-14
+
+**`POST /api/usuarios/{id}`, não `PATCH`** — decisão do usuário: a varredura do
+CA-08 (T-029) recusa verbo que substitui ou apaga em toda a borda. CONTRATOS §8
+corrigido.
+
+**Tocou, com registro:** `server/app.py` e `api/.importlinter` (registrar o
+router), `web/src/api.ts` e `app/layout/Roteador.tsx` (rota `/usuarios`),
+`tests/server/test_t011_ac.py` (a varredura de rotas exige corpo válido para
+toda rota nova).
+
+**Não fez:** entrada na navegação lateral — a tela abre por `/usuarios`.
 
 ## Armadilhas
 

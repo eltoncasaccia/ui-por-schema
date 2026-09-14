@@ -10,11 +10,24 @@ const COLUNAS: Coluna<Linha>[] = [
   { chave: 'unidade', rotulo: 'Unidade', render: (l) => l.unidade },
   {
     chave: 'saldo', rotulo: 'Saldo', num: true, campo: true,
-    render: (l) => l.saldo.toLocaleString('pt-BR'),
+    render: (l) => (
+      <span>
+        {l.saldo.toLocaleString('pt-BR')}
+        {l.abaixo_do_minimo && <> <Etiqueta tom="ambar">abaixo do mínimo</Etiqueta></>}
+      </span>
+    ),
   },
   {
     chave: 'lotes', rotulo: 'Lotes', num: true, campo: true,
     render: (l) => l.lotes.toLocaleString('pt-BR'),
+  },
+  {
+    // RN-P06: a faixa é da unidade, não do produto — cada linha tem a sua.
+    chave: 'minimo', rotulo: 'Mín–máx', num: true, campo: true,
+    render: (l) =>
+      l.minimo == null || l.maximo == null
+        ? '—'
+        : `${l.minimo.toLocaleString('pt-BR')}–${l.maximo.toLocaleString('pt-BR')}`,
   },
 ]
 

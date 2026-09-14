@@ -20,6 +20,7 @@ from typing import Protocol
 
 from estoque.domain.identidade import Ator, UnidadeId
 from estoque.domain.tipos import (
+    FaixaEstoque,
     Lote,
     Movimento,
     Produto,
@@ -74,6 +75,17 @@ class RepoProduto(Protocol):
         O que continua valendo e' a omissao de custo (`RN-A02`), que e' por
         ATOR e nao por unidade. Bem definido porque `produto.ean` e' UNIQUE
         desde a migracao 0006.
+        """
+        ...
+
+    async def faixas(
+        self, produto_id: str, ctx: ContextoDados
+    ) -> dict[UnidadeId, FaixaEstoque]:
+        """Estoque minimo e maximo de um produto POR UNIDADE (T-046, `RN-P06`).
+
+        A faixa e' do par (produto, unidade): o mesmo produto tem faixas
+        diferentes na Matriz e na filial. Intersecta o escopo do ator como o
+        resto da porta (`RN-A01`) — unidade de fora nao aparece, nem pedindo.
         """
         ...
 

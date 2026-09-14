@@ -1696,8 +1696,34 @@
         "$defs": {
           "ProdutoSaldoPorUnidadeLinhaUnidade": {
             "properties": {
+              "abaixo_do_minimo": {
+                "default": false,
+                "type": "boolean"
+              },
               "lotes": {
                 "type": "integer"
+              },
+              "maximo": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "minimo": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
               },
               "saldo": {
                 "type": "integer"

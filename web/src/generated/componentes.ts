@@ -385,7 +385,10 @@ export interface VMProdutoSaldoPorUnidade {
   total: number
 }
 export interface ProdutoSaldoPorUnidadeLinhaUnidade {
+  abaixo_do_minimo?: boolean
   lotes: number
+  maximo?: number | null
+  minimo?: number | null
   saldo: number
   unidade: string
   unidade_id: string

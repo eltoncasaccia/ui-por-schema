@@ -107,20 +107,39 @@ de reposição / curva de consumo — é roadmap, não `RN-P06`.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Mín e máx são lidos por par (produto, unidade): o mesmo produto
+- [x] **AC-1** Mín e máx são lidos por par (produto, unidade): o mesmo produto
       tem faixas diferentes em unidades diferentes. *(`RN-P06`)*
-- [ ] **AC-2** A faixa chega **intersectada com o escopo**: Odair não vê a faixa
+- [x] **AC-2** A faixa chega **intersectada com o escopo**: Odair não vê a faixa
       de uma unidade que não é dele, nem pedindo. *(negativo — `RN-A01`)*
-- [ ] **AC-3** O método novo da porta tem o mesmo comportamento no fake e no
+- [x] **AC-3** O método novo da porta tem o mesmo comportamento no fake e no
       repositório real — entra na bateria da T-042 se ela já existir, ou traz o
       seu par de testes.
-- [ ] **AC-4** `produto_saldo_por_unidade` exibe a faixa e a marcação de "abaixo
+      *Par próprio em `test_minimo_maximo.py`, apontado na `COBERTURA` da T-042:
+      a aplicação só tem `SELECT` na tabela, então a bateria da T-042 não pode
+      gravar faixa na transação dela — o lado real lê o seed, como a T-048.*
+- [x] **AC-4** `produto_saldo_por_unidade` exibe a faixa e a marcação de "abaixo
       do mínimo", e o AC-7 da T-019 passa a ser verificável — **inclusive o
       negativo**: um produto dentro da faixa não vem marcado.
-- [ ] **AC-5** CONTRATOS §4 revisado, com nota de versão e data. O `import-linter`
+- [x] **AC-5** CONTRATOS §4 revisado, com nota de versão e data. O `import-linter`
       e a bijeção continuam verdes.
-- [ ] **AC-6** `CHECK (maximo >= minimo)` recusa uma linha inválida — provado no
-      banco. *(negativo)*
+- [x] **AC-6** `CHECK (maximo >= minimo)` recusa uma linha inválida — provado no
+      banco. *(negativo)* *E `minimo >= 0`, com contraponto válido.*
+
+## Fechamento — 2026-09-14
+
+- Tabela `produto_unidade` (migração `0007`), `FaixaEstoque` no domínio,
+  `RepoProduto.faixas` intersectando escopo, CONTRATOS rev. 2.4.
+- **Valores do seed ARBITRADOS** (`dados.faixas_de_estoque`): mínimo por curva
+  (A 200, B 100, C 40), máximo 4×; a filial com metade da faixa da Matriz;
+  termolábil só no CD Refrigerado. Trocar pelos valores reais da Bertoni.
+- A tela marca "abaixo do mínimo"; unidade com faixa e sem lote aparece com
+  saldo zero, marcada.
+- **Tocou, com registro:** os arquivos listados acima, e mais `data/modelos.py`
+  (a tabela no SQLAlchemy), `web/src/views/produto_saldo_por_unidade.tsx` e
+  `tests/data/porta_contrato.py` (cobertura).
+- **Armadilha de ambiente:** `make migrate` e `make seed` usam a imagem já
+  construída da API — migração nova só é vista depois de
+  `docker compose build api`.
 
 ## Armadilhas
 

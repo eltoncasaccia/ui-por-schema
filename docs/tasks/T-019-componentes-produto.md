@@ -92,7 +92,9 @@ Cadastro ou edição de produto — não há escrita de produto no ciclo 1.
 - [x] **AC-6** Produto inativo é exibido com marcação e saldo. *(`RN-P05`)*
       → `test_ac6_produto_inativo_exibido_com_marcacao_e_saldo` (`vm.ativo is
       False`, `saldo_total == 40`); view põe etiqueta "Inativo".
-- [ ] **AC-7** Mínimo e máximo variam por unidade no mesmo produto. *(`RN-P06`)*
+- [x] **AC-7** Mínimo e máximo variam por unidade no mesmo produto. *(`RN-P06`)*
+      *Fechado pela [T-046](./T-046-minimo-maximo-por-unidade.md), em
+      `produto_saldo_por_unidade` (a ficha não tem eixo de unidade).*
       → **EM BRANCO.** Não há armazenamento para `RN-P06` no sistema (sem tabela,
       sem campo de domínio, sem método de porta, sem seed). Achado [A-30](./ACHADOS.md);
       fechamento na [T-046](./T-046-minimo-maximo-por-unidade.md).

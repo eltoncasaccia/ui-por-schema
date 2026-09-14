@@ -22,6 +22,7 @@ from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados, LinhaAuditoria
 from estoque.domain.identidade import UnidadeId
 from estoque.domain.tipos import (
+    FaixaEstoque,
     Lote,
     Movimento,
     Produto,
@@ -107,6 +108,24 @@ class RepoProdutoSQL:
         q = sa.select(m.produto).where(m.produto.c.ean == ean)
         r = (await self._c.execute(q)).mappings().first()
         return _para_produto(dict(r), ctx) if r else None
+
+    async def faixas(
+        self, produto_id: str, ctx: ContextoDados
+    ) -> dict[UnidadeId, FaixaEstoque]:
+        """T-046, RN-P06. Escopo aplicado aqui, como em todo SELECT (RN-A01)."""
+        q = sa.select(m.produto_unidade).where(
+            m.produto_unidade.c.produto_id == produto_id,
+            _escopo(m.produto_unidade.c.unidade_id, ctx),
+        )
+        return {
+            r["unidade_id"]: FaixaEstoque(
+                produto_id=r["produto_id"],
+                unidade_id=r["unidade_id"],
+                minimo=r["minimo"],
+                maximo=r["maximo"],
+            )
+            for r in (await self._c.execute(q)).mappings()
+        }
 
 
 # A-39, decidido na T-042: o teto fica no adaptador, com nome, e o fake trunca

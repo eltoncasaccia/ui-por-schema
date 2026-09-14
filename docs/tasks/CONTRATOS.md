@@ -5,7 +5,8 @@
 | **Status** | **CONGELADO** a partir da conclusão de T-004 |
 | **Autoridade** | Normativo. Código que divergir daqui está errado, não o contrário |
 | **Alteração** | Só por ADR novo + tarefa de contrato. Nunca em tarefa de feature |
-| **Revisão** | 2.3 — `RepoProduto.por_ean` acrescentado ([T-048](./T-048-porta-produto-por-ean.md), achado [A-37](./ACHADOS.md)). **Aditiva**: nenhuma assinatura existente mudou, nenhum chamador quebrou. Ver §4 |
+| **Revisão** | 2.4 — `RepoProduto.faixas` e `FaixaEstoque` acrescentados ([T-046](./T-046-minimo-maximo-por-unidade.md), `RN-P06`, 2026-09-14). **Aditiva**. Ver §4 |
+| | 2.3 — `RepoProduto.por_ean` acrescentado ([T-048](./T-048-porta-produto-por-ean.md), achado [A-37](./ACHADOS.md)). **Aditiva**: nenhuma assinatura existente mudou, nenhum chamador quebrou. Ver §4 |
 | | 2.2 — `registry/`, `commands/` e `schema/` passaram para `application/` ([ADR-0031](../adr/0031-ports-and-adapters.md)). **Só caminho mudou**: nenhuma assinatura, nenhum tipo, nenhum campo |
 | | 2.1 — provedor e modo de saída viraram configuração ([ADR-0025](../adr/0025-agnosticismo-de-provedor.md)); composição vazia passou a ser resposta válida |
 
@@ -222,7 +223,16 @@ class RepoProduto(Protocol):
     async def por_id(self, produto_id: str, ctx: ContextoDados) -> Produto | None: ...
     async def por_ids(self, ids: Sequence[str], ctx: ContextoDados) -> dict[str, Produto]: ...
     async def por_ean(self, ean: str, ctx: ContextoDados) -> Produto | None: ...   # 2.3
+    async def faixas(self, produto_id: str, ctx: ContextoDados) -> dict[UnidadeId, FaixaEstoque]: ...   # 2.4
 ```
+
+### `RepoProduto.faixas` — revisão 2.4 ([T-046](./T-046-minimo-maximo-por-unidade.md), 2026-09-14)
+
+`RN-P06`: estoque mínimo e máximo são do **par** (produto, unidade), numa tabela
+`produto_unidade` (migração `0007`, `CHECK (maximo >= minimo)` e `minimo >= 0`)
+— nunca coluna de `Produto`. `FaixaEstoque(produto_id, unidade_id, minimo,
+maximo)` em `domain/tipos.py`. **Intersecta o escopo do ator** (`RN-A01`), ao
+contrário de `por_ean`. Aditiva: nenhuma assinatura existente mudou.
 
 A busca pelo identificador **externo** — o que o leitor de código de barras
 devolve (`US-02`, `RNF-02`). É a única da porta que **não intersecta escopo de

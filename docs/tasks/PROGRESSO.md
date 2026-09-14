@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**47 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
+**48 concluídas · 1 parcial · 2 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -78,7 +78,7 @@ está pronto.
 |---|---|---|---|
 | T-020 | Vencimento, indicador e curva | ✅ | `fila_vencimento` `estoque_indicador` `vencimento_grafico` |
 | T-018 | Lote | ✅ | `lote_lista` `lote_detalhe` `lote_movimentos` `quarentena_fila` |
-| T-019 | Produto e custo restrito | ✅ | `produto_ficha` `produto_saldo_por_unidade` (AC-7 em branco — `RN-P06` sem armazenamento: [A-30](./ACHADOS.md), [T-046](./T-046-minimo-maximo-por-unidade.md)) |
+| T-019 | Produto e custo restrito | ✅ | `produto_ficha` `produto_saldo_por_unidade` (AC-7 fechado pela [T-046](./T-046-minimo-maximo-por-unidade.md), em `produto_saldo_por_unidade`) |
 | T-021 | Rastreabilidade `CA-01` | ✅ | `rastreabilidade` — AC-1..AC-7 testados. Recorte de período no `load` (porta ignora `de`/`ate`: [A-31](./ACHADOS.md)). `RNF-01` real fica para T-034 |
 | T-022 | Recebimento — leitura | ✅ | `recebimento_lista` `recebimento_detalhe` — AC-2..AC-7 testados. **AC-1 em branco**: "gerou lote em quarentena" precisa de `lote.recebimento_id`, que não tem schema. **AC-6** vira `periodo` enum (a tarefa pedia `de`/`ate` soltos — risco R-5). RN-R03 sem armazenamento para integridade/validade: [A-33](./ACHADOS.md) |
 | T-023 | Cadeia fria `CA-07` | ✅ | `temperatura_historico` `temperatura_excursoes` — AC-1..AC-6 testados. Agregação automática acima de 480 pontos; excursão detectada por corrida contígua fora de 2–8 °C; lote vinculado se entrou até o fim da excursão (AC-4, com par negativo). **Exportação (AC-2) é `csv` no viewmodel** — sem endpoint ([A-23](./ACHADOS.md)). `RNF-04` real fica para T-034 |
@@ -135,7 +135,7 @@ está pronto.
 | T-043 | Instrumentação ao vivo do LangFuse | ⬜ | A-10 |
 | T-044 | `relatorio_movimentacao` | ✅ | ADR-0029 — 9 ACs; leitura cortada declarada (`truncado`), A-39 fechado. Catálogo 24, folga 1. Cenário 10 à mão fica para o eval |
 | T-045 | Borda HTTP por router | ✅ | ADR-0032 — `app.py` de 817 → 134 linhas; contrato 5 do import-linter, com teste negativo; 467 testes, mesma contagem |
-| T-046 | Mín/máx por produto e unidade (`RN-P06`) | ⬜ | A-30 — sem armazenamento; é também tarefa de contrato (CONTRATOS §4) |
+| T-046 | Mín/máx por produto e unidade (`RN-P06`) | ✅ | A-30 **fechado**. Tabela `produto_unidade` (0007), `RepoProduto.faixas` com escopo, CONTRATOS 2.4. Faixa e "abaixo do mínimo" em `produto_saldo_por_unidade`; fecha o AC-7 da T-019. Valores do seed **arbitrados** |
 | T-048 | `RepoProduto.por_ean` (tarefa de contrato) | ✅ | A-37 — a `US-02` pede o leitor de código de barras e não havia busca por EAN em lugar nenhum. Porta + adaptador + fake + `UNIQUE (produto.ean)` na migração `0006`. Bateria única fake↔banco. **Destrava a T-026 (AC-8)**. CONTRATOS rev. 2.3 |
 | T-047 | Repos de recebimento e temperatura | ✅ | A-32 — `RepoRecebimentoSQL`/`RepoTemperaturaSQL`, `deps.py` sem `None`, seed com 6 recebimentos, bateria de escopo fake↔real. Desbloqueou T-022 e T-023 |
 | T-049 | Dispatcher de comando no cliente | ✅ | A-40 — `Bloco` ganha `comandos` (CONTRATOS §6/§8), view despacha `CustomEvent`, `render/motor.tsx` executa. Testado com mock (4 testes) e depois contra o servidor real por HTTP. `recebimento_registrar` grava de ponta a ponta; os outros 6 recusam por `If-Match` — ver T-050. AC-1 em branco na metade que depende do etag |

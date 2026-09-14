@@ -70,6 +70,20 @@ class Produto:
 
 
 @dataclass(frozen=True, slots=True)
+class FaixaEstoque:
+    """RN-P06 (T-046): estoque minimo e maximo do PAR (produto, unidade).
+
+    Nao e' campo de `Produto` de proposito: um minimo no produto obrigaria um
+    valor unico para a rede inteira, e a regra existe para impedir isso.
+    """
+
+    produto_id: str
+    unidade_id: UnidadeId
+    minimo: int
+    maximo: int
+
+
+@dataclass(frozen=True, slots=True)
 class Lote:
     id: str
     produto_id: str

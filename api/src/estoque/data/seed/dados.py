@@ -171,6 +171,26 @@ CLIENTES = [
 ]
 
 
+# T-046, RN-P06 — ARBITRADO. Nenhum documento do cliente define minimo e maximo
+# (achado A-30). A regra abaixo so' existe para o seed ter faixas plausiveis, e
+# deve ser trocada pelos valores reais da Bertoni: curva A gira mais que B, que
+# gira mais que C; a filial opera com metade da faixa da Matriz; termolabil so'
+# no CD Refrigerado.
+_MINIMO_POR_CURVA = {"A": 200, "B": 100, "C": 40}
+
+
+def faixas_de_estoque() -> list[tuple[str, str, int, int]]:
+    linhas: list[tuple[str, str, int, int]] = []
+    for pid, _e, _n, _f, _pa, classe, curva, _a, _c in PRODUTOS:
+        base = _MINIMO_POR_CURVA[str(curva)]
+        if classe == "termolabil":
+            linhas.append((str(pid), "cd-refrigerado", base, base * 4))
+        else:
+            linhas.append((str(pid), "cd-matriz", base, base * 4))
+            linhas.append((str(pid), "filial-uberlandia", base // 2, base * 2))
+    return linhas
+
+
 def _d(dias: int) -> date:
     return HOJE + timedelta(days=dias)
 

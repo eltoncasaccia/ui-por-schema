@@ -40,6 +40,7 @@ COBERTURA: dict[str, dict[str, str]] = {
         "por_id": "bateria_produto",
         "por_ids": "bateria_produto",
         "por_ean": "tests/data/test_produto_por_ean.py (T-048)",
+        "faixas": "tests/data/test_minimo_maximo.py (T-046)",
     },
     "RepoMovimento": {
         "do_lote": "bateria_movimento",

@@ -36,6 +36,16 @@ produto = sa.Table(
     sa.Column("custo_unitario_centavos", sa.Integer, nullable=False),
 )
 
+# T-046, RN-P06: minimo e maximo sao do PAR (produto, unidade), nunca do produto.
+produto_unidade = sa.Table(
+    "produto_unidade",
+    metadata,
+    sa.Column("produto_id", sa.Text, primary_key=True),
+    sa.Column("unidade_id", sa.Text, primary_key=True),
+    sa.Column("minimo", sa.Integer, nullable=False),
+    sa.Column("maximo", sa.Integer, nullable=False),
+)
+
 usuario = sa.Table(
     "usuario",
     metadata,

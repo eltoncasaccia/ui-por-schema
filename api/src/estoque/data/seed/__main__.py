@@ -49,6 +49,17 @@ async def semear(url: str) -> None:
             ["id"],
         )
 
+        # T-046: faixas ARBITRADAS — ver `dados.faixas_de_estoque`.
+        await _upsert(
+            c,
+            m.produto_unidade,
+            [
+                {"produto_id": p, "unidade_id": u, "minimo": mn, "maximo": mx}
+                for p, u, mn, mx in dados.faixas_de_estoque()
+            ],
+            ["produto_id", "unidade_id"],
+        )
+
         await _upsert(
             c,
             m.usuario,

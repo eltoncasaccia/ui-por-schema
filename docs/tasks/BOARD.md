@@ -183,7 +183,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | [T-048](./T-048-porta-produto-por-ean.md) | **`RepoProduto.por_ean`** — o leitor de código de barras não tinha para onde apontar ([A-37](./ACHADOS.md)). **Tarefa de contrato**, aditiva: CONTRATOS §4 rev. 2.3 | A | P | T-007, T-036 | ✅ |
 
-| [T-046](./T-046-minimo-maximo-por-unidade.md) | **Mín/máx por produto e unidade** (`RN-P06`) — sem armazenamento no sistema; é também tarefa de contrato (CONTRATOS §4). Aberta pela T-019 ([A-30](./ACHADOS.md)) | A | M | T-002, T-007, T-036, T-006 | ⬜ |
+| [T-046](./T-046-minimo-maximo-por-unidade.md) | **Mín/máx por produto e unidade** (`RN-P06`) — sem armazenamento no sistema; é também tarefa de contrato (CONTRATOS §4). Aberta pela T-019 ([A-30](./ACHADOS.md)) | A | M | T-002, T-007, T-036, T-006 | ✅ |
 | [T-049](./T-049-dispatcher-de-comando.md) | **Dispatcher de comando no cliente** — nenhum botão de escrita chama o servidor. Tarefa de contrato (CONTRATOS §6/§8). Aberta pela leitura da T-031 ([A-40](./ACHADOS.md)) | B/D | G | T-011, T-025..T-030 | ✅ |
 | [T-050](./T-050-etag-na-leitura.md) | **Etag na leitura** — 6 dos 7 comandos exigem `If-Match` e nenhuma leitura devolve etag. Aberta testando a T-049 contra o servidor real ([A-41](./ACHADOS.md)) | A/C | G | T-049 | ✅ |
 | [T-051](./T-051-etag-multiplo-e-porta.md) | **Etag por linha** — `movimento_saida`/`movimento_descarte`/`movimento_estorno` (a pessoa escolhe o candidato depois de ler) e `controlado_autorizar` (bloc-level). Cortada da T-050 no levantamento; a "porta faltando" do levantamento original estava errada, corrigido no arquivo | A/C | G | T-050 | ✅ |

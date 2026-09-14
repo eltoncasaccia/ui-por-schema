@@ -29,6 +29,7 @@ from estoque.data.porta import ContextoDados, LinhaAuditoria, Repositorios
 from estoque.data.repositorios import LIMITE_MOVIMENTOS
 from estoque.domain.identidade import Ator, UnidadeId
 from estoque.domain.tipos import (
+    FaixaEstoque,
     Lote,
     Movimento,
     Produto,
@@ -286,6 +287,26 @@ class FakeRepoProduto:
         vazamento (achado A-11)."""
         p = next((x for x in PRODUTOS.values() if x.ean == ean), None)
         return self._visivel(p, ctx) if p else None
+
+    async def faixas(
+        self, produto_id: str, ctx: ContextoDados
+    ) -> dict[UnidadeId, FaixaEstoque]:
+        """T-046. Escopo antes do criterio, como o resto da porta (RN-A01)."""
+        return {
+            f.unidade_id: f
+            for f in FAIXAS
+            if f.produto_id == produto_id and f.unidade_id in ctx.unidades_permitidas
+        }
+
+
+# RN-P06 (T-046): a faixa e' do PAR. O mesmo produto tem faixas diferentes na
+# Matriz e em Uberlandia — sem isso o AC-1 nao teria como falhar.
+FAIXAS: list[FaixaEstoque] = [
+    FaixaEstoque(produto_id="p-amox", unidade_id="cd-matriz", minimo=200, maximo=800),
+    FaixaEstoque(produto_id="p-amox", unidade_id="filial-uberlandia", minimo=50, maximo=300),
+    # Abaixo do minimo de proposito: o Refrigerado soma 550 de vacina.
+    FaixaEstoque(produto_id="p-vac", unidade_id="cd-refrigerado", minimo=600, maximo=1200),
+]
 
 
 class FakeRepoMovimento:

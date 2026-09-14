@@ -119,7 +119,9 @@ class ComponentDef:
     # devolveu, ANTES de `select` descartar o que a tela nao precisa. Existe so
     # para componente com `commands` cujo comando exige `If-Match` (T-050,
     # achado A-41): sem etag na leitura, a escrita nunca tem o que comparar.
-    etag: Callable[[Any], str] | None = None
+    # `str | None` porque `controlado_autorizar` (T-051) não tem alvo fixo
+    # quando aberto sem `movimento_id` — a fila sozinha não tem o que comparar.
+    etag: Callable[[Any], str | None] | None = None
 
     def __post_init__(self) -> None:
         _validar(self)

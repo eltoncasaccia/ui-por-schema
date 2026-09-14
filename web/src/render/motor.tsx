@@ -118,14 +118,16 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
     }
     if (!el) return
     function aoComando(ev: Event): void {
-      const { acao, corpo } = (ev as CustomEvent<DetalheComando>).detail
+      const { acao, corpo, etag: etagDaLinha } = (ev as CustomEvent<DetalheComando>).detail
       const cmd = comandosAtual.current?.[acao]
       if (!cmd) return
-      // T-050: o etag lido na ÚLTIMA leitura deste bloco — `undefined` para
-      // os comandos que ainda não têm etag na leitura (achado A-41, o resto
-      // fica para T-051). O servidor recusa com "If-Match obrigatorio" nesse
-      // caso, exatamente como fazia antes desta tarefa.
-      const etag = api.etagAtual(blocoAtual.current.tipo, blocoAtual.current.params)
+      // T-050 (por bloco) + T-051 (por linha): a view manda o etag da LINHA
+      // escolhida quando o comando tem mais de um candidato possível
+      // (`movimento_saida`, `movimento_descarte`, `movimento_estorno`); sem
+      // isso, cai no etag do bloco inteiro — o caso de `quarentena_liberar`,
+      // `lote_status_acao` e `controlado_autorizar`. `undefined` nos dois
+      // quando a leitura ainda não tem etag (achado A-41 residual).
+      const etag = etagDaLinha ?? api.etagAtual(blocoAtual.current.tipo, blocoAtual.current.params)
       const t: Tentativa = {
         acao,
         endpoint: cmd.endpoint,

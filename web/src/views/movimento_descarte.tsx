@@ -162,6 +162,9 @@ export const view: View<'movimento_descarte'> = ({ vm }) => {
               <button type="button" disabled={!podeEnviar}
                 onClick={(e) => {
                   if (!escolhido || !motivo) return
+                  // T-051: etag da LINHA escolhida — `alvo` pode não estar em
+                  // `fila` (foi pedido por `lote_id`, mesmo fora do recorte).
+                  const candidato = [vm.alvo, ...fila].find((c) => c?.lote_id === escolhido)
                   dispararComando(e.currentTarget, {
                     acao: 'movimento_descarte',
                     corpo: {
@@ -170,6 +173,7 @@ export const view: View<'movimento_descarte'> = ({ vm }) => {
                       justificativa,
                       segunda_identificacao_id: segunda,
                     },
+                    ...(candidato?.etag ? { etag: candidato.etag } : {}),
                   })
                 }}>
                 Registrar descarte

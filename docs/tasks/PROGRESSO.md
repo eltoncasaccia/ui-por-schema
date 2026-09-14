@@ -117,7 +117,7 @@ está pronto.
 |---|---|---|---|
 | T-032 | Suíte de avaliação | 🟡 | 17 casos dos ~40; roda os dois modos; sem série histórica |
 | T-033 | Segurança CS-01 a CS-06 | 🟡 | CS-01/02/03/05/06 cobertos — CS-01, CS-03 e CS-06 ganharam teste **de borda HTTP** na T-011; **CS-04 continua nunca testado** (o de menor confiança do release); falta `R-003` |
-| T-031 | Telas com rota | ⬜ | decisão de router tomada (react-router-dom); T-049 e T-050 fecharam — `/quarentena/:loteId` destrancada. T-051 (etag de `movimento_saida`/`controlado_autorizar`) ainda bloqueia `/saida` e `/controlados` |
+| T-031 | Telas com rota | ⬜ | decisão de router tomada (react-router-dom); T-049, T-050 e T-051 fecharam — as 4 rotas de escrita (`/quarentena/:loteId`, `/saida`, `/controlados`, `/recebimento/novo`) estão destrancadas |
 | T-038 | Gestão de usuários | ⬜ | — |
 | T-034 | Relatório de fechamento | ⬜ | — |
 
@@ -136,7 +136,7 @@ está pronto.
 | T-047 | Repos de recebimento e temperatura | ✅ | A-32 — `RepoRecebimentoSQL`/`RepoTemperaturaSQL`, `deps.py` sem `None`, seed com 6 recebimentos, bateria de escopo fake↔real. Desbloqueou T-022 e T-023 |
 | T-049 | Dispatcher de comando no cliente | ✅ | A-40 — `Bloco` ganha `comandos` (CONTRATOS §6/§8), view despacha `CustomEvent`, `render/motor.tsx` executa. Testado com mock (4 testes) e depois contra o servidor real por HTTP. `recebimento_registrar` grava de ponta a ponta; os outros 6 recusam por `If-Match` — ver T-050. AC-1 em branco na metade que depende do etag |
 | T-050 | Etag na leitura | ✅ | A-41 (fatia simples) — `application/etag.py` (módulo neutro, contrato 2 intacto), `ComponentDef.etag`, `meta.etag` em `/dados`. `quarentena_liberar` e `lote_status_acao` completam de ponta a ponta contra o servidor real (Docker reconstruído, não só pytest); etag desatualizado devolve `conflito` e nada é aplicado. `movimento_saida` (etag por candidato) e `controlado_autorizar`/`movimento_estorno` (porta faltando) cortados para T-051 no levantamento |
-| T-051 | Etag por candidato, e porta de `RepoMovimento` | ⬜ | A-41 (resto) — `movimento_saida` precisa de etag por LINHA (a pessoa escolhe o lote na tela); `controlado_autorizar`/`movimento_estorno` precisam de método novo em `RepoMovimento` (porta não expõe as colunas que o etag usa); `movimento_descarte` não conferido. **Destrava a T-031** para `movimento_saida`, `controlado_autorizar` |
+| T-051 | Etag por linha | ✅ | A-41 (resto) — `controlado_autorizar` (bloc-level) e etag POR LINHA em `movimento_saida`/`movimento_descarte`/`movimento_estorno` (a pessoa escolhe o candidato depois de ler). Levantamento original errava: nenhum método novo de `RepoMovimento` foi preciso — o domínio `Movimento` já carrega tudo que o etag usa. Verificado por `curl` contra o container real (autorizar + saída) e pytest contra Postgres real (descarte + estorno), sempre com o par positivo/negativo. **T-031 destravada** |
 
 ---
 

@@ -171,9 +171,12 @@ export const view: View<'movimento_estorno'> = ({ vm }) => {
               <button type="button" disabled={!podeEnviar}
                 onClick={(e) => {
                   if (!escolhido || !motivo) return
+                  // T-051: etag do LANÇAMENTO escolhido, não do extrato inteiro.
+                  const alvo = lancamentos.find((l) => l.movimento_id === escolhido)
                   dispararComando(e.currentTarget, {
                     acao: 'movimento_estorno',
                     corpo: { movimento_id: escolhido, motivo, complemento },
+                    ...(alvo?.etag ? { etag: alvo.etag } : {}),
                   })
                 }}>
                 Registrar estorno

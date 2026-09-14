@@ -33,8 +33,9 @@ from typing import Any
 import sqlalchemy as sa
 
 from estoque.application.commands.entradas.saida import JUSTIFICATIVA_MINIMA, EntradaSaida
-from estoque.application.commands.pipeline import etag_de_valores, registrar
+from estoque.application.commands.pipeline import registrar
 from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.etag import etag_lote_e_saldo
 from estoque.data import modelos as m
 from estoque.data.porta import ContextoDados
 from estoque.data.repositorios import RepoLoteSQL, RepoProdutoSQL
@@ -227,14 +228,7 @@ async def _etag_da_saida(entrada: Any, ctx: ContextoComando) -> str | None:
     lote = await RepoLoteSQL(ctx.conn).por_id(entrada.lote_id, _dados(ctx))
     if lote is None:
         return None
-    return etag_de_valores(
-        {
-            "id": lote.id,
-            "status": lote.status,
-            "validade": lote.validade,
-            "saldo": await _saldo(lote.id, ctx),
-        }
-    )
+    return etag_lote_e_saldo(lote, await _saldo(lote.id, ctx))
 
 
 # ---------------------------------------------------------------- aplicar

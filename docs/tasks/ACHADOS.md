@@ -6,7 +6,7 @@ regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 > **Próximo número: `A-42`.** Está aqui para ninguém precisar abrir o arquivo
 > só para descobrir o número seguinte.
 
-**Este arquivo só tem o que ainda exige ação.** Os 30 achados já fechados foram
+**Este arquivo só tem o que ainda exige ação.** Os 33 achados já fechados foram
 para [`docs/relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md)
 — eram 56% do arquivo, descrevendo problemas que não existem mais, e todo
 fechamento de tarefa passava por cima deles.
@@ -46,8 +46,6 @@ não se perder.
 | A-30 | `RN-P06` (mín/máx por unidade) não tem armazenamento nenhum | **T-046** |
 | A-31 | `RepoMovimento.por_cliente` ignora `de` e `ate` — no fake **e** no real | **T-042** (o conserto do adaptador entrou no escopo dela) |
 | A-39 | **`RepoMovimento.listar` trunca em 500 no adaptador real e o fake não trunca.** Divergência de contrato da família do A-11, achada na revisão de tarefas de 2026-09-10 sem nenhum teste apontando. Quem ler 365 dias recebe 500 movimentos e um total com cara de completo — e é justamente o que a **T-044** vai fazer | **T-042** decide (limite sobe para a porta, ou vira parâmetro) · **T-044** declara no viewmodel enquanto não |
-| A-40 | **Nenhum código do cliente chama `POST /api/comandos/{nome}`.** As cinco tarefas de escrita (T-026 a T-030) entregaram só a metade do ADR-0005: a view (`views/*.tsx`) com botões `data-acao`, e nada que os leia. T-025 descrevia a confirmação como "decisão do motor de render, disparada por `CommandDef.confirm`" — esse pedaço nunca foi escrito em `render/motor.tsx` (dono T-015), nem em nenhum outro módulo. As duas superfícies (assistente e, agora, T-031) ficam sem caminho para escrever: o assistente só chama `api.dados`, nunca um comando. Achado na leitura da T-031, antes de abrir editor | **T-049**, que passa a bloquear a T-031 |
-| A-41 | **Nenhuma leitura devolve `etag`, e 6 dos 7 comandos de escrita exigem `If-Match`.** Achado testando a T-049 contra o servidor **real** (não mock). **T-050 fechou a fatia de `quarentena_liberar` e `lote_status_acao`** (etag só sobre o `Lote`, via `application/etag.py` — módulo neutro que não viola o contrato 2). `movimento_saida` (etag por candidato, não por bloco), `controlado_autorizar` e `movimento_estorno` (etag lê colunas que `RepoMovimento` não expõe) e `movimento_descarte` (não conferido) continuam sem etag na leitura | **T-051** |
 
 ---
 
@@ -68,12 +66,12 @@ não serem redescobertas como se fossem novidade.
 
 ## 4. Resolvidos
 
-**30 achados**, com o texto inteiro em
+**33 achados**, com o texto inteiro em
 [`docs/relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md).
 
 Os ids continuam citáveis: `A-01` a `A-07` (auditoria A-001), `A-02b` a `A-09`
 (auditoria A-002), e `A-12`, `A-13`, `A-15` a `A-18`, `A-20`, `A-21`, `A-24` a
-`A-27`, `A-29`, `A-32`, `A-34`, `A-36` (execução).
+`A-27`, `A-29`, `A-32`, `A-34`, `A-36`, `A-37`, `A-40`, `A-41` (execução).
 
 ---
 

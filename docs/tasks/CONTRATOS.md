@@ -416,11 +416,13 @@ return ok(vm.model_dump(mode="json"), etag=etag)
 leitura devolvia etag. **T-050 fechou `quarentena_liberar` e
 `lote_status_acao`** (etag simples, sobre um `Lote`, calculado por
 `application/etag.py:etag_lote` — o mesmo módulo que a escrita usa, para o
-hash nunca divergir entre os dois lados). `movimento_saida` (etag por
-CANDIDATO escolhido na tela, não por bloco) e `controlado_autorizar`/
-`movimento_estorno` (a porta não expõe as colunas que o etag usa) seguem em
-[T-051](./T-051-etag-multiplo-e-porta.md). `recebimento_registrar` nunca
-precisou — é criação, sem `etag_de`.
+hash nunca divergir entre os dois lados). **T-051 fechou os outros três**:
+`controlado_autorizar` é bloc-level como os dois primeiros;
+`movimento_saida`, `movimento_descarte` e `movimento_estorno` precisavam de
+etag POR LINHA — a pessoa escolhe o candidato na tela, depois da leitura —
+e por isso o etag mora no PRÓPRIO viewmodel (um campo por item da lista),
+não em `meta`. `recebimento_registrar` nunca precisou — é criação, sem
+`etag_de`.
 
 ---
 

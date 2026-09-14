@@ -25,6 +25,7 @@ from estoque.application.commands.entradas.descarte import (
     EntradaDescarte,
     MotivoDescarte,
 )
+from estoque.application.etag import etag_lote_e_saldo
 from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
 from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
 from estoque.application.registry.registry import registrar
@@ -64,6 +65,8 @@ class LoteDescartavel(BaseModel):
     status_efetivo: StatusLoteEfetivo
     pode_descartar: bool
     impedimento: str | None = None
+    # T-051: etag DESTA linha — a pessoa escolhe o lote na fila, depois de ler.
+    etag: str
 
 
 class OpcaoMotivo(BaseModel):
@@ -165,6 +168,7 @@ def _linha(lote: Lote, d: Dados) -> LoteDescartavel:
         status_efetivo=efetivo,
         pode_descartar=impedimento is None,
         impedimento=impedimento,
+        etag=etag_lote_e_saldo(lote, saldo),
     )
 
 

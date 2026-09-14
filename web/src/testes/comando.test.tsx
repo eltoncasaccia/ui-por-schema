@@ -155,6 +155,90 @@ describe('AC-3 · Idempotency-Key por invocação', () => {
   })
 })
 
+describe('T-051 · etag por LINHA — a pessoa escolhe depois de ler', () => {
+  type VMSaida = ViewModel<'movimento_saida'>
+
+  function vmSaida(): VMSaida {
+    const base = {
+      dias_restantes: 200,
+      disponivel: true,
+      exige_liberacao_rt: false,
+      motivo: null,
+      saldo: 10,
+      situacao: 'ok' as const,
+      status_efetivo: 'liberado' as const,
+      unidade: 'CD Matriz',
+      validade: '2027-01-01',
+    }
+    return {
+      produto: 'Amoxicilina 500mg',
+      classe: 'comum',
+      escopo: 'CD Matriz',
+      exige_autorizacao: false,
+      proposta: { ...base, lote_id: 'lote-a', numero: 'L-A', proposto: true, etag: 'etag-a' },
+      alternativas: [
+        { ...base, lote_id: 'lote-b', numero: 'L-B', proposto: false, etag: 'etag-b' },
+      ],
+      motivos: [
+        { valor: 'avaria', rotulo: 'Avaria', exige_destinatario: false },
+      ],
+    }
+  }
+
+  function blocoSaida(): Bloco {
+    return {
+      tipo: 'movimento_saida',
+      params: { produto_id: 'p-amox' },
+      tamanho: 'inteira',
+      comandos: {
+        movimento_saida: {
+          endpoint: '/api/comandos/movimento_saida',
+          confirm: true,
+          idempotent: false,
+        },
+      },
+    }
+  }
+
+  async function abrirSaida() {
+    dados.mockReset()
+    dados.mockResolvedValue(vmSaida())
+    envolver(<Composicao blocos={[blocoSaida()]} atorId={ATOR} />)
+    await screen.findByText(/Amoxicilina 500mg/)
+    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '1' } })
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'avaria' } })
+  }
+
+  it('a proposta (escolha padrão) manda o etag DELA, não um valor do bloco', async () => {
+    comando.mockResolvedValue({})
+    await abrirSaida()
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar saída' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirmar' }))
+
+    await waitFor(() => expect(comando).toHaveBeenCalledTimes(1))
+    expect(comando.mock.calls[0]![3]).toBe('etag-a')
+  })
+
+  it('trocar para a alternativa manda o etag DELA, não o da proposta', async () => {
+    comando.mockResolvedValue({})
+    await abrirSaida()
+    const radios = screen.getAllByRole('radio')
+    fireEvent.click(radios[1]!) // a alternativa
+    // Trocar da proposta exige justificativa (RN-L03) — sem isso o botão
+    // continua desabilitado e o teste provaria menos do que parece.
+    fireEvent.change(screen.getByLabelText('Justificativa para não usar o lote proposto'), {
+      target: { value: 'pedido exige lote com validade maior' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar saída' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirmar' }))
+
+    await waitFor(() => expect(comando).toHaveBeenCalledTimes(1))
+    expect(comando.mock.calls[0]![3]).toBe('etag-b')
+    // Nunca o etag do bloco (api.etagAtual) — provaria "por linha" de mentira.
+    expect(comando.mock.calls[0]![3]).not.toBe(ETAG)
+  })
+})
+
 describe('AC-4 e AC-8 · erro não apaga a tela, e o retry reaproveita a chave', () => {
   it('erro mostra mensagem, mantém o produto na tela, e o retry usa a MESMA chave', async () => {
     comando.mockRejectedValueOnce(new Error('falha de rede')).mockResolvedValueOnce({})

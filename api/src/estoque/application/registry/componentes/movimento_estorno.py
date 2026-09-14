@@ -24,6 +24,7 @@ from estoque.application.commands.entradas.estorno import (
     EntradaEstorno,
     MotivoEstorno,
 )
+from estoque.application.etag import etag_movimento_estorno
 from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
 from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
 from estoque.application.registry.registry import registrar
@@ -61,6 +62,8 @@ class Lancamento(BaseModel):
     pode_estornar: bool
     # Preenchido só quando não pode: é o que evita a segunda tentativa.
     impedimento: str | None = None
+    # T-051: etag DESTE lançamento — a pessoa escolhe qual estornar no extrato.
+    etag: str
 
 
 class OpcaoMotivo(BaseModel):
@@ -148,6 +151,9 @@ def _lancamento(mov: Movimento, todos: list[Movimento]) -> Lancamento:
         estorna_movimento_id=mov.estorna_movimento_id,
         pode_estornar=impedimento is None,
         impedimento=impedimento,
+        etag=etag_movimento_estorno(
+            mov.id, mov.status, mov.lote_id, mov.quantidade, estornado=ja_estornado(mov, todos)
+        ),
     )
 
 

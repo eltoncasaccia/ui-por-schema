@@ -23,6 +23,7 @@ from datetime import UTC, datetime
 from pydantic import BaseModel
 
 from estoque.application.commands.entradas.autorizacao import EntradaAutorizacao
+from estoque.application.etag import etag_movimento_autorizacao
 from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
 from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
 from estoque.application.registry.registry import registrar
@@ -172,6 +173,13 @@ def projetar(d: Dados) -> VM:
     )
 
 
+def _etag(d: Dados) -> str | None:
+    """T-051: bloc-level, como `quarentena_liberar` — `alvo_id` é fixo por
+    `params.movimento_id`, nunca escolhido depois da leitura."""
+    mov = next((m for m in d.movimentos if m.id == d.alvo_id), None) if d.alvo_id else None
+    return etag_movimento_autorizacao(mov.id, mov.status, mov.autorizador_id) if mov else None
+
+
 COMPONENTE = registrar(
     ComponentDef(
         id="controlado_autorizar",
@@ -196,6 +204,7 @@ COMPONENTE = registrar(
         tamanho="inteira",
         load=carregar,
         select=projetar,
+        etag=_etag,
         commands={
             "controlado_autorizar": CommandDef(
                 endpoint="/api/comandos/controlado_autorizar",

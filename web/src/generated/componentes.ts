@@ -239,6 +239,7 @@ export interface VMMovimentoDescarte {
 }
 export interface MovimentoDescarteLoteDescartavel {
   dias_restantes: number
+  etag: string
   impedimento?: string | null
   lote_id: string
   numero: string
@@ -270,6 +271,7 @@ export interface VMMovimentoEstorno {
 export interface MovimentoEstornoLancamento {
   autor: string
   estorna_movimento_id?: string | null
+  etag: string
   impedimento?: string | null
   motivo: string
   movimento_id: string
@@ -337,6 +339,7 @@ export interface VMMovimentoSaida {
 export interface MovimentoSaidaLoteCandidato {
   dias_restantes: number
   disponivel: boolean
+  etag: string
   exige_liberacao_rt?: boolean
   lote_id: string
   motivo?: string | null

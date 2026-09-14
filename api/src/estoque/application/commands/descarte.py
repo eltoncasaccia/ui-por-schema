@@ -34,9 +34,10 @@ from estoque.application.commands.entradas.descarte import (
     JUSTIFICATIVA_MINIMA,
     EntradaDescarte,
 )
-from estoque.application.commands.pipeline import etag_de_valores, registrar
+from estoque.application.commands.pipeline import registrar
 from estoque.application.commands.saida import _dados, _saldo, _travar_lote
 from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.etag import etag_lote_e_saldo
 from estoque.data import modelos as m
 from estoque.data.repositorios import RepoLoteSQL
 from estoque.domain.erros import ErroDominio, nao_encontrado
@@ -160,14 +161,7 @@ async def _etag_do_lote(entrada: Any, ctx: ContextoComando) -> str | None:
     lote = await RepoLoteSQL(ctx.conn).por_id(entrada.lote_id, _dados(ctx))
     if lote is None:
         return None
-    return etag_de_valores(
-        {
-            "id": lote.id,
-            "status": lote.status,
-            "validade": lote.validade,
-            "saldo": await _saldo(lote.id, ctx),
-        }
-    )
+    return etag_lote_e_saldo(lote, await _saldo(lote.id, ctx))
 
 
 async def _aplicar(entrada: Any, ctx: ContextoComando) -> Efeito:

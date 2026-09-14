@@ -995,6 +995,9 @@
               "dias_restantes": {
                 "type": "integer"
               },
+              "etag": {
+                "type": "string"
+              },
               "impedimento": {
                 "anyOf": [
                   {
@@ -1049,7 +1052,8 @@
               "dias_restantes",
               "saldo",
               "status_efetivo",
-              "pode_descartar"
+              "pode_descartar",
+              "etag"
             ],
             "title": "MovimentoDescarteLoteDescartavel",
             "type": "object"
@@ -1143,6 +1147,9 @@
                 ],
                 "default": null
               },
+              "etag": {
+                "type": "string"
+              },
               "impedimento": {
                 "anyOf": [
                   {
@@ -1187,7 +1194,8 @@
               "motivo",
               "autor",
               "registrado_em",
-              "pode_estornar"
+              "pode_estornar",
+              "etag"
             ],
             "title": "MovimentoEstornoLancamento",
             "type": "object"
@@ -1447,6 +1455,9 @@
               "disponivel": {
                 "type": "boolean"
               },
+              "etag": {
+                "type": "string"
+              },
               "exige_liberacao_rt": {
                 "default": false,
                 "type": "boolean"
@@ -1512,7 +1523,8 @@
               "situacao",
               "status_efetivo",
               "proposto",
-              "disponivel"
+              "disponivel",
+              "etag"
             ],
             "title": "MovimentoSaidaLoteCandidato",
             "type": "object"

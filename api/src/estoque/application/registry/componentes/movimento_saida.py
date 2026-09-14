@@ -27,6 +27,7 @@ from estoque.application.commands.entradas.saida import (
     EntradaSaida,
     MotivoSaida,
 )
+from estoque.application.etag import etag_lote_e_saldo
 from estoque.application.registry.componentes.lote_lista import NOME_UNIDADE
 from estoque.application.registry.definir import CommandDef, ComponentDef, LoadContext
 from estoque.application.registry.registry import registrar
@@ -80,6 +81,9 @@ class LoteCandidato(BaseModel):
     # servidor decide de verdade, e aceita se o RT já tiver liberado.
     exige_liberacao_rt: bool = False
     motivo: str | None = None
+    # T-051: etag DESTA linha — a pessoa escolhe qual lote usar depois de ler,
+    # então o `If-Match` da escrita não pode ser um valor só para o bloco.
+    etag: str
 
 
 class OpcaoMotivo(BaseModel):
@@ -190,6 +194,7 @@ def _candidato(lote: Lote, d: Dados) -> LoteCandidato:
                 else _motivo_de_indisponibilidade(efetivo)
             )
         ),
+        etag=etag_lote_e_saldo(lote, saldo),
     )
 
 

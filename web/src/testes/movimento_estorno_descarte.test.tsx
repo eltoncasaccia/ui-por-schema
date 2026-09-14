@@ -33,6 +33,7 @@ const SAIDA: Lancamento = {
   estorna_movimento_id: null,
   pode_estornar: true,
   impedimento: null,
+  etag: 'etag-saida',
 }
 const ENTRADA: Lancamento = {
   ...SAIDA,
@@ -80,6 +81,7 @@ const VENCIDO: LoteDescartavel = {
   status_efetivo: 'vencido',
   pode_descartar: true,
   impedimento: null,
+  etag: 'etag-vencido',
 }
 const LIBERADO: LoteDescartavel = {
   ...VENCIDO,

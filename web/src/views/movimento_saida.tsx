@@ -205,6 +205,11 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
               <button type="button" disabled={!podeEnviar}
                 onClick={(e) => {
                   if (!escolhido || !motivo) return
+                  // T-051: etag da LINHA escolhida, não do bloco — a pessoa
+                  // pode ter trocado a proposta por uma alternativa.
+                  const candidato = [vm.proposta, ...(vm.alternativas ?? [])].find(
+                    (c) => c?.lote_id === escolhido,
+                  )
                   dispararComando(e.currentTarget, {
                     acao: 'movimento_saida',
                     corpo: {
@@ -215,6 +220,7 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
                       cliente_id: opcao?.exige_destinatario ? clienteId : null,
                       nota_fiscal: opcao?.exige_destinatario ? notaFiscal : null,
                     },
+                    ...(candidato?.etag ? { etag: candidato.etag } : {}),
                   })
                 }}>
                 {vm.exige_autorizacao ? 'Enviar para autorização' : 'Registrar saída'}

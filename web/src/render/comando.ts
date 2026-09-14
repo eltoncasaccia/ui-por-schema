@@ -18,6 +18,14 @@ export interface DetalheComando {
   /** Corpo já montado do estado local da view. Nunca inclui `criadoEm` nem
    * qualquer timestamp do cliente (`RN-M04`) — isso é o servidor quem grava. */
   corpo: Record<string, unknown>
+  /**
+   * T-051 — só quando o componente tem etag POR LINHA (a pessoa escolhe o
+   * candidato depois de ler: `movimento_saida`, `movimento_descarte`,
+   * `movimento_estorno`). A view lê `vm.<linha escolhida>.etag` e manda aqui;
+   * sem isto, o wrapper cai no etag do BLOCO (`api.etagAtual`), que é o caso
+   * de `quarentena_liberar`, `lote_status_acao` e `controlado_autorizar`.
+   */
+  etag?: string
 }
 
 /** O metadado que o `Bloco` carrega por comando — CONTRATOS §6/§8. */

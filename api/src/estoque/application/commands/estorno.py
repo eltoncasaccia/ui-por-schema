@@ -30,9 +30,10 @@ from estoque.application.commands.entradas.estorno import (
     TIPOS_ESTORNAVEIS,
     EntradaEstorno,
 )
-from estoque.application.commands.pipeline import etag_de_valores, registrar
+from estoque.application.commands.pipeline import registrar
 from estoque.application.commands.saida import _saldo, _travar_lote
 from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.etag import etag_movimento_estorno
 from estoque.data import modelos as m
 from estoque.data.repositorios import _para_movimento
 from estoque.domain.erros import ErroDominio, nao_encontrado
@@ -150,7 +151,13 @@ async def _etag_do_original(entrada: Any, ctx: ContextoComando) -> str | None:
             .where(m.movimento.c.estorna_movimento_id == entrada.movimento_id)
         )
     ).scalar_one()
-    return etag_de_valores({**dict(linha), "estornado": bool(estornado)})
+    return etag_movimento_estorno(
+        linha["id"],
+        linha["status"],
+        linha["lote_id"],
+        linha["quantidade"],
+        estornado=bool(estornado),
+    )
 
 
 async def _aplicar(entrada: Any, ctx: ContextoComando) -> Efeito:

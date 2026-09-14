@@ -25,9 +25,10 @@ from typing import Any
 import sqlalchemy as sa
 
 from estoque.application.commands.entradas.autorizacao import MOTIVO_MINIMO, EntradaAutorizacao
-from estoque.application.commands.pipeline import etag_de_valores, registrar
+from estoque.application.commands.pipeline import registrar
 from estoque.application.commands.saida import _saldo, _travar_lote
 from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
+from estoque.application.etag import etag_movimento_autorizacao
 from estoque.autorizacao.motor import negar_se_mesma_pessoa
 from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio, nao_encontrado
@@ -74,7 +75,9 @@ async def _etag_do_movimento(entrada: Any, ctx: ContextoComando) -> str | None:
         .mappings()
         .first()
     )
-    return None if linha is None else etag_de_valores(dict(linha))
+    if linha is None:
+        return None
+    return etag_movimento_autorizacao(linha["id"], linha["status"], linha["autorizador_id"])
 
 
 async def _aplicar(entrada: Any, ctx: ContextoComando) -> Efeito:

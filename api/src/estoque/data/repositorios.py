@@ -109,6 +109,12 @@ class RepoProdutoSQL:
         return _para_produto(dict(r), ctx) if r else None
 
 
+# A-39, decidido na T-042: o teto fica no adaptador, com nome, e o fake trunca
+# igual. Sobram os MAIS RECENTES — e quem le periodo longo precisa declarar o
+# corte (T-044), porque 500 linhas parecem uma lista completa.
+LIMITE_MOVIMENTOS = 500
+
+
 class RepoMovimentoSQL:
     def __init__(self, conn: AsyncConnection) -> None:
         self._c = conn
@@ -142,8 +148,11 @@ class RepoMovimentoSQL:
             q = q.where(m.movimento.c.criado_em >= de)
         if ate:
             q = q.where(m.movimento.c.criado_em <= ate)
-        q = q.order_by(m.movimento.c.criado_em.desc()).limit(500)
-        return [_para_movimento(dict(r)) for r in (await self._c.execute(q)).mappings()]
+        q = q.order_by(m.movimento.c.criado_em.desc(), m.movimento.c.id.desc())
+        return [
+            _para_movimento(dict(r))
+            for r in (await self._c.execute(q.limit(LIMITE_MOVIMENTOS))).mappings()
+        ]
 
     async def por_cliente(
         self, cliente_id: str, de: date, ate: date, ctx: ContextoDados
@@ -151,6 +160,8 @@ class RepoMovimentoSQL:
         q = sa.select(m.movimento).where(
             m.movimento.c.cliente_id == cliente_id,
             _escopo(m.movimento.c.unidade_id, ctx),
+            # A-31: o periodo era ignorado aqui e no fake.
+            sa.cast(m.movimento.c.criado_em, sa.Date).between(de, ate),
         )
         return [_para_movimento(dict(r)) for r in (await self._c.execute(q)).mappings()]
 

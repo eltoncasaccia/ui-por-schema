@@ -49,3 +49,5 @@ deu errado antes*.
 | A-05 | `requires` estático não cabia em 2 componentes | A-001 | Catálogo 23 → 22 |
 | A-06 | 6 permissões sem uso, 1 contradizendo tarefa | A-001 | 18 permissões |
 | A-07 | CONTRATOS definia 3 de 7 entidades | A-001 | CONTRATOS rev. 2.0 |
+| A-11 | Os fakes reimplementavam a interseção de escopo da porta — se o adaptador real parasse de intersectar, a suíte seguia verde | auditoria de testes | [T-042](../tasks/T-042-contract-test-repositorios.md): bateria única fake ↔ repositório real; escopo sabotado nos dois lados, os dois vermelhos |
+| A-31 | `RepoMovimento.por_cliente` ignorava `de` e `ate`, no fake **e** no real | execução da T-021 | T-042: janela aplicada nos dois, com par de teste (janela curta e larga) |

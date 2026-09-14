@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**44 concluídas · 1 parcial · 6 não iniciadas** · 23 de 24 componentes previstos.
+**45 concluídas · 1 parcial · 5 não iniciadas** · 23 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -131,7 +131,7 @@ está pronto.
 |---|---|---|---|
 | T-040 | CSRF e rate limit | ✅ | A-02, A-03 — **fechados** |
 | T-041 | CI no GitHub Actions | ✅ | A-07 — com Postgres, e portão que reprova teste pulado |
-| T-042 | Contract test fake ↔ repositório real | ⬜ | A-11 |
+| T-042 | Contract test fake ↔ repositório real | ✅ | A-11 e A-31 **fechados**, A-39 decidido (teto no adaptador, fake trunca igual). 5 ACs; escopo sabotado no real e no fake, os dois vermelhos |
 | T-043 | Instrumentação ao vivo do LangFuse | ⬜ | A-10 |
 | T-044 | `relatorio_movimentacao` | ⬜ | ADR-0029 |
 | T-045 | Borda HTTP por router | ✅ | ADR-0032 — `app.py` de 817 → 134 linhas; contrato 5 do import-linter, com teste negativo; 467 testes, mesma contagem |

@@ -102,17 +102,35 @@ Não reescreve os fakes; corrige-os se a bateria os reprovar.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** A mesma bateria roda contra fake e repositório real, e os dois
+- [x] **AC-1** A mesma bateria roda contra fake e repositório real, e os dois
       passam.
-- [ ] **AC-2** Removendo a interseção de escopo do repositório **real**, a
+- [x] **AC-2** Removendo a interseção de escopo do repositório **real**, a
       bateria **falha**. *(negativo — é o teste que prova que este teste serve)*
-- [ ] **AC-3** Removendo a interseção do **fake**, a bateria falha também.
+      *`_escopo` devolvendo `sa.true()`: vermelho.*
+- [x] **AC-3** Removendo a interseção do **fake**, a bateria falha também.
       *(negativo — um fake permissivo é pior que fake nenhum)*
-- [ ] **AC-4** Um método novo na porta sem cobertura na bateria é detectado —
+      *`FakeRepoLote._visiveis` devolvendo todos: vermelho.*
+- [x] **AC-4** Um método novo na porta sem cobertura na bateria é detectado —
       por reflexão sobre o `Protocol`, ou por lista explícita que falha ao
       divergir.
-- [ ] **AC-5** No CI, a bateria contra o repositório real **não pula**. Teste
+      *Reflexão sobre os `Protocol` `Repo*` comparada a `COBERTURA`, com teste
+      que injeta um `RepoNovo` e vê a divergência.*
+- [x] **AC-5** No CI, a bateria contra o repositório real **não pula**. Teste
       que pula é teste que não existe.
+      *O pulo diz "sem banco", que o portão da T-041 reprova. Localmente rodou
+      contra o Postgres sem pular.*
+
+## Fechamento — 2026-09-14
+
+**Tocou, com registro:** `data/repositorios.py` e `tests/registry/fakes.py`.
+
+- **A-31 fechado:** `por_cliente` respeita `de`/`ate` nos dois lados.
+- **A-39 decidido:** o teto fica no adaptador (`LIMITE_MOVIMENTOS = 500`), o fake
+  trunca igual, e sobram os mais recentes. Ordem de `listar` alinhada:
+  `criado_em` desc com `id` desc de desempate — o fake ordenava ao contrário.
+  A T-044 declara o corte no viewmodel.
+- `RepoRecebimento` e `RepoTemperatura` já tinham bateria fake↔real (T-047), e
+  `por_ean` a sua (T-048): a `COBERTURA` aponta para elas em vez de duplicar.
 
 ## Armadilhas
 

@@ -26,6 +26,7 @@ from datetime import UTC, date, datetime, timedelta
 
 from estoque.application.registry.definir import LoadContext, Pagina
 from estoque.data.porta import ContextoDados, LinhaAuditoria, Repositorios
+from estoque.data.repositorios import LIMITE_MOVIMENTOS
 from estoque.domain.identidade import Ator, UnidadeId
 from estoque.domain.tipos import (
     Lote,
@@ -316,12 +317,17 @@ class FakeRepoMovimento:
             sel = [m for m in sel if m.criado_em >= de]
         if ate is not None:
             sel = [m for m in sel if m.criado_em <= ate]
-        return sorted(sel, key=lambda m: (m.criado_em, m.id))
+        # Mesma ordem e mesmo teto do adaptador real (A-39, T-042).
+        return sorted(sel, key=lambda m: (m.criado_em, m.id), reverse=True)[:LIMITE_MOVIMENTOS]
 
     async def por_cliente(
         self, cliente_id: str, de: date, ate: date, ctx: ContextoDados
     ) -> Sequence[Movimento]:
-        return [m for m in self._visiveis(ctx) if m.cliente_id == cliente_id]
+        return [
+            m
+            for m in self._visiveis(ctx)
+            if m.cliente_id == cliente_id and de <= m.criado_em.date() <= ate
+        ]
 
 
 # Trilha de auditoria montada para o caso dificil do AC-5: uma linha COM custo.

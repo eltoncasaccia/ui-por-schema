@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**49 concluídas · 1 parcial · 1 não iniciada** · 24 de 24 componentes previstos.
+**49 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -141,6 +141,15 @@ está pronto.
 | T-049 | Dispatcher de comando no cliente | ✅ | A-40 — `Bloco` ganha `comandos` (CONTRATOS §6/§8), view despacha `CustomEvent`, `render/motor.tsx` executa. Testado com mock (4 testes) e depois contra o servidor real por HTTP. `recebimento_registrar` grava de ponta a ponta; os outros 6 recusam por `If-Match` — ver T-050. AC-1 em branco na metade que depende do etag |
 | T-050 | Etag na leitura | ✅ | A-41 (fatia simples) — `application/etag.py` (módulo neutro, contrato 2 intacto), `ComponentDef.etag`, `meta.etag` em `/dados`. `quarentena_liberar` e `lote_status_acao` completam de ponta a ponta contra o servidor real (Docker reconstruído, não só pytest); etag desatualizado devolve `conflito` e nada é aplicado. `movimento_saida` (etag por candidato) e `controlado_autorizar`/`movimento_estorno` (porta faltando) cortados para T-051 no levantamento |
 | T-051 | Etag por linha | ✅ | A-41 (resto) — `controlado_autorizar` (bloc-level) e etag POR LINHA em `movimento_saida`/`movimento_descarte`/`movimento_estorno` (a pessoa escolhe o candidato depois de ler). Levantamento original errava: nenhum método novo de `RepoMovimento` foi preciso — o domínio `Movimento` já carrega tudo que o etag usa. Verificado por `curl` contra o container real (autorizar + saída) e pytest contra Postgres real (descarte + estorno), sempre com o par positivo/negativo. **T-031 destravada** |
+
+---
+
+## Abertas em 2026-09-14
+
+| | Tarefa | Estado | Origem |
+|---|---|---|---|
+| T-052 | Banco de teste isolado | ⬜ | A-44. O banco de desenvolvimento foi limpo à mão com `make reset` em 2026-09-14; sem esta tarefa, o próximo `make test-api` suja de novo |
+| T-053 | Testes de ponta a ponta com Playwright | ⬜ | ADR-0033 · A-45 (bug do menu, reproduzido no navegador) |
 
 ---
 

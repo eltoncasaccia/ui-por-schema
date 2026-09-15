@@ -3,7 +3,7 @@
 Registro do que a execução descobriu e o documento não previa: conflito entre
 regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 
-> **Próximo número: `A-44`.** Está aqui para ninguém precisar abrir o arquivo
+> **Próximo número: `A-46`.** Está aqui para ninguém precisar abrir o arquivo
 > só para descobrir o número seguinte.
 
 **Este arquivo só tem o que ainda exige ação.** Os 33 achados já fechados foram
@@ -41,7 +41,7 @@ não se perder.
 
 | # | Achado | Tarefa |
 |---|---|---|
-| — | Nenhum aberto: A-10, A-11, A-30, A-31 e A-39 fecharam em 2026-09-14 | — |
+| A-44 | **Os testes de banco escrevem no banco de desenvolvimento, e o que escrevem não pode ser apagado.** Sem variável de ambiente, os 13 arquivos com URL de teste, e o próprio app sob teste (`server/config.py:18`), caem em `localhost:15432/estoque`. Em 2026-09-14 eram 262 usuários de teste contra 8 reais, visíveis na tela `/usuarios`, com 3.262 linhas de auditoria e 417 movimentos. `movimento` e `auditoria` são append-only, então não há limpeza seletiva: só `make reset`. O CI não vê, porque usa banco efêmero. Primeiro sinal no [R-003 §4](../relatorios/R-003-seguranca-ciclo-1.md), tratado como limite | [T-052](./T-052-banco-de-teste-isolado.md) |
 ---
 
 ## 3. Abertos, anotados como limite conhecido
@@ -58,6 +58,7 @@ não serem redescobertas como se fossem novidade.
 | A-08b | Spike sem relatório R-001, e perguntas não commitadas antes da execução | A-002 | **R-001 entregue** (2026-09-09), T-017 fechada. A parte "perguntas antes do resultado" é **não recuperável** para o spike (usou os 17 casos da T-032); a disciplina passa a valer para os casos novos da [T-032](./T-032-suite-de-avaliacao.md) — ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md) |
 | A-42 | **`titulo` do schema é texto livre sem teto — e é onde a injeção pega.** Blocos e params têm teto de 12; o título, nenhum: `POST /api/views` aceita 1 MB, grava e devolve. Com `qwen2.5:7b` real, o texto hostil colado na pergunta chegou ao título em 5 de 6 perguntas, literalmente em 2. Não autoriza nada, mas é o único texto da composição escolhido de fora, exibido com cara de tela oficial | execução da T-033 ([R-003 §3](../relatorios/R-003-seguranca-ciclo-1.md)) | **Sem dono — decisão da equipe.** Recomendação: corrigir no ciclo, com teto (~120 caracteres) em `ViewSchema.titulo` e `NovaView.titulo`. Restrição nova em contrato congelado (§7) → tarefa de contrato. `test_cs01_titulo_de_um_megabyte_e_recusado` está `xfail(strict=True)` e reprova sozinho quando o teto entrar |
 | A-43 | **Escrita composta junto de leitura é aceita, e a checagem que deveria decidir nunca dispara.** `validar.py:113` exige `len(bloco.params) >= 0` (sempre verdadeiro) e `tamanho != "inteira"` (todo componente com `commands` é `inteira`, invariante 4). O RT compõe `[lote_lista, quarentena_liberar]` e os dois passam. O ADR-0005 diz "não é composto junto de outros **no mesmo bloco**", e isso tem duas leituras | execução da T-033 ([R-003 §3](../relatorios/R-003-seguranca-ciclo-1.md)) | Não é furo de autorização: gravar exige `POST /api/comandos`, com `requires`, CSRF e `If-Match`. **Decisão técnica, vira emenda ao ADR-0005**; qualquer que seja a leitura, a condição morta sai (`validar.py` é da T-013) |
+| A-45 | **O menu "Navegação" tem dois tipos de item, e eles se atrapalham.** Três itens fixos (`MENU`, `PainelNavegacao.tsx:24`) montam a tela no workspace; os demais são rotas (`NAV_ROTAS`). Reproduzido no navegador como Marco, em 2026-09-14: **(1)** em `/lotes`, clicar em "Vencimento" não muda a tela, porque `App.tsx:110` só volta para `/` a partir de `/v/:viewId`, e ainda marca "Vencimento" como atual; **(2)** em `/vencimento`, o item destacado é o primeiro "Vencimento", não o da rota, porque só os itens fixos gravam `itemAtual`; **(3)** "Vencimento" aparece duas vezes, e a mesma fila tem duas molduras: no workspace, com "schema do sistema", fixar e compartilhar; na rota, só com o título. É o "layout diferente" relatado pelo cliente | execução, a pedido do cliente | **Sem dono, e é trabalho: vira tarefa.** Recomendação: um menu só de rotas, com o destaque tirado da URL. Escreve em `App.tsx`, `PainelNavegacao.tsx` e `rotasOperacao.tsx` (T-031). Até lá, a [T-053](./T-053-e2e-playwright.md) prende o sintoma (1) num `test.fail()` |
 
 ---
 

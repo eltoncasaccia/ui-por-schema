@@ -188,6 +188,13 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | [T-050](./T-050-etag-na-leitura.md) | **Etag na leitura** — 6 dos 7 comandos exigem `If-Match` e nenhuma leitura devolve etag. Aberta testando a T-049 contra o servidor real ([A-41](./ACHADOS.md)) | A/C | G | T-049 | ✅ |
 | [T-051](./T-051-etag-multiplo-e-porta.md) | **Etag por linha** — `movimento_saida`/`movimento_descarte`/`movimento_estorno` (a pessoa escolhe o candidato depois de ler) e `controlado_autorizar` (bloc-level). Cortada da T-050 no levantamento; a "porta faltando" do levantamento original estava errada, corrigido no arquivo | A/C | G | T-050 | ✅ |
 
+### Abertas em 2026-09-14 — banco de teste e ponta a ponta
+
+| Id | Tarefa | Trilha | Tam. | Depende | Status |
+|---|---|---|---|---|---|
+| [T-052](./T-052-banco-de-teste-isolado.md) | **Banco de teste isolado** — os testes escreviam no banco de desenvolvimento, e append-only não se limpa ([A-44](./ACHADOS.md)) | E | M | — | ⬜ |
+| [T-053](./T-053-e2e-playwright.md) | **Testes de ponta a ponta com Playwright** — navegação, sessão real e catálogo por ator no navegador ([ADR-0033](../adr/0033-e2e-playwright-banco-proprio.md)); prende o bug do menu ([A-45](./ACHADOS.md)) num `test.fail()` | E/D | M | T-052 | ⬜ |
+
 ### W5 — Garantias e fechamento · até 4 sessões
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |

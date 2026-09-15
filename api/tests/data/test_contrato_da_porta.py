@@ -56,7 +56,7 @@ async def conexao() -> AsyncIterator[AsyncConnection]:
             yield c
         await eng.dispose()
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make seed`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
 
 
 async def _semear(c: AsyncConnection) -> None:

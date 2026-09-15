@@ -58,6 +58,7 @@ ficou prometido em três documentos e implementado em nenhum
 |---|---|
 | `make up` · `down` · `reset` · `logs` | sobe tudo · derruba · derruba **e APAGA os dados** · acompanha |
 | `make db-local` | publica o Postgres em `localhost:15432` — sem isso, teste local não roda |
+| `make db-teste` | cria, migra e semeia `estoque_teste`, **o** banco dos testes — idempotente |
 | `make migrate` · `make seed` | `alembic upgrade head` · dados da Bertoni, idempotente |
 | `make env` · `make env-completar` | o `.env` está completo? · acrescenta o que falta |
 | `make modelo` | provedor, modelo e modo em uso |
@@ -66,6 +67,11 @@ ficou prometido em três documentos e implementado em nenhum
 > mapeamento de porta. Rode `make db-local` **de novo** depois de migrar. Sem a
 > porta, nove testes de imutabilidade **pulam** — e teste que pula é teste que
 > não existe.
+>
+> **Os testes nunca gravam no banco `estoque`.** Gravam em `estoque_teste`, e
+> apontá-los para o de desenvolvimento para a suíte antes de coletar: o que um
+> teste grava em `movimento` e `auditoria` não se apaga (A-44). Migração nova?
+> `make db-teste` de novo.
 
 **Dois papéis de banco, e a diferença é regulatória:** `DATABASE_URL` usa o papel
 restrito; `DATABASE_URL_ADMIN`, o dono — e **só** migração e seed o usam.

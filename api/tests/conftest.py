@@ -3,6 +3,9 @@
 O conjunto de papeis E' o teste de permissao — remover um enfraquece a suite.
 """
 
+import os
+
+import banco
 import pytest
 
 from estoque.domain.identidade import (
@@ -10,6 +13,18 @@ from estoque.domain.identidade import (
     Ator,
     PapelId,
 )
+
+# O app sob teste le `DATABASE_URL` (`server/config.py`). Sem isto ele cairia no
+# padrao de desenvolvimento enquanto as fixtures gravam no banco de teste (T-052).
+# `setdefault`, e nao atribuicao: quem declara a variavel (o CI) continua sendo
+# lido — e' o que deixa o teste do A-27 conferir a configuracao de verdade.
+os.environ.setdefault("DATABASE_URL", banco.URL_APP_ASYNC)
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    erro = banco.erro_de_endereco()
+    if erro:
+        raise pytest.UsageError(erro)
 
 
 def ator(nome: str, papel: PapelId, unidades: set[str]) -> Ator:

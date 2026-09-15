@@ -54,7 +54,8 @@ Sonnet a executa igual por uma fração do orçamento de sessão.
 ## 3. Ambiente
 
 ```bash
-make db-local && make migrate     # e db-local DE NOVO: migrate derruba a porta
+make db-local && make db-teste    # o banco dos testes, nunca o de desenvolvimento
+make migrate && make db-local     # só se o banco de dev precisar: migrate derruba a porta
 make env                          # o .env está completo?
 ```
 

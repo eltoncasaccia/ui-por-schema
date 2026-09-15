@@ -22,6 +22,12 @@ logs:  ## acompanha os logs
 db-local:  ## publica o Postgres em localhost:15432 (só dev, exige -f explícito)
 	docker compose -f docker-compose.yml -f compose.local.yml up -d db
 
+# O banco dos testes, separado do de desenvolvimento (T-052, A-44): o que teste
+# grava em movimento e auditoria nao se apaga. `uv` local, e nao `compose run`,
+# que recriaria o container do banco sem a porta.
+db-teste:  ## cria, migra e semeia o estoque_teste — o banco dos testes (idempotente)
+	cd api && uv run python tests/banco.py
+
 migrate:  ## aplica as migrações
 	docker compose run --rm api alembic upgrade head
 
@@ -110,7 +116,7 @@ eval-livre:  ## só o modo livre — a pergunta original da v1
 
 check: lint typecheck test arch  ## tudo que o CI roda
 
-.PHONY: help up down reset logs db-local env env-completar modelo eval-livre migrate seed \
+.PHONY: help up down reset logs db-local db-teste env env-completar modelo eval-livre migrate seed \
 	gerar-indice types indice rn \
 	test test-api test-web typecheck typecheck-api typecheck-web \
 	lint lint-api lint-web arch arch-api arch-web \

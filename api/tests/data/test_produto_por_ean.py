@@ -5,8 +5,7 @@ achado A-11 aplicado desde o primeiro dia deste método: um fake mais permissivo
 que o adaptador faria a suíte de T-026 passar sobre um buraco, e o buraco aqui
 seria custo vazando para quem não tem `custo.ler`.
 
-Pula sem banco: `make db-local && make migrate && make seed`, e `make db-local`
-DE NOVO (o `migrate` recria o container sem a porta).
+Pula sem banco: `make db-local && make db-teste`.
 """
 
 import sys
@@ -120,13 +119,13 @@ async def conexao() -> AsyncIterator[AsyncConnection]:
                 await c.execute(sa.select(sa.func.count()).select_from(sa.text("produto")))
             ).scalar_one()
             if not n:
-                pytest.skip("sem produto no banco: rode `make seed`")
+                pytest.skip("sem produto no banco: rode `make db-teste`")
             yield c
         await eng.dispose()
     except pytest.skip.Exception:
         raise
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make seed`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
 
 
 async def test_ac4_bateria_contra_o_repositorio_real(conexao: AsyncConnection) -> None:

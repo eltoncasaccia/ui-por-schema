@@ -237,11 +237,15 @@ O banco precisa estar publicado em `localhost:15432`:
 make db-local    # publica o Postgres na porta local
 make migrate     # alembic upgrade head
 make seed        # dados da Bertoni (idempotente)
+make db-teste    # cria, migra e semeia o estoque_teste — o banco dos testes
 ```
 
 > ⚠️ `make migrate` recria o container **sem o mapeamento de porta**. Rode
 > `make db-local` de novo depois. Sem a porta, nove testes de imutabilidade
 > pulam — e teste que pula é teste que não existe.
+
+Os testes nunca gravam no banco `estoque`: usam o `estoque_teste`. O porquê está
+em [`docs/AMBIENTE.md`](docs/AMBIENTE.md).
 
 ### Verificar
 

@@ -9,13 +9,13 @@ A conexao e' a do papel `estoque_app`, nao a do dono. E' o papel com que a
 aplicacao roda de verdade, e o unico contra o qual os REVOKE da migracao 0001
 significam alguma coisa.
 
-Pulam sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pulam sem banco: `make db-local && make db-teste`.
 """
 
-import os
 import secrets
 from typing import Any
 
+import banco
 import pytest
 import sqlalchemy as sa
 from pydantic import BaseModel, Field
@@ -28,16 +28,10 @@ from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
 
-URL = os.environ.get(
-    "DATABASE_URL_TESTE_APP_ASYNC",
-    "postgresql+asyncpg://estoque_app:app@localhost:15432/estoque",
-)
+URL = banco.URL_APP_ASYNC
 # Sonda sincrona so' para decidir entre rodar e pular — o driver async nao
 # oferece jeito de perguntar "tem banco?" fora de um event loop.
-URL_SONDA = os.environ.get(
-    "DATABASE_URL_TESTE_APP",
-    "postgresql+psycopg://estoque_app:app@localhost:15432/estoque",
-)
+URL_SONDA = banco.URL_APP
 
 UNIDADE = "cd-matriz"
 LOTE = "t025-lote"
@@ -193,7 +187,7 @@ def motor() -> AsyncEngine:
         with sonda.connect():
             pass
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return create_async_engine(URL, future=True, poolclass=NullPool)
 
 

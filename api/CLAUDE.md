@@ -206,7 +206,10 @@ Convenções em [`.claude/skills/testes-python`](.claude/skills/). O resumo:
 - As sete personas estão em `tests/conftest.py` como fixture `personas`. **O
   conjunto de papéis É o teste de permissão** — remover um enfraquece a suíte.
 - Repositórios falsos para componentes: `tests/registry/fakes.py`.
-- Testes de banco (`tests/data/`) **pulam sem Postgres**. Rode `make db-local`.
+- Testes de banco **pulam sem Postgres** e gravam em `estoque_teste`, nunca no
+  banco de desenvolvimento. Rode `make db-local && make db-teste`. Os endereços
+  moram em `tests/banco.py` — importe de lá, não repita a URL no arquivo de
+  teste. Apontar para o banco de dev para a suíte antes de coletar (T-052).
 - Valor inválido de enum entra por `Model.model_validate({...})`, com
   dicionário — é assim que ele chega de verdade, vindo do JSON do modelo. Passar
   literal inválido como kwarg só briga com o verificador de tipos.

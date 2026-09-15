@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**49 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
+**50 concluídas · 1 parcial · 2 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -148,7 +148,7 @@ está pronto.
 
 | | Tarefa | Estado | Origem |
 |---|---|---|---|
-| T-052 | Banco de teste isolado | ⬜ | A-44. O banco de desenvolvimento foi limpo à mão com `make reset` em 2026-09-14; sem esta tarefa, o próximo `make test-api` suja de novo |
+| T-052 | Banco de teste isolado | ✅ | A-44 **fechado**. `estoque_teste` por `make db-teste`; endereços em `tests/banco.py`; suíte apontada para o dev para antes de coletar (2 negativos por processo filho, sabotados). 896 testes, nenhum skip por falta de banco; banco `estoque` com as mesmas contagens antes e depois da suíte |
 | T-053 | Testes de ponta a ponta com Playwright | ⬜ | ADR-0033 · A-45 (bug do menu, reproduzido no navegador) |
 
 ---

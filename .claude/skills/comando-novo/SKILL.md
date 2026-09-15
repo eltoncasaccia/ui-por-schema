@@ -157,7 +157,8 @@ documento nenhum: derive do enum `MotivoMovimento` e registre em
 **Contra Postgres real**, e não contra fake: o que se prova aqui — saldo,
 imutabilidade, `CHECK` de banco, concorrência — um duble provaria só que o teste
 não chamou nada. Copie a fixture `motor` de `test_saida_comandos.py`; ela **pula
-sem banco**, e teste que pula é teste que não existe (rode `make db-local`).
+sem banco**, e teste que pula é teste que não existe (rode `make db-local && make db-teste`).
+A URL vem de `tests/banco.py` — nunca repita o endereço no arquivo de teste.
 
 > Não dá para "resetar" o saldo entre testes: sem `DELETE` em `movimento`, cada
 > teste **mede antes e afirma sobre a diferença**. É mais chato e é o único jeito

@@ -12,22 +12,19 @@ para o dono, é aqui que quebra.
 O segundo teste é o par do A-20: `saldo_lote` deixou de ser materializada, e a
 prova é que ela acompanha uma escrita.
 
-Pulam sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pulam sem banco: `make db-local && make db-teste`.
 """
 
-import os
 import secrets
 
+import banco
 import pytest
 import sqlalchemy as sa
 from sqlalchemy import Engine
 
 from estoque.server.config import Config
 
-DONO = os.environ.get(
-    "DATABASE_URL_TESTE",
-    "postgresql+psycopg://estoque:troque-isto@localhost:15432/estoque",
-)
+DONO = banco.URL_DONO
 
 
 def _sincrona(url: str) -> str:
@@ -52,7 +49,7 @@ def app() -> Engine:
     # publicada. O teste não deve falhar por causa do host.
     eng = _motor(url) or _motor(url.replace("@db:5432", "@localhost:15432"))
     if eng is None:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return eng
 
 

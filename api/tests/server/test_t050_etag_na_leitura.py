@@ -6,7 +6,7 @@ corte foi registrado no arquivo dela): `quarentena_liberar` e
 `lote_status_acao`, os dois cujo etag é só sobre o `Lote` — `movimento_saida`
 soma `saldo` e fica para T-051.
 
-Pulam sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pulam sem banco: `make db-local && make db-teste`.
 """
 
 import secrets

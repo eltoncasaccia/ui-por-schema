@@ -7,8 +7,7 @@ A mesma bateria de escopo (RN-A01) roda contra o **fake** (sempre) e contra o
 **repositório real** ligado ao Postgres (pula sem banco). Um fake permissivo
 faria a suíte de T-022/T-023 passar sobre um buraco — é o achado A-11.
 
-Pula sem banco: `make db-local && make migrate && make seed`, e `make db-local`
-DE NOVO.
+Pula sem banco: `make db-local && make db-teste`.
 """
 
 import sys
@@ -133,13 +132,13 @@ async def conexao() -> AsyncIterator[AsyncConnection]:
                 await c.execute(sa.select(sa.func.count()).select_from(sa.text("recebimento")))
             ).scalar_one()
             if not n:
-                pytest.skip("sem recebimento no banco: rode `make seed`")
+                pytest.skip("sem recebimento no banco: rode `make db-teste`")
             yield c
         await eng.dispose()
     except pytest.skip.Exception:
         raise
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make seed`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
 
 
 async def test_bateria_contra_o_repositorio_real(conexao: AsyncConnection) -> None:

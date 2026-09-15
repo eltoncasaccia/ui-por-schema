@@ -8,23 +8,20 @@ Este teste é de BORDA, e não do componente: quem grava o evento de leitura é 
 endpoint (`server/app.py`), num lugar só, para toda leitura. Testar no componente
 provaria que o componente não faz — que é verdade e não é o AC.
 
-Pula sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pula sem banco: `make db-local && make db-teste`.
 """
 
-import os
 import secrets
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime, timedelta
 
+import banco
 import pytest
 import sqlalchemy as sa
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import Engine
 
-DONO = os.environ.get(
-    "DATABASE_URL_TESTE",
-    "postgresql+psycopg://estoque:troque-isto@localhost:15432/estoque",
-)
+DONO = banco.URL_DONO
 
 USUARIO = "t024-sandra"
 
@@ -36,7 +33,7 @@ def dono() -> Engine:
         with eng.connect():
             pass
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return eng
 
 

@@ -9,7 +9,7 @@ Dois formatos:
     isso em cada um — escrever com o etag da linha ERRADA (não a escolhida)
     tem que dar `conflito`, não só "etag velho".
 
-Pulam sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pulam sem banco: `make db-local && make db-teste`.
 """
 
 import secrets

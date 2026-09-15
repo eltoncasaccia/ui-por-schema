@@ -18,6 +18,38 @@ que você acha que provou.
 
 ---
 
+## Dois databases no mesmo Postgres: `estoque` e `estoque_teste`
+
+| Database | Quem grava | Criado por |
+|---|---|---|
+| `estoque` | você, pelo `make up` | o boot da API (migração e seed) |
+| `estoque_teste` | **só** os testes | `make db-teste` |
+
+Até a T-052, os testes gravavam no `estoque`. `movimento` e `auditoria` são
+append-only, então não há como apagar só o que um teste deixou. Em 2026-09-14 eram
+262 usuários de teste contra 8 reais, visíveis na tela `/usuarios`, e a única
+saída foi `make reset`, que levou junto as telas salvas. É o achado **A-44**.
+
+Três coisas sustentam a separação:
+
+- os endereços dos testes moram em `api/tests/banco.py`, e o padrão é
+  `estoque_teste`;
+- o `conftest.py` põe `DATABASE_URL` no banco de teste quando ninguém a declarou.
+  O app sob teste lê dali; sem isso, a fixture gravaria num banco e o servidor
+  leria de outro;
+- apontar qualquer um deles para o banco de desenvolvimento **para a suíte antes
+  de coletar**. Não pula: pular é o que o CI reprova, e o que esconderia a volta do
+  problema. Isso vale também para uma `DATABASE_URL` exportada do `.env`, que traz
+  o mesmo banco como `db:5432`.
+
+`make db-teste` roda `uv` local contra `localhost:15432`, e **não**
+`docker compose run`, que recriaria o container do banco sem a porta (a armadilha
+acima). É idempotente: rode de novo a cada migração nova.
+
+O CI não usa nada disso. Ele tem Postgres efêmero e declara as três variáveis.
+
+---
+
 ## Dois papéis de banco, e a diferença é regulatória
 
 | Variável | Papel | Quem usa |

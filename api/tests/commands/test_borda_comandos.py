@@ -8,14 +8,14 @@ A rota nova que esquece a protecao transversal e' o modo de falha mais comum de
 uma borda HTTP — e o motivo de o CSRF deste projeto ser middleware e nao
 dependencia por rota. O teste que prova isso e' o negativo, aqui embaixo.
 
-Pulam sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pulam sem banco: `make db-local && make db-teste`.
 """
 
-import os
 import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import banco
 import pytest
 import sqlalchemy as sa
 from httpx import ASGITransport, AsyncClient
@@ -25,10 +25,7 @@ from estoque.application.commands import pipeline
 from estoque.application.commands.tipos import Comando, ContextoComando, Efeito
 from estoque.data import modelos as m
 
-URL_DONO = os.environ.get(
-    "DATABASE_URL_TESTE",
-    "postgresql+psycopg://estoque:troque-isto@localhost:15432/estoque",
-)
+URL_DONO = banco.URL_DONO
 
 USUARIO = "t025-http-ivo"
 LOTE = "t025-http-lote"
@@ -115,7 +112,7 @@ def dono() -> sa.Engine:
         with eng.connect():
             pass
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return eng
 
 

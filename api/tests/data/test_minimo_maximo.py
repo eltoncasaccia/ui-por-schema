@@ -6,16 +6,15 @@ cada lado com o SEU dado e o esperado lido da MESMA fonte que o alimentou —
 do outro. Constante copiada entre os dois lados faria a bateria comparar coisas
 diferentes e passar.
 
-Pula sem banco: `make db-local && make migrate && make seed`, e `make db-local`
-DE NOVO (o `migrate` recria o container sem a porta).
+Pula sem banco: `make db-local && make db-teste`.
 """
 
-import os
 import sys
 from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Protocol
 
+import banco
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
@@ -37,9 +36,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "registry"))
 import fakes
 
 TODAS = frozenset({"cd-matriz", "cd-refrigerado", "filial-uberlandia"})
-URL_DONO = os.environ.get(
-    "DATABASE_URL_TESTE", "postgresql+psycopg://estoque:troque-isto@localhost:15432/estoque"
-)
+URL_DONO = banco.URL_DONO
 PRODUTO_SECO = next(str(p[0]) for p in seed.PRODUTOS if p[5] != "termolabil")
 
 
@@ -105,7 +102,7 @@ async def conexao() -> AsyncIterator[AsyncConnection]:
             yield c
         await eng.dispose()
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make seed`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
 
 
 async def test_ac3_bateria_contra_o_repositorio_real(conexao: AsyncConnection) -> None:
@@ -131,7 +128,7 @@ def _dono() -> sa.Engine:
         with eng.connect():
             pass
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make seed`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return eng
 
 

@@ -41,7 +41,7 @@ não se perder.
 
 | # | Achado | Tarefa |
 |---|---|---|
-| A-44 | **Os testes de banco escrevem no banco de desenvolvimento, e o que escrevem não pode ser apagado.** Sem variável de ambiente, os 13 arquivos com URL de teste, e o próprio app sob teste (`server/config.py:18`), caem em `localhost:15432/estoque`. Em 2026-09-14 eram 262 usuários de teste contra 8 reais, visíveis na tela `/usuarios`, com 3.262 linhas de auditoria e 417 movimentos. `movimento` e `auditoria` são append-only, então não há limpeza seletiva: só `make reset`. O CI não vê, porque usa banco efêmero. Primeiro sinal no [R-003 §4](../relatorios/R-003-seguranca-ciclo-1.md), tratado como limite | [T-052](./T-052-banco-de-teste-isolado.md) |
+| — | Nenhum aberto: A-44 fechou em 2026-09-14, com a [T-052](./T-052-banco-de-teste-isolado.md) | — |
 ---
 
 ## 3. Abertos, anotados como limite conhecido

@@ -10,15 +10,15 @@ cada requisicao, do banco (`RN-A06`), entao nao ha como injetar um ator falso
 pela borda. Essa e' a propriedade que se quer, nao um obstaculo a contornar — e
 por isso estes testes pulam sem Postgres em vez de fingir com um duble.
 
-Pulam sem banco: `make db-local && make migrate && make seed`, e `make db-local`
-DE NOVO (o `migrate` recria o container sem a porta).
+Pulam sem banco: `make db-local && make db-teste`. Gravam no `estoque_teste`,
+nunca no banco de desenvolvimento (T-052).
 """
 
-import os
 import secrets
 from collections.abc import Iterable
 from datetime import UTC, datetime, timedelta
 
+import banco
 import pytest
 import sqlalchemy as sa
 from httpx import ASGITransport, AsyncClient
@@ -27,10 +27,7 @@ from sqlalchemy import Engine
 # O papel DONO: os testes precisam inserir usuario e sessao, e `estoque_app` nao
 # pode (achado A-27). A aplicacao sob teste continua conectando como `estoque_app`,
 # que e' o ponto do A-27 — o teste nao pode emprestar privilegio a ela.
-URL_DONO = os.environ.get(
-    "DATABASE_URL_TESTE",
-    "postgresql+psycopg://estoque:troque-isto@localhost:15432/estoque",
-)
+URL_DONO = banco.URL_DONO
 
 UNIDADES: dict[str, tuple[str, str]] = {
     "cd-matriz": ("Matriz", "seco"),
@@ -50,7 +47,7 @@ def motor_dono() -> Engine:
             with eng.connect():
                 pass
         except Exception:
-            pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+            pytest.skip("sem banco: rode `make db-local && make db-teste`")
         _motor = eng
     return _motor
 

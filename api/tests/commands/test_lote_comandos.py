@@ -9,15 +9,15 @@ forjada faz — e é a única forma de provar `RN-A03`.
 As seis personas que não são a Helena aparecem uma a uma. Um `for` sobre todas
 provaria menos: com cinco recusadas e uma esquecida, o laço ainda fica verde.
 
-Pulam sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pulam sem banco: `make db-local && make db-teste`.
 """
 
-import os
 import secrets
 from dataclasses import replace
 from datetime import date, timedelta
 from typing import Any
 
+import banco
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
@@ -29,14 +29,8 @@ from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
 
-URL = os.environ.get(
-    "DATABASE_URL_TESTE_APP_ASYNC",
-    "postgresql+asyncpg://estoque_app:app@localhost:15432/estoque",
-)
-URL_SONDA = os.environ.get(
-    "DATABASE_URL_TESTE_APP",
-    "postgresql+psycopg://estoque_app:app@localhost:15432/estoque",
-)
+URL = banco.URL_APP_ASYNC
+URL_SONDA = banco.URL_APP
 
 UNIDADE = "cd-matriz"
 LOTE = "t027-lote"
@@ -54,7 +48,7 @@ def motor() -> AsyncEngine:
         with sonda.connect():
             pass
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return create_async_engine(URL, future=True, poolclass=NullPool)
 
 

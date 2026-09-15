@@ -9,23 +9,16 @@ A aplicacao conecta como `estoque_app`, um papel SEM privilegio de UPDATE/DELETE
 nessas tabelas. A migracao roda como dono — e' a separacao que faz o REVOKE
 valer, porque o dono de uma tabela ignora privilegios negados.
 
-Pulam quando nao ha banco: `make db-local` para rodar.
+Pulam quando nao ha banco: `make db-local && make db-teste` para rodar.
 """
 
-import os
-
+import banco
 import pytest
 import sqlalchemy as sa
 from sqlalchemy import Engine
 
-URL_APP = os.environ.get(
-    "DATABASE_URL_TESTE_APP",
-    "postgresql+psycopg://estoque_app:app@localhost:15432/estoque",
-)
-URL_DONO = os.environ.get(
-    "DATABASE_URL_TESTE",
-    "postgresql+psycopg://estoque:troque-isto@localhost:15432/estoque",
-)
+URL_APP = banco.URL_APP
+URL_DONO = banco.URL_DONO
 
 
 def _motor(url: str) -> Engine | None:
@@ -41,7 +34,7 @@ def _motor(url: str) -> Engine | None:
 def app() -> Engine:
     eng = _motor(URL_APP)
     if eng is None:
-        pytest.skip("sem banco: rode `make db-local && make migrate`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return eng
 
 

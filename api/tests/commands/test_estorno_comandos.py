@@ -9,14 +9,14 @@ escrita na tarefa). Ausência de botão não é ausência de endpoint: a varredu
 sai do `openapi()` do app real, para que uma rota nova de exclusão reprove por
 padrão em vez de passar por ninguém ter olhado.
 
-Pulam sem banco: `make db-local && make migrate`, e `make db-local` DE NOVO.
+Pulam sem banco: `make db-local && make db-teste`.
 """
 
-import os
 import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import banco
 import pytest
 import sqlalchemy as sa
 from httpx import ASGITransport, AsyncClient
@@ -32,18 +32,9 @@ from estoque.data import modelos as m
 from estoque.domain.erros import ErroDominio
 from estoque.domain.identidade import Ator
 
-URL = os.environ.get(
-    "DATABASE_URL_TESTE_APP_ASYNC",
-    "postgresql+asyncpg://estoque_app:app@localhost:15432/estoque",
-)
-URL_SONDA = os.environ.get(
-    "DATABASE_URL_TESTE_APP",
-    "postgresql+psycopg://estoque_app:app@localhost:15432/estoque",
-)
-URL_DONO = os.environ.get(
-    "DATABASE_URL_TESTE",
-    "postgresql+psycopg://estoque:troque-isto@localhost:15432/estoque",
-)
+URL = banco.URL_APP_ASYNC
+URL_SONDA = banco.URL_APP
+URL_DONO = banco.URL_DONO
 
 # Um produto por lote, como na T-028: o FEFO propõe entre os lotes do MESMO
 # produto, e lotes irmãos fariam cada saída deste arquivo exigir justificativa
@@ -71,7 +62,7 @@ def motor() -> AsyncEngine:
         with sonda.connect():
             pass
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return create_async_engine(URL, future=True, poolclass=NullPool)
 
 
@@ -84,7 +75,7 @@ def dono() -> sa.Engine:
         with eng.connect():
             pass
     except Exception:
-        pytest.skip("sem banco: rode `make db-local && make migrate && make db-local`")
+        pytest.skip("sem banco: rode `make db-local && make db-teste`")
     return eng
 
 

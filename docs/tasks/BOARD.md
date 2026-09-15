@@ -192,7 +192,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-052](./T-052-banco-de-teste-isolado.md) | **Banco de teste isolado** — os testes escreviam no banco de desenvolvimento, e append-only não se limpa ([A-44](./ACHADOS.md)) | E | M | — | ⬜ |
+| [T-052](./T-052-banco-de-teste-isolado.md) | **Banco de teste isolado** — os testes escreviam no banco de desenvolvimento, e append-only não se limpa ([A-44](./ACHADOS.md)) | E | M | — | 🔵 Claude · 2026-09-14 |
 | [T-053](./T-053-e2e-playwright.md) | **Testes de ponta a ponta com Playwright** — navegação, sessão real e catálogo por ator no navegador ([ADR-0033](../adr/0033-e2e-playwright-banco-proprio.md)); prende o bug do menu ([A-45](./ACHADOS.md)) num `test.fail()` | E/D | M | T-052 | ⬜ |
 
 ### W5 — Garantias e fechamento · até 4 sessões

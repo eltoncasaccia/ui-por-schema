@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom'
 import type { Bloco, Eu } from '../../api'
+import { composicaoDaTela } from '../../estado/sessao'
 import { Composicao } from '../../render/motor'
+import { CabecalhoTela } from '../../shell/CabecalhoTela'
 import type { RotaOperacao } from '../layout/rotasOperacao'
 
 /**
@@ -16,9 +18,7 @@ export function TelaOperacao({ rota, eu }: { rota: RotaOperacao; eu: Eu }) {
 
   return (
     <main className="workspace">
-      <header className="workspace-cabeca">
-        <h1 className="workspace-titulo">{rota.rotulo}</h1>
-      </header>
+      <CabecalhoTela titulo={rota.rotulo} composicao={composicaoDaTela(rota.rotulo, [bloco])} />
       <div className="workspace-corpo">
         <Composicao blocos={[bloco]} atorId={eu.id} />
       </div>

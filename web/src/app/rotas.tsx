@@ -88,3 +88,11 @@ export function useRotaView(): {
   const fechar = useCallback(() => irPara('/'), [])
   return { viewId, abrir, fechar }
 }
+
+/**
+ * O caminho corrente, reativo como `useRotaView`. Para quem vive FORA do
+ * `BrowserRouter` da T-031 — a navegação lateral — e não alcança `useLocation`.
+ */
+export function useCaminho(): string {
+  return useSyncExternalStore(assinar, () => globalThis.location?.pathname ?? '/', () => '/')
+}

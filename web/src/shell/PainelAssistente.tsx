@@ -1,13 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { ErroApi, api, type Eu } from '../api'
+import { irPara } from '../app/rotas'
 import { Composicao as Render } from '../render/motor'
 import { Icone } from '../ui/icones'
 import { sessao, useSessao, viewKeyLocal } from '../estado/sessao'
 
-export function PainelAssistente({
-  eu, aoFechar, aoCompartilhar,
-}: { eu: Eu; aoFechar: () => void; aoCompartilhar: (composicaoId: string) => void }) {
+export function PainelAssistente({ eu, aoFechar }: { eu: Eu; aoFechar: () => void }) {
   const { conversa, composicoes, pensando, fixadas } = useSessao()
   const [rascunho, setRascunho] = useState('')
   const cat = useQuery({ queryKey: [eu.id, 'catalogo'], queryFn: api.catalogo })
@@ -81,6 +80,7 @@ export function PainelAssistente({
           if (m.papel === 'nota') return <p key={i} className="msg-nota">{m.texto}</p>
           const c = composicoes[m.composicaoId]
           if (!c) return null
+          const fixada = fixadas.some((f) => f.viewKey === c.viewKey)
           return (
             <div key={i}>
               <div className="composicao-inline">
@@ -90,17 +90,19 @@ export function PainelAssistente({
                       uma resposta boa costuma ser guardada ou repassada na hora. */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <button
-                      className={`estrela ${fixadas.some((f) => f.viewKey === c.viewKey) ? 'is-fixada' : ''}`}
+                      className={`estrela ${fixada ? 'is-fixada' : ''}`}
                       onClick={() => sessao.fixar(c)}
-                      aria-pressed={fixadas.some((f) => f.viewKey === c.viewKey)}
+                      aria-pressed={fixada}
                       aria-label="Fixar esta resposta" title="Fixar"
-                    ><Icone.Estrela tamanho={15} preenchida={fixadas.some((f) => f.viewKey === c.viewKey)} /></button>
-                    <button className="estrela" onClick={() => aoCompartilhar(c.id)}
+                    ><Icone.Estrela tamanho={15} preenchida={fixada} /></button>
+                    <button className="estrela" onClick={() => sessao.compartilhar(c)}
                       aria-label="Compartilhar esta resposta" title="Compartilhar">
                       <Icone.Compartilhar tamanho={15} />
                     </button>
+                    {/* O workspace só aparece em `/`: sem navegar, numa rota
+                        como `/lotes` o botão trocava a composição fora da vista. */}
                     <button className="btn btn-primario" style={{ padding: '3px 9px', fontSize: 11 }}
-                      onClick={() => sessao.aoWorkspace(c.id)}>
+                      onClick={() => { sessao.aoWorkspace(c.id); irPara('/') }}>
                       ao workspace
                     </button>
                   </div>

@@ -33,11 +33,12 @@ export function App() {
   const [painel, setPainel] = useState<PainelId | null>('navegacao')
   const [assistente, setAssistente] = useState(true)
   const [debug, setDebug] = useState(false)
-  const [compartilhando, setCompartilhando] = useState<string | null>(null)
   const [itemAtual, setItemAtual] = useState<string | null>(null)
   const [erroRota, setErroRota] = useState<string | null>(null)
   const [tema, setTema] = useTema()
-  const { composicoes, noWorkspace } = useSessao()
+  // Vem da sessão, e não de estado local: o botão de compartilhar mora em
+  // qualquer tela — rota, workspace ou conversa —, e nenhuma delas é filha daqui.
+  const { compartilhando } = useSessao()
   const largura = useLargura()
   const { viewId } = useRotaView()
 
@@ -99,15 +100,14 @@ export function App() {
   if (carregando) return <p className="vazio" style={{ padding: 32 }}>carregando…</p>
   if (!eu) return <Login aoEntrar={setEu} />
 
-  const atual = noWorkspace ? composicoes[noWorkspace] : undefined
-  const aCompartilhar = compartilhando ? composicoes[compartilhando] : undefined
   const estreito = largura < LIMITE_ESTREITO
 
   function abrir(titulo: string, blocos: Bloco[], item: string | null = null) {
     setItemAtual(item)
-    // Sair do endereço da view ao abrir outra coisa: sem isso, um F5 depois de
-    // clicar no menu reabriria a tela compartilhada, e não a que está na frente.
-    if (viewId) irPara('/')
+    // O workspace só está na tela em `/`. Sem voltar para lá, o clique no menu a
+    // partir de uma rota (`/lotes`) montava a composição fora da vista (A-45), e
+    // um F5 numa view compartilhada reabriria a tela errada.
+    irPara('/')
     sessao.compos({
       id: crypto.randomUUID(), titulo, origem: 'sistema', blocos,
       schema: { versao: 1, blocos: blocos.map((b) => ({ tipo: b.tipo, params: b.params })) },
@@ -215,12 +215,7 @@ export function App() {
             </div>
           </div>
         )}
-        {!erroRota && (
-          <Roteador
-            eu={eu}
-            workspace={<Workspace eu={eu} aoCompartilhar={() => atual && setCompartilhando(atual.id)} />}
-          />
-        )}
+        {!erroRota && <Roteador eu={eu} workspace={<Workspace eu={eu} />} />}
 
         {assistente && !estreito && (
           <div className="divisor" role="separator" tabIndex={0} aria-label="Redimensionar assistente"
@@ -230,10 +225,7 @@ export function App() {
           <>
             {estreito && <button className="veu" onClick={() => setAssistente(false)} aria-label="Fechar assistente" />}
             <aside className="assistente-dock" style={estreito ? undefined : { width: dock.largura, flex: 'none' }}>
-              <PainelAssistente
-                eu={eu} aoFechar={() => setAssistente(false)}
-                aoCompartilhar={(id) => setCompartilhando(id)}
-              />
+              <PainelAssistente eu={eu} aoFechar={() => setAssistente(false)} />
             </aside>
           </>
         )}
@@ -241,11 +233,11 @@ export function App() {
 
       {debug && <PainelDebug eu={eu} aoFechar={() => setDebug(false)} />}
 
-      {aCompartilhar && (
+      {compartilhando && (
         <Compartilhar
-          atorId={eu.id} titulo={aCompartilhar.titulo}
-          blocos={aCompartilhar.blocos} schema={aCompartilhar.schema}
-          aoFechar={() => setCompartilhando(null)}
+          atorId={eu.id} titulo={compartilhando.titulo}
+          blocos={compartilhando.blocos} schema={compartilhando.schema}
+          aoFechar={() => sessao.compartilhar(null)}
         />
       )}
     </div>

@@ -145,6 +145,50 @@ describe('AC-4 · navegação lateral filtrada pelo catálogo do ator', () => {
   })
 })
 
+// --- A-45 · o menu seleciona o que está na tela --------------------------------
+
+describe('A-45 · seleção e itens do menu', () => {
+  const CATALOGO: EntradaCatalogo[] = ['lote_lista', 'fila_vencimento', 'estoque_indicador'].map(
+    (id) => ({ id, label: '', description: '', examples: [], params: {} }),
+  )
+
+  it('a rota aberta fica selecionada', async () => {
+    catalogoMock.mockResolvedValue(CATALOGO)
+    history.replaceState(null, '', '/lotes')
+    envolver(<PainelNavegacao atual={null} aoAbrir={() => {}} atorId="u-marco" />)
+    expect(await screen.findByRole('button', { name: /^Lotes/ })).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('fora de /, o último indicador aberto NÃO fica selecionado', async () => {
+    catalogoMock.mockResolvedValue(CATALOGO)
+    history.replaceState(null, '', '/lotes')
+    envolver(<PainelNavegacao atual="quarentena" aoAbrir={() => {}} atorId="u-marco" />)
+    expect(await screen.findByRole('button', { name: /^Quarentena/ })).not.toHaveAttribute('aria-current')
+    expect(screen.getAllByRole('button', { current: 'page' })).toHaveLength(1)
+  })
+
+  it('em /, o indicador aberto fica selecionado', async () => {
+    catalogoMock.mockResolvedValue(CATALOGO)
+    history.replaceState(null, '', '/')
+    envolver(<PainelNavegacao atual="quarentena" aoAbrir={() => {}} atorId="u-marco" />)
+    expect(await screen.findByRole('button', { name: /^Quarentena/ })).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('"Vencimento" aparece uma vez só', async () => {
+    catalogoMock.mockResolvedValue(CATALOGO)
+    envolver(<PainelNavegacao atual={null} aoAbrir={() => {}} atorId="u-marco" />)
+    await screen.findByRole('button', { name: /^Lotes/ })
+    expect(screen.getAllByRole('button', { name: /^Vencimento/ })).toHaveLength(1)
+  })
+
+  it('indicador fora do catálogo do ator não aparece', async () => {
+    catalogoMock.mockResolvedValue([{ id: 'lote_lista', label: '', description: '', examples: [], params: {} }])
+    envolver(<PainelNavegacao atual={null} aoAbrir={() => {}} atorId="u-rafael" />)
+    await screen.findByRole('button', { name: /^Lotes/ })
+    expect(screen.queryByRole('button', { name: /^Quarentena/ })).toBeNull()
+  })
+})
+
 // --- AC-5 · recusa no servidor, cliente não finge sucesso ----------------------
 
 describe('AC-5 · acesso direto negado no servidor', () => {

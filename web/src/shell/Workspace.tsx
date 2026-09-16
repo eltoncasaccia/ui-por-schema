@@ -1,10 +1,10 @@
 import type { Eu } from '../api'
 import { Composicao as Render } from '../render/motor'
-import { sessao, useSessao } from '../estado/sessao'
-import { Icone } from '../ui/icones'
+import { useSessao } from '../estado/sessao'
+import { CabecalhoTela } from './CabecalhoTela'
 
-export function Workspace({ eu, aoCompartilhar }: { eu: Eu; aoCompartilhar: () => void }) {
-  const { composicoes, noWorkspace, fixadas } = useSessao()
+export function Workspace({ eu }: { eu: Eu }) {
+  const { composicoes, noWorkspace } = useSessao()
   const c = noWorkspace ? composicoes[noWorkspace] : undefined
 
   if (!c) {
@@ -22,34 +22,15 @@ export function Workspace({ eu, aoCompartilhar }: { eu: Eu; aoCompartilhar: () =
     )
   }
 
-  const fixada = fixadas.some((f) => f.viewKey === c.viewKey)
-
   return (
     <main className="workspace">
-      <header className="workspace-cabeca">
-        <div style={{ minWidth: 0 }}>
-          <h1 className="workspace-titulo" style={{ overflowWrap: 'anywhere' }}>{c.titulo}</h1>
-          <div className="workspace-sub">
-            <span className={`marca-origem ${c.origem === 'assistente' ? 'marca-assistente' : ''}`}>
-              {c.origem === 'assistente' ? 'schema do assistente' : 'schema do sistema'}
-            </span>
-            <span className="suave">{c.blocos.length} componente{c.blocos.length === 1 ? '' : 's'}</span>
-            <span className="mono fraco" style={{ fontSize: 11 }}>{c.viewKey}</span>
-          </div>
-        </div>
-        <div className="workspace-acoes">
-          {/* Só a estrela: o rótulo repetia o que o ícone já diz, e o estado
-              (fixada ou não) fica no preenchimento, não num texto. */}
-          <button className={`estrela ${fixada ? 'is-fixada' : ''}`} onClick={() => sessao.fixar(c)}
-            aria-pressed={fixada} aria-label={fixada ? 'Desafixar view' : 'Fixar view'}
-            title={fixada ? 'Desafixar' : 'Fixar'}>
-            <Icone.Estrela tamanho={16} preenchida={fixada} />
-          </button>
-          <button className="btn" onClick={aoCompartilhar} aria-label="Compartilhar view">
-            <Icone.Compartilhar tamanho={15} /> <span className="so-largo">Compartilhar</span>
-          </button>
-        </div>
-      </header>
+      <CabecalhoTela titulo={c.titulo} composicao={c}>
+        <span className={`marca-origem ${c.origem === 'assistente' ? 'marca-assistente' : ''}`}>
+          {c.origem === 'assistente' ? 'schema do assistente' : 'schema do sistema'}
+        </span>
+        <span className="suave">{c.blocos.length} componente{c.blocos.length === 1 ? '' : 's'}</span>
+        <span className="mono fraco" style={{ fontSize: 11 }}>{c.viewKey}</span>
+      </CabecalhoTela>
       <div className="workspace-corpo">
         <Render blocos={c.blocos} atorId={eu.id} />
       </div>

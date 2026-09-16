@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { Bloco, Eu } from '../../api'
+import { composicaoDaTela } from '../../estado/sessao'
 import { Composicao } from '../../render/motor'
+import { CabecalhoTela } from '../../shell/CabecalhoTela'
 
 /**
  * `/saida` é a exceção da tabela: `movimento_saida.Params.produto_id` é
@@ -24,9 +26,8 @@ export function TelaSaida({ eu }: { eu: Eu }) {
   if (!confirmado) {
     return (
       <main className="workspace">
-        <header className="workspace-cabeca">
-          <h1 className="workspace-titulo">Saída</h1>
-        </header>
+        {/* Sem produto ainda não há tela para fixar nem compartilhar. */}
+        <CabecalhoTela titulo="Saída" />
         <div className="workspace-corpo">
           <div className="cartao cartao-corpo">
             <p className="vazio">Informe o id do produto para começar a separação.</p>
@@ -55,9 +56,7 @@ export function TelaSaida({ eu }: { eu: Eu }) {
   const bloco: Bloco = { tipo: 'movimento_saida', params: { produto_id: produtoId }, tamanho: 'inteira' }
   return (
     <main className="workspace">
-      <header className="workspace-cabeca">
-        <h1 className="workspace-titulo">Saída</h1>
-      </header>
+      <CabecalhoTela titulo="Saída" composicao={composicaoDaTela('Saída', [bloco])} />
       <div className="workspace-corpo">
         <Composicao blocos={[bloco]} atorId={eu.id} />
       </div>

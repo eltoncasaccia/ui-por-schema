@@ -42,12 +42,16 @@ interface Estado {
   fixadas: { viewKey: string; titulo: string; blocos: Bloco[] }[]
   traces: { pergunta: string; trace: Trace; em: number }[]
   pensando: boolean
+  /** A composição com o diálogo de compartilhar aberto, venha de que tela vier. */
+  compartilhando: Composicao | null
 }
 
-let estado: Estado = {
+const VAZIO: Estado = {
   conversa: [], composicoes: {}, noWorkspace: null,
-  fixadas: [], traces: [], pensando: false,
+  fixadas: [], traces: [], pensando: false, compartilhando: null,
 }
+
+let estado: Estado = VAZIO
 const ouvintes = new Set<() => void>()
 
 function definir(parcial: Partial<Estado>) {
@@ -102,7 +106,26 @@ export const sessao = {
     })
   },
   limpar: () => { definir({ conversa: [], pensando: false }) },
-  reset() { estado = { conversa: [], composicoes: {}, noWorkspace: null, fixadas: [], traces: [], pensando: false }; ouvintes.forEach((o) => o()) },
+  /** Abre — ou fecha, com `null` — o diálogo de compartilhar, de qualquer tela,
+   *  sem callback atravessando o roteador. */
+  compartilhar: (c: Composicao | null) => { definir({ compartilhando: c }) },
+  reset() { estado = VAZIO; ouvintes.forEach((o) => o()) },
+}
+
+/**
+ * A composição de uma tela de rota, no mesmo formato que o menu e o assistente
+ * produzem — é o que deixa fixar e compartilhar funcionarem igual em toda tela.
+ */
+export function composicaoDaTela(titulo: string, blocos: Bloco[]): Composicao {
+  const viewKey = viewKeyLocal(blocos)
+  return {
+    id: `tela-${viewKey}`,
+    titulo,
+    origem: 'sistema',
+    blocos,
+    schema: { versao: 1, blocos: blocos.map((b) => ({ tipo: b.tipo, params: b.params })) },
+    viewKey,
+  }
 }
 
 export function useSessao(): Estado {

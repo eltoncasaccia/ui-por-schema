@@ -74,9 +74,11 @@ web/CLAUDE.md                              seção Testes
       lote aparece. *(negativo)*
 - [ ] **AC-6** Cada item de rota do menu de Marco leva ao path da tabela
       `ROTAS_OPERACAO` e ao título correspondente.
-- [ ] **AC-7** O A-45 fica preso num `test.fail()`: em `/lotes`, clicar no primeiro
-      "Vencimento" deve mostrar a fila de vencimento. Hoje não mostra, então o teste
-      passa. Quando o menu for corrigido, ele reprova sozinho e obriga a virar `test`.
+- [ ] **AC-7** A navegação do A-45 continua certa no navegador de verdade: a partir
+      de `/lotes`, clicar num indicador abre o workspace em `/`, e o item selecionado
+      é sempre o da tela aberta, inclusive depois do "voltar" do navegador. *(O A-45
+      foi corrigido em 2026-09-14, antes desta tarefa; o `test.fail()` previsto
+      virou teste comum.)*
 - [ ] **AC-8** Sabotagem: sem o filtro de catálogo (`PainelNavegacao.tsx:45`), o AC-3
       fica vermelho. Registrado no fechamento, não commitado.
 - [ ] **AC-9** Nenhum `waitForTimeout` em `web/e2e/`, e o servidor de e2e sobe sem
@@ -86,7 +88,8 @@ web/CLAUDE.md                              seção Testes
 
 ## Não faz
 
-- **Corrigir o menu (A-45):** é tarefa própria, e esta só prende o bug.
+- **Corrigir o menu (A-45):** já foi corrigido em 2026-09-14. Esta tarefa só prova
+  a correção no navegador.
 - **Linhas clicáveis e cadastro de usuário:** esperam decisão do cliente.
 - **Testar o assistente com modelo real:** custa token (ADR-0013).
 - **Firefox, WebKit e layout estreito:** ficam registrados no ADR-0033 como não

@@ -39,6 +39,10 @@ Regras:
 - Se a pergunta nao puder ser respondida com o catalogo, devolva
   {"versao": 1, "blocos": []}.
 - Prefira poucos blocos. Um bloco costuma bastar.
+- Se a pergunta for VAGA e couber em mais de um componente (ex.: "quero
+  registrar", "quero ver"), NAO escolha por conta propria: devolva
+  {"versao": 1, "blocos": [], "esclarecer": ["<id>", "<id>"]} com ate 4 ids do
+  catalogo, para a pessoa escolher. Fora desse caso, `esclarecer` e' [].
 """
 
 

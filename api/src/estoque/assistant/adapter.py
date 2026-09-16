@@ -74,10 +74,13 @@ def json_schema_do_catalogo(catalogo: Sequence[Mapping[str, Any]]) -> dict[str, 
                 },
             }
         )
+    ids = [c["id"] for c in catalogo]
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["versao", "titulo", "blocos"],
+        # `esclarecer` e' obrigatorio aqui porque `strict` exige toda propriedade
+        # em `required`; vazio e' o caso comum.
+        "required": ["versao", "titulo", "blocos", "esclarecer"],
         "properties": {
             "versao": {"type": "integer", "const": 1},
             "titulo": {"type": ["string", "null"]},
@@ -85,6 +88,11 @@ def json_schema_do_catalogo(catalogo: Sequence[Mapping[str, Any]]) -> dict[str, 
                 "type": "array",
                 "maxItems": 12,
                 "items": {"anyOf": ramos} if ramos else {"type": "object"},
+            },
+            "esclarecer": {
+                "type": "array",
+                "maxItems": 4,
+                "items": {"enum": ids} if ids else {"type": "string"},
             },
         },
     }

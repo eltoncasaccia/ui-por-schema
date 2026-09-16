@@ -335,11 +335,17 @@ class ViewSchema(BaseModel):
     versao: Literal[1]
     titulo: str | None = None
     blocos: tuple[Bloco, ...]
+    esclarecer: tuple[ComponentId, ...] = ()   # rev. 2026-09-14 — até 4, ids
 ```
 
 **O que o schema não tem, e nunca terá:** markup, estilo, layout livre, valor
 literal de dado, expressão. Acrescentar qualquer um exige revogar o
 [ADR-0001](../adr/0001-ui-por-schema.md).
+
+**`esclarecer` (rev. 2026-09-14, [ADR-0034](../adr/0034-esclarecer-por-ids.md)):** para uma pergunta vaga ("quero registrar"),
+o modelo devolve até 4 ids candidatos, validados contra o catálogo do ator; o
+rótulo que a pessoa lê vem do registry. Não é texto: uma pergunta escrita pelo
+modelo seria o `titulo` do A-42 outra vez.
 
 ### Os dois identificadores · [ADR-0021](../adr/0021-viewkey-e-viewid.md)
 

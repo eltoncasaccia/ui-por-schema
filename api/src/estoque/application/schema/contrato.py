@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 # a pilha nem consumir memoria.
 MAX_BLOCOS = 12
 MAX_PARAMS = 12
+MAX_ESCLARECER = 4
 
 
 class Bloco(BaseModel):
@@ -38,3 +39,8 @@ class ViewSchema(BaseModel):
     # obedecer, e a suíte de avaliação registrava os 6 casos negativos como
     # schema inválido — quando "não compor" era exatamente o certo.
     blocos: tuple[Bloco, ...] = Field(max_length=MAX_BLOCOS)
+    # Pergunta vaga ("quero registrar") que cabe em mais de um componente: o
+    # modelo devolve os IDS candidatos em vez de escolher por conta propria.
+    # Ids, nunca texto — o que a pessoa le e' o `label` do registry, escrito por
+    # nos. Um campo de pergunta livre seria o `titulo` do A-42 outra vez.
+    esclarecer: tuple[str, ...] = Field(default=(), max_length=MAX_ESCLARECER)

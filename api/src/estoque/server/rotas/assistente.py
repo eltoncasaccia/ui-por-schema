@@ -130,10 +130,16 @@ async def compor(
         )
 
     schema = resultado.schema if resultado else None
+    # O rotulo da opcao sai do catalogo, nunca do modelo: ids ja' validados.
+    rotulos = {str(e["id"]): str(e.get("label") or e["id"]) for e in cat}
     return ok(
         {
             "schema": schema.model_dump() if schema else None,
             "blocos": [bloco_resposta(b) for b in (schema.blocos if schema else ())],
+            "esclarecer": [
+                {"id": i, "label": rotulos.get(i, i)}
+                for i in (schema.esclarecer if schema else ())
+            ],
         },
         trace=r.trace.resumo(),
     )

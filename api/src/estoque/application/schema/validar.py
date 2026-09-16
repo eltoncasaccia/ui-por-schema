@@ -66,12 +66,23 @@ def validar_schema(bruto: object, ator: Ator) -> ResultadoValidacao:
         aceitos.append(bloco.tipo)
         blocos_ok.append(bloco)
 
+    # Opcao de esclarecimento fora do catalogo DESTE ator cai como qualquer bloco
+    # fora dele: oferecer o que a pessoa nao pode pedir conta que a porta existe.
+    opcoes: list[str] = []
+    for opcao in schema.esclarecer:
+        if opcao not in permitidos:
+            rejeitados.append(Rejeicao(opcao, "esclarecer: fora do catalogo do ator"))
+        elif opcao not in opcoes:
+            opcoes.append(opcao)
+
     # Composicao intencionalmente vazia e' VALIDA: o modelo olhou o catalogo e
     # concluiu que nada serve. Distinta de "tudo foi rejeitado", que e' falha.
-    if not blocos_ok and rejeitados:
+    if not blocos_ok and not opcoes and rejeitados:
         return ResultadoValidacao(None, aceitos, rejeitados)
 
-    limpo = ViewSchema(versao=1, titulo=schema.titulo, blocos=tuple(blocos_ok))
+    limpo = ViewSchema(
+        versao=1, titulo=schema.titulo, blocos=tuple(blocos_ok), esclarecer=tuple(opcoes)
+    )
     return ResultadoValidacao(limpo, aceitos, rejeitados)
 
 

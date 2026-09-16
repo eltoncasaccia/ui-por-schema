@@ -5,7 +5,7 @@
  * conhece — a conversa em andamento, o que está no workspace, o que foi fixado.
  */
 import { useSyncExternalStore } from 'react'
-import type { Bloco } from '../api'
+import type { Bloco, OpcaoEsclarecer } from '../api'
 
 export interface Trace {
   origem: string
@@ -34,6 +34,7 @@ export type Mensagem =
   | { papel: 'assistente'; composicaoId: string }
   | { papel: 'erro'; texto: string }
   | { papel: 'nota'; texto: string }
+  | { papel: 'opcoes'; opcoes: OpcaoEsclarecer[] }
 
 interface Estado {
   conversa: Mensagem[]
@@ -73,6 +74,10 @@ export const sessao = {
   },
   nota(texto: string) {
     definir({ conversa: [...estado.conversa, { papel: 'nota', texto }], pensando: false })
+  },
+  /** Pergunta vaga: a conversa oferece as opções que o modelo apontou. */
+  opcoes(opcoes: OpcaoEsclarecer[]) {
+    definir({ conversa: [...estado.conversa, { papel: 'opcoes', opcoes }], pensando: false })
   },
   /** Abre no workspace. Usado pela navegação e pelas views fixadas. */
   compos(c: Composicao) {

@@ -78,7 +78,9 @@ export interface TraceApi {
   tokens_entrada: number; ms_ate_primeiro_token: number; erro: string | null
   provedor_efetivo?: string
 }
-export interface Composicao { schema: unknown; blocos: Bloco[]; trace: TraceApi }
+/** Opção de esclarecimento: id validado no servidor, rótulo do catálogo — nunca texto do modelo. */
+export interface OpcaoEsclarecer { id: string; label: string }
+export interface Composicao { schema: unknown; blocos: Bloco[]; trace: TraceApi; esclarecer?: OpcaoEsclarecer[] }
 
 export interface Destinatario { id: string; nome: string; papel: string }
 export interface Recebida {

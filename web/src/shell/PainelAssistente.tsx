@@ -1,20 +1,24 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { ErroApi, api, type Eu } from '../api'
+import { ErroApi, api, type Eu, type OpcaoEsclarecer } from '../api'
+import { NAV_ROTAS } from '../app/layout/rotasOperacao'
 import { irPara } from '../app/rotas'
 import { Composicao as Render } from '../render/motor'
 import { Icone } from '../ui/icones'
 import { sessao, useSessao, viewKeyLocal } from '../estado/sessao'
+import { sugestoesPara } from './sugestoes'
+
+/** Componente → a rota que abre a tela dele sem precisar de id. */
+const ROTA_DO_COMPONENTE: ReadonlyMap<string, string> = new Map(NAV_ROTAS.map((r) => [r.componente, r.path]))
 
 export function PainelAssistente({ eu, aoFechar }: { eu: Eu; aoFechar: () => void }) {
   const { conversa, composicoes, pensando, fixadas } = useSessao()
   const [rascunho, setRascunho] = useState('')
   const cat = useQuery({ queryKey: [eu.id, 'catalogo'], queryFn: api.catalogo })
-  // Sugestões saem do catálogo DESTE ator — que já é filtrado por permissão —
-  // e os exemplos são escritos sem nome de unidade nem valor restrito. Sugerir
-  // o que a pessoa não pode pedir é oferecer uma porta fechada, e ainda conta
-  // que a porta existe.
-  const sugestoes = (cat.data ?? []).flatMap((c) => c.examples).slice(0, 5)
+  // Filtradas pelo catálogo DESTE ator — que já é filtrado por permissão.
+  // Sugerir o que a pessoa não pode pedir é oferecer uma porta fechada, e
+  // ainda conta que a porta existe.
+  const sugestoes = sugestoesPara(new Set((cat.data ?? []).map((c) => c.id)))
 
   async function perguntar(texto: string) {
     setRascunho('')
@@ -22,6 +26,10 @@ export function PainelAssistente({ eu, aoFechar }: { eu: Eu; aoFechar: () => voi
     try {
       const c = await api.compor(texto)
       if (c.blocos.length === 0) {
+        if (c.esclarecer && c.esclarecer.length > 0) {
+          sessao.opcoes(c.esclarecer)
+          return
+        }
         // Composição vazia é RESPOSTA, não erro. E a mensagem não diz que o
         // sistema TEM o dado e não pode mostrar — diz que não sabe responder.
         // Contar que existe já é contar demais (ADR-0014).
@@ -45,6 +53,15 @@ export function PainelAssistente({ eu, aoFechar }: { eu: Eu; aoFechar: () => voi
     } catch (e) {
       sessao.falhou(e instanceof ErroApi ? e.message : 'Falhou.')
     }
+  }
+
+  function escolher(o: OpcaoEsclarecer) {
+    // Com rota, a opção abre a tela de verdade: registrar é um formulário, não
+    // uma resposta para ler espremida na conversa. Sem rota, vira a pergunta
+    // explícita que a pessoa escolheu.
+    const rota = ROTA_DO_COMPONENTE.get(o.id)
+    if (rota) irPara(rota)
+    else void perguntar(o.label)
   }
 
   return (
@@ -78,6 +95,18 @@ export function PainelAssistente({ eu, aoFechar }: { eu: Eu; aoFechar: () => voi
           if (m.papel === 'usuario') return <div key={i} className="msg-usuario">{m.texto}</div>
           if (m.papel === 'erro') return <p key={i} className="msg-erro">{m.texto}</p>
           if (m.papel === 'nota') return <p key={i} className="msg-nota">{m.texto}</p>
+          if (m.papel === 'opcoes') {
+            return (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <p className="msg-nota">O que você quer fazer?</p>
+                <div className="sugestoes">
+                  {m.opcoes.map((o) => (
+                    <button key={o.id} className="sugestao" onClick={() => escolher(o)}>{o.label}</button>
+                  ))}
+                </div>
+              </div>
+            )
+          }
           const c = composicoes[m.composicaoId]
           if (!c) return null
           const fixada = fixadas.some((f) => f.viewKey === c.viewKey)

@@ -43,6 +43,7 @@ antigo recebe `Status: Substituído por ADR-XXXX`. O histórico é o valor.
 | [0031](./0031-ports-and-adapters.md) | Ports & Adapters, com a regra de dependência no CI | Fundacional | Aceito — **substitui 0030**, emenda 0007 |
 | [0032](./0032-borda-http-por-router.md) | A borda HTTP quebrada por área, com `independence` entre os routers | Ciclo 1 | Aceito — detalha 0031 |
 | [0033](./0033-e2e-playwright-banco-proprio.md) | Testes de ponta a ponta com Playwright, contra um banco próprio | Ferramental | Aceito |
+| [0034](./0034-esclarecer-por-ids.md) | Pergunta vaga devolve ids para escolher, nunca texto | Ciclo 1 | Aceito — **emenda 0001** |
 
 ## Origem das decisões
 

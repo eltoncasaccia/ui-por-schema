@@ -17,16 +17,16 @@
   --barra: 52px;
   --toque: 44px;
 
-  /* ── Tema claro — neutros de papel, quentes ─────────────────────────
-     Não é um cinza-azulado de editor de código: é um sistema de REGISTRO
-     lido o dia inteiro sob luz de armazém. O fundo tem calor, o texto é
-     tinta, e a cor só aparece onde significa estado.                   */
-  --s0: #f7f5f2;   /* o chão */
-  --s1: #fbfaf8;   /* painéis */
+  /* ── Tema claro — cinza neutro ──────────────────────────────────────
+     Os neutros quentes da v1 liam como marrom ao lado do verde. Cinza sem
+     matiz deixa o acento e os estados como as únicas cores da tela — que
+     é o ponto: a cor só aparece onde significa estado.                 */
+  --s0: #f3f4f5;   /* o chão */
+  --s1: #f9fafa;   /* painéis */
   --s2: #ffffff;   /* cartões */
   --campo: #ffffff;
-  --linha: #e5e0d8;  --linha-fraca: #efebe4;
-  --texto: #1c1a17;  --dim: #5e574d;  --fraco: #8a8175;
+  --linha: #dfe2e5;  --linha-fraca: #eceef0;
+  --texto: #1b1e21;  --dim: #545a60;  --fraco: #7d838a;
 
   /* Verde-azulado profundo: registro clínico, não SaaS genérico. */
   --acento: #0f6b62;  --acento-bg: #e3f2ef;  --acento-borda: #a8d5ce;
@@ -38,20 +38,23 @@
   --ruim: #c62828;     --ruim-b: #f2c9c6;
   --fixada: #a86800;   --fixada-b: #ecd9ab;
 
-  --u0: #dda06a;  --u1: #b8590d;  --u2: #7a3408;  --u3: #c62828;
+  /* Urgência: a mesma família das etiquetas da linha (âmbar → laranja →
+     vermelho), com a luminosidade caindo à medida que a urgência sobe. É a
+     luminosidade que separa as faixas para quem não distingue matiz. */
+  --u0: #f0c36d;  --u1: #d98a1f;  --u2: #b8520f;  --u3: #b42323;
 
   /* Sombra de papel: elevação por luz, não por borda. */
-  --sombra: 0 1px 1px rgb(38 30 20 / 4%), 0 3px 8px rgb(38 30 20 / 5%);
-  --sombra-alta: 0 12px 40px rgb(38 30 20 / 16%);
+  --sombra: 0 1px 1px rgb(20 24 28 / 4%), 0 3px 8px rgb(20 24 28 / 5%);
+  --sombra-alta: 0 12px 40px rgb(20 24 28 / 16%);
   --borda-cartao: transparent;
   color-scheme: light;
 }
 
-/* ── Tema escuro — tinta quente, não preto azulado ───────────────── */
+/* ── Tema escuro — grafite neutro ────────────────────────────────── */
 :root[data-tema="escuro"] {
-  --s0: #14120f;  --s1: #1a1815;  --s2: #201d19;  --campo: #191612;
-  --linha: #302c26;  --linha-fraca: #272320;
-  --texto: #ece7de;  --dim: #a89f92;  --fraco: #7a7266;
+  --s0: #121416;  --s1: #17191b;  --s2: #1d1f22;  --campo: #151719;
+  --linha: #2b2e32;  --linha-fraca: #222427;
+  --texto: #e5e7e9;  --dim: #9ba1a7;  --fraco: #70767c;
   --acento: #4ec5b3;  --acento-bg: #143b36;  --acento-borda: #1f5c53;
   --bom: #4ade80;      --bom-b: #1e4632;
   --ciano: #6ba7f5;    --ciano-b: #1c3a5c;
@@ -59,7 +62,8 @@
   --laranja: #fb923c;  --laranja-b: #5c3416;
   --ruim: #ef4444;     --ruim-b: #5a2626;
   --fixada: #fbbf24;   --fixada-b: #4a3c15;
-  --u0: #a8621f;  --u1: #d9822b;  --u2: #fdba74;  --u3: #ef4444;
+  /* no escuro a urgência ACENDE: a faixa mais grave é a mais saturada */
+  --u0: #b8913a;  --u1: #d4901f;  --u2: #fb923c;  --u3: #ef4444;
   --sombra: none;
   --sombra-alta: 0 12px 40px rgb(0 0 0 / 45%);
   --borda-cartao: var(--linha);
@@ -67,9 +71,9 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema="claro"]) {
-    --s0: #14120f;  --s1: #1a1815;  --s2: #201d19;  --campo: #191612;
-    --linha: #302c26;  --linha-fraca: #272320;
-    --texto: #ece7de;  --dim: #a89f92;  --fraco: #7a7266;
+    --s0: #121416;  --s1: #17191b;  --s2: #1d1f22;  --campo: #151719;
+    --linha: #2b2e32;  --linha-fraca: #222427;
+    --texto: #e5e7e9;  --dim: #9ba1a7;  --fraco: #70767c;
     --acento: #4ec5b3;  --acento-bg: #143b36;  --acento-borda: #1f5c53;
     --bom: #4ade80;      --bom-b: #1e4632;
     --ciano: #6ba7f5;    --ciano-b: #1c3a5c;
@@ -77,7 +81,7 @@
     --laranja: #fb923c;  --laranja-b: #5c3416;
     --ruim: #ef4444;     --ruim-b: #5a2626;
     --fixada: #fbbf24;   --fixada-b: #4a3c15;
-    --u0: #a8621f;  --u1: #d9822b;  --u2: #fdba74;  --u3: #ef4444;
+    --u0: #b8913a;  --u1: #d4901f;  --u2: #fb923c;  --u3: #ef4444;
     --sombra: none;
     --sombra-alta: 0 12px 40px rgb(0 0 0 / 45%);
     --borda-cartao: var(--linha);
@@ -86,6 +90,20 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Rolagem quase invisível: avisa que há mais conteúdo sem disputar atenção
+   com ele. A cor sai do texto do tema, então vale nos dois sem token novo. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--texto) 14%, transparent) transparent;
+}
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--texto) 14%, transparent);
+  border-radius: 6px;
+}
+*::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--texto) 28%, transparent); }
 html, body, #root { height: 100%; margin: 0; }
 body {
   background: var(--s0); color: var(--texto);

@@ -5,10 +5,12 @@
  * vencem, quantos são graves?"). Uma barra segmentada responde composição e
  * total de uma vez, cabe numa linha e não compete com o número principal.
  *
- * Por que UMA matiz: urgência é MAGNITUDE, não identidade. Rampa sequencial
- * separa por luminosidade, que toda forma de daltonismo preserva. Duas matizes
- * (âmbar/laranja) foram testadas e reprovadas — ΔE 0.4 para deuteranopia no
- * tema claro, ou seja, indistinguíveis.
+ * Por que uma RAMPA: urgência é MAGNITUDE, não identidade. O que separa as
+ * faixas é a luminosidade, que toda forma de daltonismo preserva. A matiz vai
+ * de âmbar a vermelho só para casar com as etiquetas da linha — a rampa
+ * marrom anterior destoava do resto da tela. Âmbar e laranja de MESMA
+ * luminosidade já foram reprovados (ΔE 0.4 para deuteranopia): os degraus
+ * dos tokens `--u*` precisam continuar separados em luminosidade.
  *
  * Rótulo direto em cada segmento: é o alívio exigido quando um degrau claro da
  * rampa não alcança 3:1 contra a superfície branca.

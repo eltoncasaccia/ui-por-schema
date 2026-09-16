@@ -8,17 +8,9 @@ from typing import Any
 from fastapi import APIRouter, Cookie
 from pydantic import BaseModel, Field
 
-from estoque.application.registry.definir import LoadContext, Pagina, permissoes_base
-from estoque.application.registry.registry import buscar, valores_proibidos
+from estoque.application.registry.definir import Pagina
 from estoque.auditoria import registro as aud
-from estoque.autorizacao.motor import (
-    autorizar_ou_falhar,
-    autorizar_params_ou_falhar,
-    autorizar_unidade_do_param,
-)
-from estoque.data.porta import ContextoDados
-from estoque.domain.erros import ErroDominio
-from estoque.server.deps import Tx, ator_ou_falhar, motor, ok, repos
+from estoque.server.deps import ator_ou_falhar, ler_componente, motor, ok
 
 rotas = APIRouter()
 
@@ -46,32 +38,8 @@ async def dados(
     """
     async with motor.connect() as c:
         ator = await ator_ou_falhar(c, sessao)
-        comp = buscar(componente_id)
-        if comp is None:
-            raise ErroDominio("nao_encontrado", "Registro nao encontrado.")
-
-        autorizar_ou_falhar(ator, permissoes_base(comp.requires), "este componente")
-        # RequiresPorValor: permissao que depende do VALOR do param. Sem esta
-        # linha, um schema forjado passa pela permissao base e o `load` roda.
-        autorizar_params_ou_falhar(valores_proibidos(comp, ator), corpo.params)
-        # ADR-0014: unidade pedida fora do escopo nega, nao devolve vazio.
-        autorizar_unidade_do_param(ator, corpo.params.get("unidade_id"))
-
-        params = comp.params.model_validate(corpo.params)
-        ctx_dados = ContextoDados(ator=ator, unidades_permitidas=ator.unidades, tx=Tx(c))
-        ctx = LoadContext(
-            ator=ator,
-            unidades_permitidas=ator.unidades,
-            repos=repos(c),
-            dados=ctx_dados,
-            pagina=Pagina(limite=corpo.pagina.limite, cursor=corpo.pagina.cursor),
-        )
-        carga = await comp.load(params, ctx)
-        # T-050: o MESMO etag que a escrita recalcula para o `If-Match` — sem
-        # isto, comando com `etag_de` nunca tem o que comparar (achado A-41).
-        etag = comp.etag(carga) if comp.etag else None
-        # ADR-0020: `select` roda AQUI. So' o viewmodel atravessa a rede.
-        vm = comp.select(carga)
+        pagina = Pagina(limite=corpo.pagina.limite, cursor=corpo.pagina.cursor)
+        _, vm, etag = await ler_componente(c, ator, componente_id, corpo.params, pagina)
 
     async with motor.begin() as c2:
         await aud.registrar(

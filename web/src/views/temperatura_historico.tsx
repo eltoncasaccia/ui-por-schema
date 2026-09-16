@@ -11,16 +11,6 @@ function dataBr(iso: string): string {
   return new Date(iso).toLocaleDateString('pt-BR')
 }
 
-/** Download client-side: os dados são exatamente os do `vm` — nada é rebuscado. */
-function baixarCsv(nome: string, conteudo: string): void {
-  const url = URL.createObjectURL(new Blob([conteudo], { type: 'text/csv;charset=utf-8' }))
-  const a = document.createElement('a')
-  a.href = url
-  a.download = nome
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
 /**
  * O gráfico é uma faixa 2–8 °C sombreada com a série por cima. Quando o período
  * é longo o servidor já agregou em baldes (min–máx–média); o desenho usa a
@@ -145,16 +135,6 @@ export const view: View<'temperatura_historico'> = ({ vm }) => {
         ) : (
           <Grafico vm={vm} />
         )}
-
-        <div style={{ marginTop: 12 }}>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => baixarCsv(`temperatura-${vm.unidade}-${vm.de}-a-${vm.ate}.csv`, vm.csv)}
-          >
-            Baixar CSV
-          </button>
-        </div>
       </div>
     </section>
   )

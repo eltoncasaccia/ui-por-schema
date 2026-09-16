@@ -2790,7 +2790,7 @@
             "type": "object"
           }
         },
-        "description": "Sem custo (CA-05): temperatura nao tem preco, e nada aqui busca produto.\n\n`pontos` **ou** `baldes` vem preenchido, nunca os dois — `agregado` diz qual.\n`csv` e' a exportacao (AC-2), montada das mesmas linhas.",
+        "description": "Sem custo (CA-05): temperatura nao tem preco, e nada aqui busca produto.\n\n`pontos` **ou** `baldes` vem preenchido, nunca os dois — `agregado` diz qual.",
         "properties": {
           "agregado": {
             "type": "boolean"
@@ -2806,16 +2806,9 @@
             },
             "type": "array"
           },
-          "csv": {
-            "type": "string"
-          },
           "de": {
             "format": "date",
             "type": "string"
-          },
-          "exportavel": {
-            "default": true,
-            "type": "boolean"
           },
           "faixa_max_c": {
             "default": 8.0,
@@ -2848,8 +2841,7 @@
           "ate",
           "total_leituras",
           "leituras_fora_da_faixa",
-          "agregado",
-          "csv"
+          "agregado"
         ],
         "title": "VMTemperaturaHistorico",
         "type": "object"

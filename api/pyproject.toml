@@ -16,12 +16,20 @@ dependencies = [
     "httpx>=0.28.1",
     "psycopg[binary]>=3.3.5",
     "langfuse>=4.15",
+    "openpyxl>=3.1.5",
+    "fpdf2>=2.8.8",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3", "pytest-asyncio>=1.0", "httpx>=0.28",
-    "mypy>=1.14", "ruff>=0.14", "import-linter>=2.1",
+    "pytest>=8.3",
+    "pytest-asyncio>=1.0",
+    "httpx>=0.28",
+    "mypy>=1.14",
+    "ruff>=0.14",
+    "import-linter>=2.1",
+    "types-openpyxl>=3.1.5.20260827",
+    "pypdf>=6.19.0",
 ]
 
 [build-system]

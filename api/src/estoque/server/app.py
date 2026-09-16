@@ -40,6 +40,7 @@ from estoque.server.rotas import (
     comandos,
     compartilhamento,
     dados,
+    exportar,
     saude,
     usuarios,
     views,
@@ -144,6 +145,7 @@ for _mod in (
     views,
     compartilhamento,
     dados,
+    exportar,
     comandos,
     usuarios,
 ):

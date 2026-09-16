@@ -623,15 +623,12 @@ export interface TemperaturaExcursoesLotePresente {
  * Sem custo (CA-05): temperatura nao tem preco, e nada aqui busca produto.
  *
  * `pontos` **ou** `baldes` vem preenchido, nunca os dois — `agregado` diz qual.
- * `csv` e' a exportacao (AC-2), montada das mesmas linhas.
  */
 export interface VMTemperaturaHistorico {
   agregado: boolean
   ate: string
   baldes?: TemperaturaHistoricoBalde[]
-  csv: string
   de: string
-  exportavel?: boolean
   faixa_max_c?: number
   faixa_min_c?: number
   leituras_fora_da_faixa: number

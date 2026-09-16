@@ -81,7 +81,7 @@ está pronto.
 | T-019 | Produto e custo restrito | ✅ | `produto_ficha` `produto_saldo_por_unidade` (AC-7 fechado pela [T-046](./T-046-minimo-maximo-por-unidade.md), em `produto_saldo_por_unidade`) |
 | T-021 | Rastreabilidade `CA-01` | ✅ | `rastreabilidade` — AC-1..AC-7 testados. Recorte de período no `load` (porta ignora `de`/`ate`: [A-31](./ACHADOS.md)). `RNF-01` real fica para T-034 |
 | T-022 | Recebimento — leitura | ✅ | `recebimento_lista` `recebimento_detalhe` — AC-2..AC-7 testados. **AC-1 em branco**: "gerou lote em quarentena" precisa de `lote.recebimento_id`, que não tem schema. **AC-6** vira `periodo` enum (a tarefa pedia `de`/`ate` soltos — risco R-5). RN-R03 sem armazenamento para integridade/validade: [A-33](./ACHADOS.md) |
-| T-023 | Cadeia fria `CA-07` | ✅ | `temperatura_historico` `temperatura_excursoes` — AC-1..AC-6 testados. Agregação automática acima de 480 pontos; excursão detectada por corrida contígua fora de 2–8 °C; lote vinculado se entrou até o fim da excursão (AC-4, com par negativo). **Exportação (AC-2) é `csv` no viewmodel** — sem endpoint ([A-23](./ACHADOS.md)). `RNF-04` real fica para T-034 |
+| T-023 | Cadeia fria `CA-07` | ✅ | `temperatura_historico` `temperatura_excursoes` — AC-1..AC-6 testados. Agregação automática acima de 480 pontos; excursão detectada por corrida contígua fora de 2–8 °C; lote vinculado se entrou até o fim da excursão (AC-4, com par negativo). **Exportação (AC-2)**: era `csv` no viewmodel; desde a T-054, sai de `/api/componentes/{id}/exportar`. `RNF-04` real fica para T-034 |
 | T-024 | Movimento e trilha | ✅ | 2 |
 
 ## W4 — Escrita · fechada, sete comandos
@@ -150,6 +150,12 @@ está pronto.
 |---|---|---|---|
 | T-052 | Banco de teste isolado | ✅ | A-44 **fechado**. `estoque_teste` por `make db-teste`; endereços em `tests/banco.py`; suíte apontada para o dev para antes de coletar (2 negativos por processo filho, sabotados). 896 testes, nenhum skip por falta de banco; banco `estoque` com as mesmas contagens antes e depois da suíte |
 | T-053 | Testes de ponta a ponta com Playwright | ⬜ | ADR-0033 · A-45 (bug do menu, reproduzido no navegador) |
+
+## Abertas em 2026-09-16
+
+| | Tarefa | Estado | Origem |
+|---|---|---|---|
+| T-054 | Exportação em CSV, XLSX e PDF | ✅ | Pedido do cliente · ADR-0035. `POST /api/componentes/{id}/exportar` usa a mesma leitura autorizada de `dados` (`deps.ler_componente`); 7 componentes exportáveis; `exportavel` no catálogo; botão acima do bloco. 12 ACs; custo, escopo, teto, injeção de fórmula e import-linter sabotados e vistos vermelhos. Conferido no app real (API + Vite + navegador). O `csv` saiu do viewmodel da temperatura. Não aberto num Excel de verdade |
 
 ---
 

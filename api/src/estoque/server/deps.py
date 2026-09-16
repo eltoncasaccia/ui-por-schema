@@ -12,13 +12,25 @@ para o MESMO objeto.
 from typing import Any
 
 from argon2 import PasswordHasher
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
-from estoque.application.registry.registry import buscar
+from estoque.application.registry.definir import (
+    ComponentDef,
+    LoadContext,
+    Pagina,
+    permissoes_base,
+)
+from estoque.application.registry.registry import buscar, valores_proibidos
 from estoque.application.schema.contrato import Bloco
 from estoque.assistant.langfuse_obs import criar as criar_observador
 from estoque.assistant.observador import Observador, ObservadorNulo
-from estoque.data.porta import Repositorios
+from estoque.autorizacao.motor import (
+    autorizar_ou_falhar,
+    autorizar_params_ou_falhar,
+    autorizar_unidade_do_param,
+)
+from estoque.data.porta import ContextoDados, Repositorios
 from estoque.data.repositorios import (
     RepoAuditoriaSQL,
     RepoLoteSQL,
@@ -72,6 +84,47 @@ class Tx:
 
     async def rollback(self) -> None:
         await self._c.rollback()
+
+
+async def ler_componente(
+    c: AsyncConnection,
+    ator: Ator,
+    componente_id: str,
+    params_brutos: dict[str, Any],
+    pagina: Pagina,
+) -> tuple[ComponentDef, BaseModel, str | None]:
+    """O TERCEIRO momento de autorizacao (ADR-0004), num lugar so'.
+
+    `dados` e `exportar` passam por aqui. Se cada router tivesse a sua copia,
+    a exportacao seria o atalho: a checagem esquecida numa das duas e' um
+    arquivo com o que a tela recusaria. Devolve componente, viewmodel e etag.
+    """
+    comp = buscar(componente_id)
+    if comp is None:
+        raise ErroDominio("nao_encontrado", "Registro nao encontrado.")
+
+    autorizar_ou_falhar(ator, permissoes_base(comp.requires), "este componente")
+    # RequiresPorValor: permissao que depende do VALOR do param. Sem esta
+    # linha, um schema forjado passa pela permissao base e o `load` roda.
+    autorizar_params_ou_falhar(valores_proibidos(comp, ator), params_brutos)
+    # ADR-0014: unidade pedida fora do escopo nega, nao devolve vazio.
+    autorizar_unidade_do_param(ator, params_brutos.get("unidade_id"))
+
+    params = comp.params.model_validate(params_brutos)
+    ctx_dados = ContextoDados(ator=ator, unidades_permitidas=ator.unidades, tx=Tx(c))
+    ctx = LoadContext(
+        ator=ator,
+        unidades_permitidas=ator.unidades,
+        repos=repos(c),
+        dados=ctx_dados,
+        pagina=pagina,
+    )
+    carga = await comp.load(params, ctx)
+    # T-050: o MESMO etag que a escrita recalcula para o `If-Match` — sem
+    # isto, comando com `etag_de` nunca tem o que comparar (achado A-41).
+    etag = comp.etag(carga) if comp.etag else None
+    # ADR-0020: `select` roda AQUI. So' o viewmodel atravessa a rede.
+    return comp, comp.select(carga), etag
 
 
 def tamanho(tipo: str) -> str:

@@ -71,6 +71,8 @@ existe no vocabulário dele.
 - 300 combinações por um componente. O catálogo deixa de crescer por pergunta.
 - O usuário monta o próprio corte, sem abrir tarefa.
 - Reaproveita `RequiresPorValor`, `viewId` e a exportação que já existem.
+  *(Emenda, 2026-09-16: a exportação não existia fora da temperatura. Ela passou
+  a existir com o [ADR-0035](./0035-exportacao-no-servidor.md).)*
 
 **Custos aceitos**
 - **A folga do catálogo cai de 2 para 1.** Um segundo relatório

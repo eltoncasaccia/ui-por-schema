@@ -80,7 +80,21 @@ def test_router_importando_router_quebra_o_verificador() -> None:
     assert "rotas.rotas.auth -> rotas.rotas.comandos" in r.stdout
 
 
+def test_exportacao_que_conhece_formato_quebra_o_verificador() -> None:
+    """T-054 AC-10, contratos 6 e 7.
+
+    A regra que tira custo do arquivo nao pode depender do openpyxl, e o
+    pipeline do modelo nao pode estar a um import de gerar arquivo. Os dois
+    contratos tem de acusar, e o segundo pelo caminho indireto tambem: o
+    assistente importa a exportacao, que importa o formato.
+    """
+    r = rodar(VIOLACOES, "formato.cfg")
+    assert _falhou_por_contrato(r)
+    assert "Contracts: 0 kept, 2 broken" in r.stdout, r.stdout
+    assert "formato.application.exportacao -> formato.exportacao" in r.stdout
+
+
 def test_o_projeto_real_esta_limpo() -> None:
     r = rodar(RAIZ)
     assert r.returncode == 0, r.stdout
-    assert "Contracts: 5 kept, 0 broken" in r.stdout
+    assert "Contracts: 7 kept, 0 broken" in r.stdout

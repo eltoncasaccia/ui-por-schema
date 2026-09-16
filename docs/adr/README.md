@@ -44,6 +44,7 @@ antigo recebe `Status: Substituído por ADR-XXXX`. O histórico é o valor.
 | [0032](./0032-borda-http-por-router.md) | A borda HTTP quebrada por área, com `independence` entre os routers | Ciclo 1 | Aceito — detalha 0031 |
 | [0033](./0033-e2e-playwright-banco-proprio.md) | Testes de ponta a ponta com Playwright, contra um banco próprio | Ferramental | Aceito |
 | [0034](./0034-esclarecer-por-ids.md) | Pergunta vaga devolve ids para escolher, nunca texto | Ciclo 1 | Aceito — **emenda 0001** |
+| [0035](./0035-exportacao-no-servidor.md) | Exportação gerada no servidor, a partir do viewmodel | Ciclo 1 | Aceito — **emenda 0029** |
 
 ## Origem das decisões
 

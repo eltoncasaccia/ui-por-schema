@@ -129,9 +129,9 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 > **T-023 fechou:** `temperatura_historico` (série com faixa 2–8 °C, agregação
 > automática acima de 480 pontos, `csv` no viewmodel) e `temperatura_excursoes`
 > (ocorrências fora da faixa + lotes presentes até o fim da janela, `RN-F04`).
-> AC-1..AC-6 verificados. **Exportação (AC-2) é client-side a partir do
-> viewmodel** — não há endpoint de export no ciclo 1 ([A-23](./ACHADOS.md)); os
-> mesmos dados da tela, por construção.
+> AC-1..AC-6 verificados. **Exportação (AC-2)**: era client-side, a partir do
+> viewmodel; desde a [T-054](./T-054-exportacao-csv-xlsx-pdf.md), sai do servidor, com os
+> mesmos dados da tela por construção.
 
 ### W4 — Escrita · até 5 sessões · 7 componentes
 
@@ -199,7 +199,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-054](./T-054-exportacao-csv-xlsx-pdf.md) | **Exportação em CSV, XLSX e PDF**: rota `exportar` no servidor a partir do viewmodel, com a mesma autorização de `dados`. Muda CONTRATOS §8 e traz duas dependências novas, `openpyxl` e `fpdf2`, autorizadas pelo usuário. Cumpre a promessa do ADR-0029 e os RF-11 e RF-14 | C/D | G | T-044, T-023 | ⬜ |
+| [T-054](./T-054-exportacao-csv-xlsx-pdf.md) | **Exportação em CSV, XLSX e PDF**: rota `exportar` no servidor a partir do viewmodel, com a mesma autorização de `dados`. Muda CONTRATOS §8 e traz duas dependências novas, `openpyxl` e `fpdf2`, autorizadas pelo usuário. Cumpre a promessa do ADR-0029 e os RF-11 e RF-14 ([ADR-0035](../adr/0035-exportacao-no-servidor.md)) | C/D | G | T-044, T-023 | ✅ |
 
 ### W5 — Garantias e fechamento · até 4 sessões
 

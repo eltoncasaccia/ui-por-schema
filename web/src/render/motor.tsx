@@ -15,6 +15,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useRef, useState } from 'react'
 import { ErroApi, api, type Bloco } from '../api'
 import type { ComponentId } from '../generated/componentes'
+import { BotaoExportar } from './BotaoExportar'
 import { EVENTO_COMANDO, chaveIdempotencia, type DetalheComando } from './comando'
 import { classeTexto } from '../ui/estados'
 import { VIEWS } from '../views/indice'
@@ -176,6 +177,9 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
 
   return (
     <div ref={contRef}>
+      {/* Acima do bloco, não abaixo: numa lista com rolagem infinita, o fim
+          nunca chega, e o botão lá embaixo não existe para quem usa. */}
+      <BotaoExportar tipo={bloco.tipo} params={bloco.params} atorId={atorId} />
       <View vm={vm} />
       {tentativa && (
         <div className="cartao cartao-corpo" role="status" style={{ marginTop: 8 }}>

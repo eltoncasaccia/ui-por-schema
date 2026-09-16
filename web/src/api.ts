@@ -56,12 +56,16 @@ function chaveEtag(tipo: string, params: Record<string, unknown>): string {
 export interface Persona { email: string; nome: string; papel: string }
 export interface Eu { id: string; nome: string; papel: string | null; unidades: string[]; permissoes: string[] }
 export interface ParamInfo { valores?: string[]; tipo?: string; obrigatorio: boolean }
+export type FormatoExportacao = 'csv' | 'xlsx' | 'pdf'
+
 export interface EntradaCatalogo {
   id: string
   label: string
   description: string
   examples: string[]
   params: Record<string, ParamInfo>
+  /** T-054: o servidor gera arquivo deste componente. Só da borda, nunca do prompt. */
+  exportavel?: boolean
 }
 export interface ComandoDoBloco { endpoint: string; confirm: boolean; idempotent: boolean }
 export interface Bloco {
@@ -120,6 +124,27 @@ export const api = {
   sair: () => chamar<unknown>('/api/auth/sair', { method: 'POST' }),
   eu: () => chamar<Eu>('/api/auth/eu'),
   catalogo: () => chamar<EntradaCatalogo[]>('/api/catalogo'),
+  /**
+   * T-054: o arquivo sai do servidor, com a mesma autorização da leitura. A
+   * resposta boa é binária; a ruim é o envelope de erro de sempre.
+   */
+  exportar: async (
+    id: string, params: Record<string, unknown>, formato: FormatoExportacao,
+  ): Promise<{ arquivo: Blob; nome: string }> => {
+    const r = await fetch(`/api/componentes/${id}/exportar`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': tokenCsrf() },
+      body: JSON.stringify({ params, formato }),
+    })
+    if (!r.ok) {
+      const corpo = (await r.json()) as Resposta<unknown>
+      if (!corpo.ok) throw new ErroApi(corpo.erro.codigo, corpo.erro.mensagem)
+      throw new ErroApi('invalido', 'Não foi possível exportar.')
+    }
+    const nome = /filename="([^"]+)"/.exec(r.headers.get('Content-Disposition') ?? '')?.[1]
+    return { arquivo: await r.blob(), nome: nome ?? `exportacao.${formato}` }
+  },
   compor: async (pergunta: string): Promise<Composicao> => {
     const r = await fetch('/api/assistente/compor', {
       method: 'POST',

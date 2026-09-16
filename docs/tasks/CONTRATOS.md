@@ -389,6 +389,7 @@ class RespostaErro(BaseModel):
 | `/api/assistente/compor` | POST | sessão + CSRF + rate limit (`CS-06`) |
 | `/api/view/{view_id}` | GET | revalida schema contra o catálogo **do requisitante** |
 | `/api/componentes/{id}/dados` | POST | `requires` do componente, por registro |
+| `/api/componentes/{id}/exportar` | POST | **a mesma leitura de `dados`** (`deps.ler_componente`) + CSRF. Corpo `{params, formato: csv\|xlsx\|pdf}`; resposta binária com `Content-Disposition`, erro no envelope de sempre. Rev. 2.7 (T-054, [ADR-0035](../adr/0035-exportacao-no-servidor.md)) |
 | `/api/comandos/{nome}` | POST | `requires` do command + CSRF + `Idempotency-Key` |
 | `/api/usuarios` · `/api/usuarios/{id}` | GET · POST | `usuario.gerenciar` — só tela, fora do catálogo. **POST, não PATCH** (T-038): a varredura do CA-08 recusa verbo que substitui ou apaga em toda a borda |
 
@@ -439,6 +440,14 @@ etag POR LINHA — a pessoa escolhe o candidato na tela, depois da leitura —
 e por isso o etag mora no PRÓPRIO viewmodel (um campo por item da lista),
 não em `meta`. `recebimento_registrar` nunca precisou — é criação, sem
 `etag_de`.
+
+### 8.2 Exportação e catálogo — rev. 2.7 (T-054)
+
+- `GET /api/catalogo`: cada entrada ganha `exportavel: bool`. O campo é da
+  borda (a interface decide se mostra o botão) e **não** vai para o prompt.
+- Quem exporta está em `application/exportacao/tabelas.py:TABULADORES`, e não
+  em `ComponentDef`: a assinatura do contrato de componente não mudou.
+- `temperatura_historico` perdeu `csv` e `exportavel` do viewmodel.
 
 ---
 

@@ -141,6 +141,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn:disabled { opacity: .45; cursor: default; }
 .btn-primario { background: var(--acento-bg); border-color: var(--acento-borda); color: var(--acento); }
 .btn-icone { padding: 6px 8px; }
+
+/* Exportar (T-054): discreto, acima do bloco, alinhado à direita. O menu abre
+   por cima do conteúdo, e cada item tem altura de toque. */
+.exportar { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin-bottom: 6px; }
+.exportar-acoes { position: relative; }
+.exportar-menu {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 20;
+  display: flex; flex-direction: column; min-width: 170px; padding: 4px;
+  background: var(--s2); border: 1px solid var(--linha); border-radius: var(--raio-sm);
+  box-shadow: var(--sombra-alta);
+}
+.exportar-item {
+  min-height: var(--toque); padding: 0 10px; text-align: left;
+  background: none; border: 0; border-radius: var(--raio-sm);
+  font-size: 13px; color: var(--texto);
+}
+.exportar-item:hover, .exportar-item:focus-visible { background: var(--acento-bg); color: var(--acento); }
 /* A estrela é só a estrela: sem caixa, sem borda, sem fundo. O estado vive no
    preenchimento — contorno quando não fixada, âmbar cheia quando fixada. */
 .estrela {

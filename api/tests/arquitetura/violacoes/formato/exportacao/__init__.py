@@ -1,0 +1,1 @@
+"""O adaptador de formato."""

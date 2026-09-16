@@ -51,6 +51,7 @@ CORPOS: dict[str, dict[str, Any]] = {
     "/api/assistente/compor": {"pergunta": "x"},
     "/api/comandos/{nome}": {},
     "/api/componentes/{componente_id}/dados": {},
+    "/api/componentes/{componente_id}/exportar": {"formato": "csv"},
     "/api/views": {"titulo": "t", "schema": {"versao": 1, "blocos": []}},
     "/api/destinatarios": {"schema": {"versao": 1, "blocos": []}},
     "/api/compartilhamentos": {"view_id": "x", "para": "y"},

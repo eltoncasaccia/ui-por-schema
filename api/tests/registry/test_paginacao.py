@@ -23,7 +23,14 @@ async def test_limite_da_pagina_e_respeitado() -> None:
     vez: o servidor construía o contexto sem passá-la, e a fila voltava inteira."""
     import inspect
 
+    from estoque.server import deps
     from estoque.server.rotas import dados
 
+    # T-054: a leitura autorizada mudou para `deps.ler_componente`, comum a
+    # `dados` e `exportar`. A rota monta a página do pedido; a função a
+    # repassa ao contexto.
     fonte = inspect.getsource(dados.dados)
-    assert "pagina=Pagina(" in fonte, "o servidor precisa repassar a página ao load"
+    assert "Pagina(limite=corpo.pagina.limite, cursor=corpo.pagina.cursor)" in fonte
+    assert "pagina=pagina" in inspect.getsource(deps.ler_componente), (
+        "o servidor precisa repassar a página ao load"
+    )

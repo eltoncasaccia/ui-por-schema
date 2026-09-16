@@ -60,5 +60,31 @@ modules =
     estoque.server.rotas.views
     estoque.server.rotas.compartilhamento
     estoque.server.rotas.dados
+    estoque.server.rotas.exportar
     estoque.server.rotas.comandos
     estoque.server.rotas.usuarios
+
+# --- ADR-0035: a exportacao ---
+# Quem decide O QUE vai no arquivo nao conhece o formato. Trocar openpyxl ou
+# fpdf2 e' trocar adaptador; se `application` os importasse, seria mexer na
+# regra que tira custo do arquivo.
+[importlinter:contract:6]
+name = exportacao da aplicacao nao conhece formato
+type = forbidden
+source_modules = estoque.application.exportacao
+forbidden_modules =
+    estoque.exportacao
+    estoque.server
+    openpyxl
+    fpdf
+
+# O assistente compoe tela; nao gera arquivo. Levar dado para fora do sistema
+# nao pode estar a um import do pipeline do modelo.
+[importlinter:contract:7]
+name = assistente nao exporta
+type = forbidden
+source_modules = estoque.assistant
+forbidden_modules =
+    estoque.application.exportacao
+    estoque.exportacao
+allow_indirect_imports = False

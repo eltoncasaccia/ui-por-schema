@@ -127,25 +127,8 @@ async def test_ac1_periodo_curto_vem_ponto_a_ponto(personas: dict[str, Any]) -> 
 
 
 # --- AC-2 · exportacao com os mesmos dados da tela (CA-07) -----------------
-
-
-async def test_ac2_csv_tem_uma_linha_por_ponto_da_tela(personas: dict[str, Any]) -> None:
-    vm = await _vm(personas["ivo"])
-    linhas = vm.csv.splitlines()
-    assert linhas[0] == "instante,celsius,fora_da_faixa"
-    assert len(linhas) - 1 == len(vm.pontos)
-    assert vm.exportavel is True
-    # Os valores sao os MESMOS objetos da tela, nao uma segunda consulta.
-    primeira = vm.pontos[0]
-    assert linhas[1].startswith(primeira.instante.isoformat())
-    assert str(primeira.celsius) in linhas[1]
-
-
-def test_ac2_csv_do_periodo_longo_segue_os_baldes() -> None:
-    vm = projetar(_serie_longa())
-    linhas = vm.csv.splitlines()
-    assert linhas[0] == "inicio,fim,minimo,maximo,media,leituras,tem_excursao"
-    assert len(linhas) - 1 == len(vm.baldes)
+# Desde a T-054 o arquivo sai de `/api/componentes/{id}/exportar`, e os testes
+# de "mesmas linhas da tela" moram em `tests/exportacao/test_tabelas.py`.
 
 
 # --- `select` puro e custo invisivel -------------------------------------

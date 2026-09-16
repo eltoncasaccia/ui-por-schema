@@ -18,10 +18,10 @@ Tres decisoes carregam o arquivo:
    intervalo de tempo, com min/max/media e a marca de excursao. Nao ha' param
    de balde: o modelo compoe a tela, nao escolhe resolucao.
 
-3. **A exportacao e' o proprio `select`** (`CA-07`, `AC-2`). O `csv` do viewmodel
-   e' montado das MESMAS linhas que a tela desenha — pontos ou baldes —, entao
-   "com os mesmos dados da tela" e' verdadeiro por construcao e testavel aqui,
-   sem endpoint de export (que o ciclo 1 nao tem, achado A-23).
+3. **A exportacao parte deste viewmodel** (`CA-07`, `AC-2`). A T-054 gera o
+   arquivo em `/api/componentes/{id}/exportar` a partir das MESMAS linhas que a
+   tela desenha — pontos ou baldes —, entao "com os mesmos dados da tela" e'
+   verdadeiro por construcao (`tests/exportacao`).
 """
 
 from datetime import UTC, date, datetime, time, timedelta
@@ -84,7 +84,6 @@ class VM(BaseModel):
     """Sem custo (CA-05): temperatura nao tem preco, e nada aqui busca produto.
 
     `pontos` **ou** `baldes` vem preenchido, nunca os dois — `agregado` diz qual.
-    `csv` e' a exportacao (AC-2), montada das mesmas linhas.
     """
 
     unidade: str
@@ -97,8 +96,6 @@ class VM(BaseModel):
     agregado: bool
     pontos: list[Ponto] = []
     baldes: list[Balde] = []
-    exportavel: bool = True
-    csv: str
 
 
 class Dados(BaseModel):
@@ -144,25 +141,6 @@ async def carregar(params: Params, ctx: LoadContext) -> Dados:
     )
 
 
-def _csv_pontos(pontos: list[Ponto]) -> str:
-    linhas = ["instante,celsius,fora_da_faixa"]
-    linhas += [
-        f"{p.instante.isoformat()},{p.celsius},{'sim' if p.fora_da_faixa else 'nao'}"
-        for p in pontos
-    ]
-    return "\n".join(linhas)
-
-
-def _csv_baldes(baldes: list[Balde]) -> str:
-    linhas = ["inicio,fim,minimo,maximo,media,leituras,tem_excursao"]
-    linhas += [
-        f"{b.inicio.isoformat()},{b.fim.isoformat()},{b.minimo},{b.maximo},"
-        f"{round(b.media, 3)},{b.leituras},{'sim' if b.tem_excursao else 'nao'}"
-        for b in baldes
-    ]
-    return "\n".join(linhas)
-
-
 def projetar(d: Dados) -> VM:
     """Roda NO SERVIDOR (ADR-0020). Pura: `de`/`ate` chegam pelo `Dados`, sem
     relogio."""
@@ -182,7 +160,6 @@ def projetar(d: Dados) -> VM:
             leituras_fora_da_faixa=fora,
             agregado=False,
             pontos=pontos,
-            csv=_csv_pontos(pontos),
         )
 
     # Agrega em ate' LIMITE_PONTOS baldes de tempo iguais. Um passo por leitura,
@@ -217,7 +194,6 @@ def projetar(d: Dados) -> VM:
         leituras_fora_da_faixa=fora,
         agregado=True,
         baldes=baldes,
-        csv=_csv_baldes(baldes),
     )
 
 

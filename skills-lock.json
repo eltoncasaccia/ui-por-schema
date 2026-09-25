@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "e2e-nav-test": {
+      "source": "devfullcycle/skills-mba",
+      "sourceType": "github",
+      "skillPath": "e2e-nav-test/SKILL.md",
+      "computedHash": "c14acc9d6b8f6073015530f9c5f382abd45cc30efb960a687f4bfbc2c32ee88c"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",

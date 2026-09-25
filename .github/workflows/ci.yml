@@ -102,3 +102,77 @@ jobs:
             echo "::error::teste pulou por falta de Postgres — AC-3 da T-041"
             exit 1
           fi
+
+  # T-053 — job PRÓPRIO, e não um passo do `verificar`: o e2e precisa de
+  # navegador e de dois servidores, e é a camada mais sujeita a intermitência
+  # (ADR-0033). Separado, uma falha dele não esconde o que o resto disse.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      db:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: estoque
+          POSTGRES_PASSWORD: troque-isto
+          POSTGRES_DB: estoque
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U estoque"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # O e2e roda contra `estoque_teste`, nunca contra o banco da aplicação —
+      # é a mesma separação do A-44, aqui pelo nome do database.
+      DATABASE_URL_TESTE: postgresql+psycopg://estoque:troque-isto@localhost:5432/estoque_teste
+      DATABASE_URL_TESTE_APP: postgresql+psycopg://estoque_app:app@localhost:5432/estoque_teste
+      DATABASE_URL_TESTE_APP_ASYNC: postgresql+asyncpg://estoque_app:app@localhost:5432/estoque_teste
+      DATABASE_URL_E2E: postgresql+asyncpg://estoque_app:app@localhost:5432/estoque_teste
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Instalar dependências do api
+        working-directory: api
+        run: uv sync --frozen
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Instalar dependências do web
+        working-directory: web
+        run: npm ci
+
+      # Só Chromium: os outros dois navegadores ficam registrados no ADR-0033
+      # como não verificados, e baixá-los seria minuto de CI sem evidência.
+      - name: Instalar o Chromium
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+
+      - name: Preparar o estoque_teste
+        working-directory: api
+        run: uv run python tests/banco.py
+
+      # Os servidores sobem pelo `webServer` do Playwright, sem chave de
+      # provedor de modelo: o e2e não chama modelo (ADR-0013).
+      - name: e2e
+        working-directory: web
+        run: npx playwright test
+
+      - name: Publicar relatório e trace quando falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ github.run_id }}
+          path: |
+            web/playwright-report/
+            web/test-results/
+          retention-days: 7

@@ -15,6 +15,11 @@ __pycache__/
 node_modules/
 dist/
 coverage/
+
+# Artefatos do Playwright (T-053): relatório, trace, vídeo e screenshot de
+# falha. São saída de execução, e o CI os publica como artefato do job.
+test-results/
+playwright-report/
 .DS_Store
 
 # Skills instaladas por `npx skills add` ficam versionadas em .claude/skills/

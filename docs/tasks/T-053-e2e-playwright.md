@@ -59,29 +59,29 @@ web/CLAUDE.md                              seção Testes
 
 ## Critérios de aceite
 
-- [ ] **AC-1** `make e2e` sobe a API (8001) e o Vite (5174) próprios contra
+- [x] **AC-1** `make e2e` sobe a API (8001) e o Vite (5174) próprios contra
       `estoque_teste` e roda a suíte. Com o `make up` rodando ao mesmo tempo, não há
       conflito de porta, e as contagens de `usuario`, `sessao` e `auditoria` do banco
       `estoque` **não mudam**. *(negativo — verificação executada)*
-- [ ] **AC-2** Cada uma das 7 personas entra pela tela de demonstração e vê o próprio
+- [x] **AC-2** Cada uma das 7 personas entra pela tela de demonstração e vê o próprio
       nome e papel no rodapé da navegação.
-- [ ] **AC-3** Menu por ator: Helena vê "Liberar quarentena", e **Cleide não vê**,
+- [x] **AC-3** Menu por ator: Helena vê "Liberar quarentena", e **Cleide não vê**,
       embora tenha `lote.ler` (AC-4 da T-031). *(negativo)*
-- [ ] **AC-4** Cleide, digitando `/quarentena/<id de um lote em quarentena do seed>`,
+- [x] **AC-4** Cleide, digitando `/quarentena/<id de um lote em quarentena do seed>`,
       recebe negativa, e a tela não oferece botão de liberar. O lote continua em
       quarentena. *(negativo — a prova é o servidor, não o menu)*
-- [ ] **AC-5** Sem sessão, abrir `/lotes` mostra a tela de entrada, e nenhuma linha de
+- [x] **AC-5** Sem sessão, abrir `/lotes` mostra a tela de entrada, e nenhuma linha de
       lote aparece. *(negativo)*
-- [ ] **AC-6** Cada item de rota do menu de Marco leva ao path da tabela
+- [x] **AC-6** Cada item de rota do menu de Marco leva ao path da tabela
       `ROTAS_OPERACAO` e ao título correspondente.
-- [ ] **AC-7** A navegação do A-45 continua certa no navegador de verdade: a partir
+- [x] **AC-7** A navegação do A-45 continua certa no navegador de verdade: a partir
       de `/lotes`, clicar num indicador abre o workspace em `/`, e o item selecionado
       é sempre o da tela aberta, inclusive depois do "voltar" do navegador. *(O A-45
       foi corrigido em 2026-09-14, antes desta tarefa; o `test.fail()` previsto
       virou teste comum.)*
-- [ ] **AC-8** Sabotagem: sem o filtro de catálogo (`PainelNavegacao.tsx:45`), o AC-3
+- [x] **AC-8** Sabotagem: sem o filtro de catálogo (`PainelNavegacao.tsx:45`), o AC-3
       fica vermelho. Registrado no fechamento, não commitado.
-- [ ] **AC-9** Nenhum `waitForTimeout` em `web/e2e/`, e o servidor de e2e sobe sem
+- [x] **AC-9** Nenhum `waitForTimeout` em `web/e2e/`, e o servidor de e2e sobe sem
       chave de provedor de modelo.
 - [ ] **AC-10** CI: job `e2e` separado, que instala só o Chromium e publica
       `playwright-report` e o trace como artefato quando falha.
@@ -94,3 +94,41 @@ web/CLAUDE.md                              seção Testes
 - **Testar o assistente com modelo real:** custa token (ADR-0013).
 - **Firefox, WebKit e layout estreito:** ficam registrados no ADR-0033 como não
   verificados.
+
+## Como foi verificado (2026-09-25)
+
+`make e2e` · **14 testes, 6,0 s**, Chromium, contra `estoque_teste`.
+
+| AC | A prova |
+|---|---|
+| AC-1 | Stack de desenvolvimento **no ar** (8000/5173) durante a corrida do e2e (8001/5174). Banco `estoque` **idêntico** antes e depois — `usuario=7`, `sessao=0`, `auditoria=0`, `movimento=269`. O controle de que a suíte escreveu em algum lugar: `estoque_teste` foi de `sessao=77`/`auditoria=107` para `90`/`126` |
+| AC-2 | As 7 personas, uma por teste, com nome e papel lidos do rodapé |
+| AC-3 | Helena vê "Liberar quarentena"; Cleide não vê, **e vê "Lotes"** — o controle que separa filtro de tela vazia |
+| AC-4 | O id do lote sai da fila da própria RT (`lerComponente`), não de constante. Cleide digita `/quarentena/<id>`, recebe **"Sem acesso a este componente."** palavra por palavra, não há botão de liberar no workspace, o número do lote não aparece, e a fila de Helena continua com o mesmo total e o mesmo lote |
+| AC-5 | Tela: `/lotes` sem sessão mostra a entrada, sem tabela. Servidor: POST recusado em **403 pelo CSRF** — que é middleware e não deixa a requisição chegar à autenticação — e GET `/api/auth/eu` em **401** |
+| AC-6 | A lista esperada é `ROTAS_OPERACAO` **cruzada com o catálogo do ator**, buscado em `/api/catalogo` no próprio teste. Cada item leva ao path, ao título e ao `aria-current`; e as rotas fora do catálogo têm `toHaveCount(0)` |
+| AC-7 | De `/lotes`, o indicador abre em `/`, a marca migra, e o **voltar do navegador** devolve URL, título e marca |
+| AC-8 | **Sabotagem executada:** `PainelNavegacao.tsx:45` sem o filtro → AC-3 (Cleide) e AC-6 ficaram **vermelhos**; AC-4 **continuou verde**, que é o certo: o menu é conveniência, quem protege é o servidor. Restaurado, não commitado |
+| AC-9 | `grep waitForTimeout` em `web/e2e/` e no config: nada. Nenhuma chave de provedor no `env` do `webServer` — a API subiu assim |
+
+**AC-10 fica em branco:** o job existe, o YAML foi validado (dois jobs, 9 passos
+no `e2e`), mas **nenhuma execução de CI aconteceu** — isso só se confere num
+push. Marcar agora seria evidência falsa.
+
+### Achado do próprio teste
+
+A sabotagem reprovou o AC-4 por um motivo errado: a busca por botão "liberar"
+casava com o **item do menu**, não com a tela. Corrigido para procurar dentro de
+`main.workspace`. Um teste que passa pelo motivo errado é pior que um teste que
+falha — e foi a sabotagem, não a suíte verde, que mostrou isso.
+
+### Tocado além da lista declarada
+
+- **`web/vitest.config.ts`** — o `vitest` coleta por nome e capturava as três
+  specs de `e2e/`, reprovando-as com "0 test" porque o `test()` delas é do outro
+  runner. Uma linha de `exclude`, que é a forma de o ADR-0033 §8 valer na
+  prática ("`make e2e` fica fora do `make check`").
+- **`Makefile`, alvo `help`** — o `grep -E '^[a-z-]+:'` não aceita dígito, e
+  `e2e` nunca apareceria na lista de comandos. Virou `^[a-z0-9-]+:`.
+- **`Makefile`, alvo `lint-web`** — passou a lintar `e2e` junto com `src` e
+  `scripts`; sem isso as specs ficariam fora do `eslint`.

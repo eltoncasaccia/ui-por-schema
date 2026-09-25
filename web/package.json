@@ -8,7 +8,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "arch": "tsx scripts/arch-check.ts"
+    "arch": "tsx scripts/arch-check.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.0",
@@ -17,6 +18,7 @@
     "react-router-dom": "^6.30.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^26.5.0",

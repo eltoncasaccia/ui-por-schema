@@ -96,6 +96,7 @@ saída do `tsc` e do `vitest`, e pagava por ela a cada iteração do laço.
 | `make rn RN-L05 RN-R02` | imprime **só** as regras citadas, com seção e legenda |
 | `make types` | regenera `contrato.json` e `componentes.ts` a partir do registry |
 | `make gerar-indice` | regenera `registry/indice.py` e `views/indice.ts` |
+| `make e2e` | Playwright em servidores próprios (8001/5174) contra `estoque_teste` — **fora** do `make check` |
 
 Todo verificador tem par por lado — `lint-api`/`lint-web`, `test-api`/`test-web`,
 `typecheck-*`, `arch-*`. A exceção é `make indice`: a bijeção é cross-side por

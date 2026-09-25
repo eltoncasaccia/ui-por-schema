@@ -2,7 +2,7 @@
 SHELL := /bin/bash
 
 help:  ## mostra os comandos
-	@grep -E '^[a-z-]+:.*?##' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-15s\033[0m %s\n",$$1,$$2}'
+	@grep -E '^[a-z0-9-]+:.*?##' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-15s\033[0m %s\n",$$1,$$2}'
 
 .env:
 	@cp -n .env.example .env && echo "criado .env a partir de .env.example — revise os segredos"
@@ -74,6 +74,9 @@ test-api:  ## pytest
 test-web:  ## vitest — reporter `dot`: uma linha por arquivo, a falha inteira
 	cd web && npx vitest run --reporter=dot
 
+e2e: db-teste  ## Playwright: navegacao e catalogo por ator, em servidores proprios (8001/5174)
+	cd web && npx playwright test
+
 test: test-api test-web  ## testes dos dois lados
 
 # `src` E `tests`: o achado A-09 nasceu de `tests` ficar de fora, e dez erros
@@ -90,7 +93,7 @@ lint-api:  ## ruff check + ruff format --check
 	cd api && uv run ruff check src tests && uv run ruff format --check src tests
 
 lint-web:  ## eslint — o formatador padrão não imprime nada quando está limpo
-	cd web && npx eslint src scripts
+	cd web && npx eslint src scripts e2e
 
 lint: lint-api lint-web  ## ruff + eslint
 

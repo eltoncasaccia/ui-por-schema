@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**51 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
+**52 concluídas · 1 parcial · 2 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -70,7 +70,7 @@ está pronto.
 
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
-| T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
+| T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. **Em dúvida desde 2026-09-25** ([A-47](./ACHADOS.md)): as 30 perguntas estavam commitadas antes da execução na branch `tarefa/T-017`, que nunca entrou na `main`. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
 
 ## W3 — Leitura · 15 de 15 componentes
 
@@ -149,7 +149,7 @@ está pronto.
 | | Tarefa | Estado | Origem |
 |---|---|---|---|
 | T-052 | Banco de teste isolado | ✅ | A-44 **fechado**. `estoque_teste` por `make db-teste`; endereços em `tests/banco.py`; suíte apontada para o dev para antes de coletar (2 negativos por processo filho, sabotados). 896 testes, nenhum skip por falta de banco; banco `estoque` com as mesmas contagens antes e depois da suíte |
-| T-053 | Testes de ponta a ponta com Playwright | ⬜ | ADR-0033 · A-45 (bug do menu, reproduzido no navegador) |
+| T-053 | Testes de ponta a ponta com Playwright | ✅ | **9 ACs verificados, AC-10 em branco** (o job de CI existe e o YAML valida, mas nenhuma execução de CI aconteceu — só um push confere). 14 testes em 6,0 s, Chromium, `make e2e`. **AC-1 provado com o `make up` no ar**: banco `estoque` idêntico antes e depois, `estoque_teste` crescendo — a separação do [A-44](./ACHADOS.md) valendo também para o navegador. Sabotagem do filtro de catálogo deixou AC-3 e AC-6 vermelhos e AC-4 verde, que é o certo: menu é conveniência, servidor é proteção. A sabotagem achou um defeito no próprio teste — a busca por "liberar" casava com o menu, não com a tela |
 
 ## Abertas em 2026-09-16
 

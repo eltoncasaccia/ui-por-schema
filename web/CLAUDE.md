@@ -125,3 +125,15 @@ Convenções em [`.claude/skills/testes-web`](.claude/skills/). O resumo:
 - `bijecao.test.ts` é o que impede registry e views de divergirem. Ele
   **regenera** os arquivos gerados e compara byte a byte — por isso é o mais
   lento, e por isso não se mexe nele sem entender o ADR-0017.
+
+**Ponta a ponta (T-053, ADR-0033):** `@playwright/test`, specs em `web/e2e/`, só
+Chromium. Roda por `make e2e`, **fora** do `make check` — exige navegador e dois
+servidores, que o Playwright sobe sozinho nas portas 8001/5174 contra o database
+`estoque_teste`, nunca contra o de desenvolvimento (A-44).
+
+- O e2e cobre **só** o que as outras camadas não alcançam: roteamento real,
+  cookie de sessão pelo proxy, e o menu filtrado pelo catálogo do ator. Repetir
+  no navegador um teste que o `vitest` já faz é custo sem evidência nova.
+- **`waitForTimeout` é proibido** — a asserção espera pelo estado da página.
+  Espera fixa é a causa mais comum de teste intermitente.
+- Nenhuma chamada a modelo: o servidor de e2e sobe sem chave de provedor.

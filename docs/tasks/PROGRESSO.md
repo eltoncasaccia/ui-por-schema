@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**52 concluídas · 1 parcial · 2 não iniciadas** · 24 de 24 componentes previstos.
+**52 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -157,6 +157,7 @@ está pronto.
 |---|---|---|---|
 | T-054 | Exportação em CSV, XLSX e PDF | ✅ | Pedido do cliente · ADR-0035. `POST /api/componentes/{id}/exportar` usa a mesma leitura autorizada de `dados` (`deps.ler_componente`); 7 componentes exportáveis; `exportavel` no catálogo; botão acima do bloco. 12 ACs; custo, escopo, teto, injeção de fórmula e import-linter sabotados e vistos vermelhos. Conferido no app real (API + Vite + navegador). O `csv` saiu do viewmodel da temperatura. Não aberto num Excel de verdade |
 | T-055 | Filtro interativo | ⬜ | Achado [A-46](./ACHADOS.md), relatado pelo usuário em 2026-09-16: não há controle de filtro em nenhuma superfície. Os `params` de enum já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`); falta o controle na tela, na rota tradicional e na composição do assistente. O controle mora ao redor do bloco, como o botão da T-054 — CONTRATOS §6 não muda |
+| T-056 | Erratum do R-001 e destino do A-08b | ⬜ | Achado [A-47](./ACHADOS.md). A evidência já está no repositório (commit `7fcb9de`); falta corrigir o §8 por erratum, decidir se o A-08b fecha, e transcrever hash e data para o relatório — hoje a prova de data mora só na branch `tarefa/T-017`. Recomendação escrita na tarefa: **não** fechar o A-08b, porque a rodada publicada continua sem a proteção |
 
 ---
 

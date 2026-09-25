@@ -42,11 +42,11 @@ não se perder.
 | # | Achado | Tarefa |
 |---|---|---|
 | **A-46** | Filtro não tem controle interativo em nenhuma superfície — os `params` de enum que já existem no servidor não têm controle na tela, nem na rota tradicional nem numa composição do assistente | [T-055](./T-055-filtro-interativo.md) |
-| **A-47** | **O R-001 §8 afirma duas coisas que a evidência contradiz.** O relatório diz que *"as perguntas não foram escritas nem commitadas antes da primeira execução"* e que *"`api/src/estoque/spike/` nunca foi construído"*. As duas existiam, fora da `main`: o commit `e753200` (2026-09-08 12:15:48 -03, branch `tarefa/T-017`) congela **30 perguntas** antes de qualquer execução, e a pasta de trabalho tinha o `spike/` e **120 execuções** (30 perguntas x 2 modelos x 2 modos) cujo campo `perguntas_de` aponta para aquele arquivo. Recuperados nesta data para `docs/relatorios/`; o `spike/` foi para `.archive/` | **a abrir** — ver nota |
+| **A-47** | **O R-001 §8 afirma duas coisas que a evidência contradiz.** O relatório diz que *"as perguntas não foram escritas nem commitadas antes da primeira execução"* e que *"`api/src/estoque/spike/` nunca foi construído"*. As duas existiam, fora da `main`: o commit `e753200` (2026-09-08 12:15:48 -03, branch `tarefa/T-017`) congela **30 perguntas** antes de qualquer execução, e a pasta de trabalho tinha o `spike/` e **120 execuções** (30 perguntas x 2 modelos x 2 modos) cujo campo `perguntas_de` aponta para aquele arquivo. Recuperados nesta data para `docs/relatorios/`; o `spike/` foi para `.archive/` | [T-056](./T-056-erratum-r-001.md) |
 
 > A-44 fechou em 2026-09-14, com a [T-052](./T-052-banco-de-teste-isolado.md).
 
-> **O A-47 ainda não tem tarefa, e o recorte precisa de decisão.** A rodada
+> **O recorte do A-47 precisa de decisão, e ela é da [T-056](./T-056-erratum-r-001.md).** A rodada
 > recuperada **não é** a publicada: usou `sonnet-4.6`, com 30 perguntas e 120
 > execuções; o R-001 publicou `sonnet-5` e `haiku-4.5`, com 17 casos e 68
 > execuções. Os números do relatório continuam válidos — o que muda é o que se
@@ -55,7 +55,9 @@ não se perder.
 > o **A-08b** (§4 deste arquivo) cai, corrigir o R-001 §8 e a
 > linha da T-017 no [PROGRESSO](./PROGRESSO.md), e escolher se a rodada de 30
 > perguntas entra no relatório como anexo. **A branch `tarefa/T-017` não pode
-> ser apagada**: é ela que carrega a data do commit, que é a prova.
+> ser apagada enquanto a T-056 não fechar**: é ela que carrega a data do commit,
+> que é a prova — e o AC-4 da T-056 existe justamente para transcrever essa
+> prova para o relatório e libertar a branch.
 
 ---
 

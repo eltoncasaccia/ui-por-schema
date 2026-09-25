@@ -3,7 +3,7 @@
 Registro do que a execução descobriu e o documento não previa: conflito entre
 regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 
-> **Próximo número: `A-46`.** Está aqui para ninguém precisar abrir o arquivo
+> **Próximo número: `A-47`.** Está aqui para ninguém precisar abrir o arquivo
 > só para descobrir o número seguinte.
 
 **Este arquivo só tem o que ainda exige ação.** Os 33 achados já fechados foram
@@ -41,7 +41,10 @@ não se perder.
 
 | # | Achado | Tarefa |
 |---|---|---|
-| — | Nenhum aberto: A-44 fechou em 2026-09-14, com a [T-052](./T-052-banco-de-teste-isolado.md) | — |
+| **A-46** | Filtro não tem controle interativo em nenhuma superfície — os `params` de enum que já existem no servidor não têm controle na tela, nem na rota tradicional nem numa composição do assistente | [T-055](./T-055-filtro-interativo.md) |
+
+> A-44 fechou em 2026-09-14, com a [T-052](./T-052-banco-de-teste-isolado.md).
+
 ---
 
 ## 3. Abertos, anotados como limite conhecido

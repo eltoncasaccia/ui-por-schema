@@ -201,6 +201,12 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 |---|---|---|---|---|---|
 | [T-054](./T-054-exportacao-csv-xlsx-pdf.md) | **Exportação em CSV, XLSX e PDF**: rota `exportar` no servidor a partir do viewmodel, com a mesma autorização de `dados`. Muda CONTRATOS §8 e traz duas dependências novas, `openpyxl` e `fpdf2`, autorizadas pelo usuário. Cumpre a promessa do ADR-0029 e os RF-11 e RF-14 ([ADR-0035](../adr/0035-exportacao-no-servidor.md)) | C/D | G | T-044, T-023 | ✅ |
 
+### Aberta em 2026-09-16 — filtro interativo
+
+| Id | Tarefa | Trilha | Tam. | Depende | Status |
+|---|---|---|---|---|---|
+| [T-055](./T-055-filtro-interativo.md) | **Filtro interativo**: os `params` de enum que já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`, etc.) ganham controle na tela, tanto na rota tradicional quanto numa composição do assistente — mesmo bloco, mesmo recarregamento client-driven que já existe para paginação (`render/motor.tsx`). CONTRATOS §6 (`View<Id>`) não muda: o controle mora ao redor do bloco, como o botão de exportar da T-054, não dentro da `view` ([A-46](./ACHADOS.md)) | C/D | G | T-039, T-054 | ⬜ |
+
 ### W5 — Garantias e fechamento · até 4 sessões
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |

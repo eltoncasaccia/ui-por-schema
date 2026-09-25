@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**50 concluídas · 1 parcial · 2 não iniciadas** · 24 de 24 componentes previstos.
+**51 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -15,8 +15,8 @@ atualizado a cada entrega.
 > concluídas" com 43 linhas ✅. Para reconferir:
 > `LC_ALL=C awk -F'|' '/^\| T-0[0-9][0-9] \|/ {print $4}' PROGRESSO.md | LC_ALL=C sort | LC_ALL=C uniq -c`.
 > **O `LC_ALL=C` não é enfeite:** sem ele, o `sort`/`uniq` do macOS colaciona os
-> emojis como iguais e devolve uma linha só, "51 ✅" — foi assim que a contagem
-> errada passou pela conferência.
+> emojis como iguais e devolve uma linha só com o total de linhas (na época,
+> "51 ✅") — foi assim que a contagem errada passou pela conferência.
 
 `✅ concluída` · `🟡 parcial` · `⬜ não iniciada` · `🔴 bloqueada`
 
@@ -156,6 +156,7 @@ está pronto.
 | | Tarefa | Estado | Origem |
 |---|---|---|---|
 | T-054 | Exportação em CSV, XLSX e PDF | ✅ | Pedido do cliente · ADR-0035. `POST /api/componentes/{id}/exportar` usa a mesma leitura autorizada de `dados` (`deps.ler_componente`); 7 componentes exportáveis; `exportavel` no catálogo; botão acima do bloco. 12 ACs; custo, escopo, teto, injeção de fórmula e import-linter sabotados e vistos vermelhos. Conferido no app real (API + Vite + navegador). O `csv` saiu do viewmodel da temperatura. Não aberto num Excel de verdade |
+| T-055 | Filtro interativo | ⬜ | Achado [A-46](./ACHADOS.md), relatado pelo usuário em 2026-09-16: não há controle de filtro em nenhuma superfície. Os `params` de enum já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`); falta o controle na tela, na rota tradicional e na composição do assistente. O controle mora ao redor do bloco, como o botão da T-054 — CONTRATOS §6 não muda |
 
 ---
 

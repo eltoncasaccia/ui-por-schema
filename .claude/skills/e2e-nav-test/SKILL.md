@@ -398,6 +398,7 @@ Read when you encounter specific problems during test generation or execution:
 - The app is built with Django, Laravel, Rails, or another server-rendered framework — read Section 4 (Server-Rendered Applications) and Section 7 (Framework-Specific Gotchas)
 - The app uses rich text editors (TinyMCE, Quill, CKEditor) — read Section 2.2 for interaction strategies
 - The app has custom date pickers, auto-complete fields, or file uploads — read Section 2.3-2.5
+- About to write a step that clicks a table row, card, or list item to navigate somewhere — read Section 2.7 **first**, and confirm the handler actually exists in the component before writing the step, not after
 
 **During Phase 2 (Dependency Tree):**
 - Test data may collide with seed data (unique constraints) — read Section 6.1
@@ -416,3 +417,4 @@ Read when you encounter specific problems during test generation or execution:
 - Form submission does nothing or returns 403 — read Section 2.1 (CSRF) and Section 4.1 (PRG pattern)
 - Flash/toast messages are missed — read Section 4.2
 - MFA blocks automated login — read Section 1.5
+- A click didn't throw, but the URL/DOM didn't change either — read Section 2.7 (or 7.1 on Next.js): treat this as a real failure signal, not a pass

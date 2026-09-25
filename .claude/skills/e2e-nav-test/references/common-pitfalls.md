@@ -147,6 +147,17 @@ Known edge cases, tricky scenarios, and practical workarounds that arise during 
 - After filling each field, click on the next field (or press Tab) to trigger blur validation before asserting validation messages.
 - Test both scenarios: field-level validation (on blur) and form-level validation (on submit).
 
+### 2.7 Clickable-Looking Elements Without a Handler (Any Framework)
+
+**Problem:** A table row, card, or list item *looks* clickable — it has hover styling, cursor:pointer, or sits next to a detail route that clearly exists — but no `onClick`/navigation is actually wired to it. This is not framework-specific: it happens in plain React/Vue/Svelte components just as often as in Next.js Server Components (see 7.1). A presentational/"dumb" table component in particular is a common culprit — it renders rows and delegates *all* interaction to whatever wraps it, and sometimes nothing does.
+
+**Symptoms:** Clicking the row does nothing — no navigation, no state change, no error, no console warning. The element exists, is visible, and passes every actionability check; the click event simply has nowhere to go. A test step written from "there's obviously a detail page for this, so clicking the row must open it" will hang or silently no-op.
+
+**Workaround:**
+- During Phase 1 Step 3 (map in-page flows), don't infer a click-to-navigate step from the existence of a detail route alone. Grep the component actually rendering the list/table for `onClick`, `<Link>`/`<a href>`, `useNavigate`, `router.push`, or an equivalent — confirm the handler exists before writing the step.
+- If the detail route exists but nothing in the list wires up to it, the real navigation path is often "paste/type an identifier directly" (a URL with an id param) rather than a click. Write the step that way, and note in Observations that click-to-navigate was assumed and disproven.
+- When executing (Phase 4), treat "click succeeded but the URL and DOM didn't change" as a failure signal worth a second look, not a false pass — don't just move on because `.click()` didn't throw.
+
 ---
 
 ## 3. Timing & Async State
@@ -344,7 +355,7 @@ Known edge cases, tricky scenarios, and practical workarounds that arise during 
 
 ### 7.1 Next.js: Server Components vs Client Components
 
-**Problem:** Next.js App Router uses Server Components by default. Interactive elements (onClick, onChange, useState) only work in Client Components. A test may try to interact with an element that doesn't have event handlers because it's rendered as a Server Component.
+**Problem:** Next.js App Router uses Server Components by default. Interactive elements (onClick, onChange, useState) only work in Client Components. A test may try to interact with an element that doesn't have event handlers because it's rendered as a Server Component. This is a Next.js-specific *cause* of a general symptom — see 2.7 for the same "element exists but is inert" problem in any framework.
 
 **Symptoms:** Clicking a button does nothing — no navigation, no state change, no error. The element exists but is inert.
 

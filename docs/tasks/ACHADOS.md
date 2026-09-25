@@ -3,7 +3,7 @@
 Registro do que a execução descobriu e o documento não previa: conflito entre
 regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 
-> **Próximo número: `A-49`.** Está aqui para ninguém precisar abrir o arquivo
+> **Próximo número: `A-50`.** Está aqui para ninguém precisar abrir o arquivo
 > só para descobrir o número seguinte.
 
 **Este arquivo só tem o que ainda exige ação.** Os 33 achados já fechados foram
@@ -43,7 +43,6 @@ não se perder.
 |---|---|---|
 | **A-46** | Filtro não tem controle interativo em nenhuma superfície — os `params` de enum que já existem no servidor não têm controle na tela, nem na rota tradicional nem numa composição do assistente | [T-055](./T-055-filtro-interativo.md) |
 | **A-47** | **O R-001 §8 afirma duas coisas que a evidência contradiz.** O relatório diz que *"as perguntas não foram escritas nem commitadas antes da primeira execução"* e que *"`api/src/estoque/spike/` nunca foi construído"*. As duas existiam, fora da `main`: o commit `e753200` (2026-09-08 12:15:48 -03, branch `tarefa/T-017`) congela **30 perguntas** antes de qualquer execução, e a pasta de trabalho tinha o `spike/` e **120 execuções** (30 perguntas x 2 modelos x 2 modos) cujo campo `perguntas_de` aponta para aquele arquivo. Recuperados nesta data para `docs/relatorios/`; o `spike/` foi para `.archive/` | [T-056](./T-056-erratum-r-001.md) |
-| **A-48** | **O AC-6 da T-053 exercita 2 das 6 rotas.** Ele roda com o Marco, e o catálogo do diretor — que não tem nenhum componente de escrita operacional — só alcança `/lotes` e `/vencimento`. O critério foi cumprido como estava escrito (*"o menu de Marco"*), e mesmo assim `/quarentena`, `/controlados`, `/saida` e `/recebimento/novo` não têm path nem título conferidos por ninguém. Três personas cobrem as seis | [T-057](./T-057-e2e-escrita-e-rotas.md) |
 
 > A-44 fechou em 2026-09-14, com a [T-052](./T-052-banco-de-teste-isolado.md).
 

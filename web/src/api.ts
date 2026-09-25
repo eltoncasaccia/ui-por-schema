@@ -58,6 +58,7 @@ export interface Eu { id: string; nome: string; papel: string | null; unidades: 
 export interface ParamInfo { valores?: string[]; tipo?: string; obrigatorio: boolean }
 export type FormatoExportacao = 'csv' | 'xlsx' | 'pdf'
 
+export interface ComandoDoBloco { endpoint: string; confirm: boolean; idempotent: boolean }
 export interface EntradaCatalogo {
   id: string
   label: string
@@ -66,8 +67,14 @@ export interface EntradaCatalogo {
   params: Record<string, ParamInfo>
   /** T-054: o servidor gera arquivo deste componente. Só da borda, nunca do prompt. */
   exportavel?: boolean
+  /**
+   * T-057: o mesmo `comandos` que um `Bloco` composto pelo assistente ou por
+   * uma view salva já carrega — aqui para quem monta o `Bloco` de uma ROTA
+   * tradicional (`TelaOperacao`, `TelaSaida`), que nunca passa pelas duas
+   * rotas que normalmente anexam isto (`bloco_resposta`, CONTRATOS §6/§8).
+   */
+  comandos?: Record<string, ComandoDoBloco>
 }
-export interface ComandoDoBloco { endpoint: string; confirm: boolean; idempotent: boolean }
 export interface Bloco {
   tipo: string
   params: Record<string, unknown>

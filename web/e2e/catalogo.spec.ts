@@ -59,9 +59,12 @@ test.describe('catálogo por ator', () => {
     // Nem o número do lote vazou para quem não pode ver esta tela.
     await expect(cleide.locator('body')).not.toContainText(alvo.numero)
 
-    // O estado não mudou: mesma fila, mesmo lote, para quem pode ver.
+    // O ALVO não mudou: continua na fila, para quem pode ver. Não comparamos
+    // `total` — desde a T-057, `liberacao.spec.ts` faz uma liberação de
+    // verdade em paralelo, e o total da fila é estado GLOBAL, compartilhado
+    // por todo o arquivo de teste. O que este teste prova é que a tentativa
+    // forjada de Cleide não tocou o lote dela, não que mais ninguém escreveu.
     const depois = await lerComponente<FilaQuarentena>(helena, 'quarentena_fila')
-    expect(depois.total).toBe(antes.total)
     expect(depois.linhas.map((l) => l.lote_id)).toContain(alvo.lote_id)
 
     await deHelena.close()

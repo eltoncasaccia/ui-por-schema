@@ -34,6 +34,30 @@ test.describe('entrada', () => {
     await expect(page.locator('h1.workspace-titulo')).toHaveCount(0)
   })
 
+  test('AC-6 (T-057) · sair destrói a sessão de verdade', async ({ page }) => {
+    await entrar(page, 'marco')
+    const cookieAntigo = (await page.context().cookies()).find((c) => c.name === 'sessao')?.value
+    expect(cookieAntigo).toBeTruthy()
+
+    await page.getByRole('button', { name: 'Sair' }).click()
+
+    // A tela de entrada volta.
+    await expect(page.getByRole('button', { name: new RegExp(PERSONAS.marco.nome) })).toBeVisible()
+
+    // `/lotes` depois disso mostra a entrada, e nenhum dado — o mesmo AC-5,
+    // agora depois de sair em vez de nunca ter entrado.
+    await page.goto('/lotes')
+    await expect(page.getByRole('button', { name: new RegExp(PERSONAS.marco.nome) })).toBeVisible()
+    await expect(page.getByRole('table')).toHaveCount(0)
+
+    // E o servidor recusa o cookie ANTIGO — não o que sobrou no navegador,
+    // que `resposta.delete_cookie` já limpou, mas o valor que uma aba com o
+    // reload atrasado ainda teria em mãos. A sessão foi ENCERRADA
+    // (`server/sessao.py:encerrar`), não só o cookie apagado do lado cliente.
+    const r = await page.request.get('/api/auth/eu', { headers: { Cookie: `sessao=${cookieAntigo}` } })
+    expect(r.status()).toBe(401)
+  })
+
   test('AC-5 · a API recusa o dado sem sessão, em duas camadas', async ({ request }) => {
     // A prova do servidor, ao lado da prova da tela. São DUAS proteções
     // independentes, e o teste separa uma da outra de propósito.

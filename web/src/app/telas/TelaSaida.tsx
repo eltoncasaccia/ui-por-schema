@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
-import type { Bloco, Eu } from '../../api'
+import { api, type Bloco, type Eu } from '../../api'
 import { composicaoDaTela } from '../../estado/sessao'
 import { Composicao } from '../../render/motor'
 import { CabecalhoTela } from '../../shell/CabecalhoTela'
@@ -16,8 +17,14 @@ import { CabecalhoTela } from '../../shell/CabecalhoTela'
  * identificador digitado ou colado, não buscado — mais um `?produto_id=` na
  * URL para quem chega de um link. Depois de resolvido, é a MESMA
  * `Composicao` com o MESMO `movimento_saida` das outras rotas (AC-1).
+ *
+ * `comandos` vem do `/api/catalogo` (achado da T-057) — ver o comentário
+ * equivalente em `TelaOperacao.tsx`. Sem isto, "Registrar saída" nunca chega
+ * ao servidor.
  */
 export function TelaSaida({ eu }: { eu: Eu }) {
+  const catalogo = useQuery({ queryKey: [eu.id, 'catalogo'], queryFn: api.catalogo })
+  const comandos = catalogo.data?.find((e) => e.id === 'movimento_saida')?.comandos
   const [buscaParams] = useSearchParams()
   const daUrl = buscaParams.get('produto_id') ?? ''
   const [produtoId, setProdutoId] = useState(daUrl)
@@ -53,7 +60,12 @@ export function TelaSaida({ eu }: { eu: Eu }) {
     )
   }
 
-  const bloco: Bloco = { tipo: 'movimento_saida', params: { produto_id: produtoId }, tamanho: 'inteira' }
+  const bloco: Bloco = {
+    tipo: 'movimento_saida',
+    params: { produto_id: produtoId },
+    tamanho: 'inteira',
+    ...(comandos ? { comandos } : {}),
+  }
   return (
     <main className="workspace">
       <CabecalhoTela titulo="Saída" composicao={composicaoDaTela('Saída', [bloco])} />

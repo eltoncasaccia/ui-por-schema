@@ -115,6 +115,15 @@ web/CLAUDE.md                              seção Testes
 no `e2e`), mas **nenhuma execução de CI aconteceu** — isso só se confere num
 push. Marcar agora seria evidência falsa.
 
+### Limite conhecido, achado depois
+
+O **AC-6 roda só com o Marco**, e o catálogo do diretor alcança 2 das 6 rotas
+sem parâmetro — `/quarentena`, `/controlados`, `/saida` e `/recebimento/novo`
+ficam sem path e título conferidos. O critério está cumprido como foi escrito
+(*"cada item de rota do menu de Marco"*), e mesmo assim a cobertura é metade do
+que parece. Registrado como [A-48](./ACHADOS.md) e endereçado pela
+[T-057](./T-057-e2e-escrita-e-rotas.md), que roda o mesmo AC com três personas.
+
 ### Achado do próprio teste
 
 A sabotagem reprovou o AC-4 por um motivo errado: a busca por botão "liberar"

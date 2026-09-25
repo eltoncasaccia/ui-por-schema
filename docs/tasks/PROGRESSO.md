@@ -7,7 +7,7 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**52 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
+**52 concluídas · 1 parcial · 4 não iniciadas** · 24 de 24 componentes previstos.
 **W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
@@ -149,7 +149,7 @@ está pronto.
 | | Tarefa | Estado | Origem |
 |---|---|---|---|
 | T-052 | Banco de teste isolado | ✅ | A-44 **fechado**. `estoque_teste` por `make db-teste`; endereços em `tests/banco.py`; suíte apontada para o dev para antes de coletar (2 negativos por processo filho, sabotados). 896 testes, nenhum skip por falta de banco; banco `estoque` com as mesmas contagens antes e depois da suíte |
-| T-053 | Testes de ponta a ponta com Playwright | ✅ | **9 ACs verificados, AC-10 em branco** (o job de CI existe e o YAML valida, mas nenhuma execução de CI aconteceu — só um push confere). 14 testes em 6,0 s, Chromium, `make e2e`. **AC-1 provado com o `make up` no ar**: banco `estoque` idêntico antes e depois, `estoque_teste` crescendo — a separação do [A-44](./ACHADOS.md) valendo também para o navegador. Sabotagem do filtro de catálogo deixou AC-3 e AC-6 vermelhos e AC-4 verde, que é o certo: menu é conveniência, servidor é proteção. A sabotagem achou um defeito no próprio teste — a busca por "liberar" casava com o menu, não com a tela |
+| T-053 | Testes de ponta a ponta com Playwright | ✅ | **9 ACs verificados, AC-10 em branco** (o job de CI existe e o YAML valida, mas nenhuma execução de CI aconteceu — só um push confere). 14 testes em 6,0 s, Chromium, `make e2e`. **AC-1 provado com o `make up` no ar**: banco `estoque` idêntico antes e depois, `estoque_teste` crescendo — a separação do [A-44](./ACHADOS.md) valendo também para o navegador. Sabotagem do filtro de catálogo deixou AC-3 e AC-6 vermelhos e AC-4 verde, que é o certo: menu é conveniência, servidor é proteção. A sabotagem achou um defeito no próprio teste — a busca por "liberar" casava com o menu, não com a tela. **Limite achado depois ([A-48](./ACHADOS.md)):** o AC-6 roda só com o diretor e exercita 2 das 6 rotas — [T-057](./T-057-e2e-escrita-e-rotas.md) |
 
 ## Abertas em 2026-09-16
 
@@ -158,6 +158,7 @@ está pronto.
 | T-054 | Exportação em CSV, XLSX e PDF | ✅ | Pedido do cliente · ADR-0035. `POST /api/componentes/{id}/exportar` usa a mesma leitura autorizada de `dados` (`deps.ler_componente`); 7 componentes exportáveis; `exportavel` no catálogo; botão acima do bloco. 12 ACs; custo, escopo, teto, injeção de fórmula e import-linter sabotados e vistos vermelhos. Conferido no app real (API + Vite + navegador). O `csv` saiu do viewmodel da temperatura. Não aberto num Excel de verdade |
 | T-055 | Filtro interativo | ⬜ | Achado [A-46](./ACHADOS.md), relatado pelo usuário em 2026-09-16: não há controle de filtro em nenhuma superfície. Os `params` de enum já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`); falta o controle na tela, na rota tradicional e na composição do assistente. O controle mora ao redor do bloco, como o botão da T-054 — CONTRATOS §6 não muda |
 | T-056 | Erratum do R-001 e destino do A-08b | ⬜ | Achado [A-47](./ACHADOS.md). A evidência já está no repositório (commit `7fcb9de`); falta corrigir o §8 por erratum, decidir se o A-08b fecha, e transcrever hash e data para o relatório — hoje a prova de data mora só na branch `tarefa/T-017`. Recomendação escrita na tarefa: **não** fechar o A-08b, porque a rodada publicada continua sem a proteção |
+| T-057 | E2E: as 6 rotas, escrita por clique, view compartilhada e sair | ⬜ | Achado [A-48](./ACHADOS.md). Corrige a cobertura da T-053 (AC-6 em três personas) e acrescenta os três fluxos que só o navegador prova. Não faz: exportação, paginação e `/usuarios`, registrados como candidatos |
 
 ---
 

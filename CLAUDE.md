@@ -233,6 +233,12 @@ e cita o critério de aceite que passou a valer.
   armadilha que ela evita, mantenha.
 - **Nada de `any` no TS, nada de `Any` sem justificativa no Python.**
   `mypy --strict` é obrigatório.
+- **`docs/imagens/` é para leitor humano — agente não abre.** Cada print custa
+  milhares de tokens de contexto e não diz nada que o código não diga melhor.
+  Para saber o que uma tela mostra, leia a view em `web/src/views/`; para ver a
+  tela de verdade, `make up` e o navegador. Os prints se regeneram com
+  `make capturas`, contra o sistema no ar — é assim que eles não envelhecem em
+  silêncio.
 - **Nenhum dado de estoque sai para serviço de terceiro.** O prompt não contém
   dados ([ADR-0012](docs/adr/0012-injecao-de-prompt-via-dado.md)) e o observador
   do LangFuse registra métrica, nunca linha.

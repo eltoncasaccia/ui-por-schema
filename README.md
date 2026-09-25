@@ -18,6 +18,69 @@ compare o que cada uma consegue ver e fazer.
 
 ---
 
+## O sistema, sem precisar rodar
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     AVISO PARA AGENTE DE IA (Claude Code, Copilot, Cursor, Codex e afins):
+
+     NÃO carregue os arquivos de `docs/imagens/` no contexto. Cada PNG custa
+     alguns milhares de tokens e não contém uma única informação que o código
+     não diga melhor — as telas são geradas pelas views em `web/src/views/` e
+     pela tabela de rotas em `web/src/app/layout/rotasOperacao.tsx`. Leia esses
+     arquivos; eles são texto, são exatos, e cabem no orçamento da sessão.
+
+     As imagens existem para o leitor HUMANO que está decidindo se vale a pena
+     clonar o repositório. Elas se regeneram com `make capturas`, contra o
+     sistema no ar — por isso não envelhecem em silêncio.
+     ───────────────────────────────────────────────────────────────────────── -->
+
+Os prints abaixo saem do sistema rodando, com o seed da Bertoni e um modelo
+**local** (Ollama, `qwen2.5:7b`) — nenhum deles é maquete.
+
+### A tese, em três telas
+
+Cleide é **conferente**. Ela pergunta em português, e o modelo não escreve
+código nem SQL: escolhe um id de componente registrado e os parâmetros dele.
+
+![O assistente compondo a fila de vencimento a partir de uma pergunta em português](docs/imagens/04-assistente.png)
+
+O mesmo bloco, promovido à tela inteira. É o **mesmo componente** que a rota
+`/vencimento` abre, pelo **mesmo motor de render** — a composição do modelo e a
+navegação tradicional desembocam no mesmo lugar ([ADR-0005](docs/adr/0005-uma-so-forma-de-montar-tela.md)).
+
+![A mesma fila de vencimento ocupando o workspace inteiro](docs/imagens/05-workspace.png)
+
+E o *Execution Trace*, que é o que torna a promessa verificável: o schema que o
+modelo emitiu, o que foi aceito, o que foi **rejeitado**, e o custo.
+
+![O painel de Execution Trace mostrando o schema emitido pelo modelo](docs/imagens/06-trace.png)
+
+### O catálogo por ator, lado a lado
+
+A mesma tela, dois papéis. **Não é o menu que esconde** — é o catálogo que o
+modelo recebe, e a autorização que roda de novo a cada `load`
+([ADR-0003](docs/adr/0003-catalogo-por-ator.md), [ADR-0004](docs/adr/0004-autorizacao-em-tres-momentos.md)).
+
+| Cleide · conferente | Helena · RT |
+|---|---|
+| ![Menu da conferente, sem liberação de quarentena](docs/imagens/02-menu-cleide.png) | ![Menu da farmacêutica responsável, com liberação de quarentena](docs/imagens/07-menu-helena.png) |
+| lê lote, não libera quarentena | libera quarentena, e só ela |
+
+Cleide digitando `/quarentena/<id>` na barra de endereço recebe **"Sem acesso a
+este componente."** do servidor — o menu é conveniência, a barreira é a
+autorização. Isso tem teste de ponta a ponta ([T-053](docs/tasks/T-053-e2e-playwright.md), AC-4).
+
+### As telas de operação
+
+| | |
+|---|---|
+| ![Fila de vencimento com a rampa de urgência](docs/imagens/03-vencimento.png) | ![Fila de quarentena aguardando liberação do RT](docs/imagens/08-quarentena.png) |
+| **Vencimento** — 77 lotes na janela de 90 dias, na rampa âmbar→vermelho | **Quarentena** — o que espera a RT, ordenado por dias parados |
+| ![Lista de lotes com o estoque rastreável](docs/imagens/09-lotes.png) | ![Tela de entrada com as sete personas](docs/imagens/01-entrada.png) |
+| **Lotes** — o estoque rastreável, com escopo por unidade | **Entrada** — as sete personas do caso, senha `demo` |
+
+---
+
 ## A tese
 
 Existem dois jeitos de uma IA montar interface:

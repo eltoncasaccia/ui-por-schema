@@ -40,8 +40,20 @@ env:  ## compara o .env com o .env.example
 env-completar:  ## acrescenta ao .env as variáveis novas do exemplo
 	@python3 scripts/env.py --completar
 
-modelo:  ## mostra qual modelo e provedor estão em uso
-	@docker compose exec -T api sh -c 'echo "provedor : $$PROVEDOR"; echo "modelo   : $$MODELO_ASSISTENTE"; echo "modo     : $$MODO_DECODIFICACAO"; echo "base     : $${LLM_BASE_URL:-(padrão do provedor)}"'
+modelo:  ## mostra o modelo e o provedor EFETIVOS (não o que o .env diz)
+# Pergunta à própria fábrica, não ao ambiente: `LLM_BASE_URL` só vale para o
+# provedor `compativel`, e ecoar a variável crua dizia que o OpenRouter ia para
+# o Ollama quando ele não ia. Diagnóstico que mente é pior que diagnóstico
+# ausente — quem confia nele procura o defeito no lugar errado.
+	@docker compose exec -T api python -c "\
+import os; from estoque.assistant.fabrica import criar_adaptador; \
+a = criar_adaptador(); \
+print('provedor :', os.environ.get('PROVEDOR', 'openrouter')); \
+print('modelo   :', a._modelo); \
+print('modo     :', os.environ.get('MODO_DECODIFICACAO', 'restrito')); \
+print('base     :', a._base); \
+print('chave    :', a._nome_da_chave, '(preenchida)' if a._chave else '(VAZIA)')"
+
 
 gerar-indice:  ## regenera registry/indice.py e views/indice.ts varrendo os diretórios
 	@python3 scripts/gerar_indice.py

@@ -18,6 +18,22 @@ docker compose up
 `http://localhost:5173` · entre como **Cleide (conferente)** ou **Helena (RT)** e
 compare o que cada uma consegue ver e fazer.
 
+### Comandos essenciais
+
+```bash
+make down        # derruba os serviços
+make reset       # derruba e APAGA os dados
+make check       # lint + typecheck + test + arch — é o que o CI roda
+```
+
+Desenvolver contra o banco local, gerar tipos a partir do registry, entender os
+arquivos gerados que ninguém edita à mão, ou destravar um processo preso: tudo em
+[`CLAUDE.md` §3–4](./CLAUDE.md#3-subir-derrubar-e-a-armadilha-do-meio) e
+[`docs/AMBIENTE.md`](./docs/AMBIENTE.md). `make help` lista todos os alvos.
+
+> ⚠️ `make eval` gasta token a cada execução — não rode sem intenção
+> ([ADR-0013](./docs/adr/0013-suite-de-avaliacao.md)).
+
 ---
 
 ## A tese
@@ -122,25 +138,6 @@ Declarado de propósito — [ADR-0010](./docs/adr/0010-corte-de-escopo-ciclo-1.m
 
 contagem de inventário · ajuste de saldo · transferência entre unidades · operação
 off-line · nota fiscal e financeiro (permanecem no ERP)
-
----
-
-## Comandos
-
-```bash
-make up          # sobe tudo: db + api + web (docker compose)
-make down        # derruba os serviços
-make reset       # derruba e APAGA os dados
-make check       # lint + typecheck + test + arch — é o que o CI roda
-```
-
-Desenvolver contra o banco local, gerar tipos a partir do registry, entender os
-arquivos gerados que ninguém edita à mão, ou destravar um processo preso: tudo em
-[`CLAUDE.md` §3–4](./CLAUDE.md#3-subir-derrubar-e-a-armadilha-do-meio) e
-[`docs/AMBIENTE.md`](./docs/AMBIENTE.md). `make help` lista todos os alvos.
-
-> ⚠️ `make eval` gasta token a cada execução — não rode sem intenção
-> ([ADR-0013](./docs/adr/0013-suite-de-avaliacao.md)).
 
 ---
 

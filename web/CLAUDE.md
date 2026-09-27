@@ -131,9 +131,34 @@ Chromium. Roda por `make e2e`, **fora** do `make check` — exige navegador e do
 servidores, que o Playwright sobe sozinho nas portas 8001/5174 contra o database
 `estoque_teste`, nunca contra o de desenvolvimento (A-44).
 
-- O e2e cobre **só** o que as outras camadas não alcançam: roteamento real,
-  cookie de sessão pelo proxy, e o menu filtrado pelo catálogo do ator. Repetir
-  no navegador um teste que o `vitest` já faz é custo sem evidência nova.
+- O e2e cobre o que as outras camadas não alcançam: roteamento real, cookie de
+  sessão pelo proxy, e o menu filtrado pelo catálogo do ator.
+- **Toda tela cujo viewmodel vem do servidor tem pelo menos UM caminho exercido
+  de ponta a ponta contra o seed.** O `vitest` só vê o viewmodel que a fixture
+  escreveu — e fixture é fake. Repetir no navegador uma asserção de *desenho*
+  (rótulo, ordem, formatação) continua sendo custo sem evidência nova: o corte
+  não é por camada, é por **origem do dado**.
+  **Exceção registrada:** `movimento_estorno` e `movimento_descarte` não têm
+  rota — só nascem por composição do assistente, que o e2e não tem. São os dois
+  únicos componentes de escrita fora desta regra, e é lacuna da suíte, não
+  dispensa (A-004 §3).
 - **`waitForTimeout` é proibido** — a asserção espera pelo estado da página.
   Espera fixa é a causa mais comum de teste intermitente.
 - Nenhuma chamada a modelo: o servidor de e2e sobe sem chave de provedor.
+
+> **De onde veio essa segunda regra.** Ela substituiu *"repetir no navegador um
+> teste que o `vitest` já faz é custo sem evidência nova"*, que foi posta à
+> prova de propósito em [A-004](../docs/relatorios/A-004-e2e-vale-a-pena.md):
+> dois fluxos já cobertos por `vitest` foram reescritos em e2e, e os dois
+> acharam defeito. `comando.test.tsx` dava `exige_destinatario: false` a todo
+> motivo, e a saída por venda deixava enviar sem cliente nem nota
+> ([A-52](../docs/tasks/ACHADOS.md)); `recebimento_registrar.test.tsx` entregava
+> `vm.lido` pronto em 12 testes, e o leitor de código de barras **não resolvia
+> produto nenhum** ([A-53](../docs/tasks/ACHADOS.md)) — a tela principal do
+> conferente, entregue e marcada ✅, não recebia.
+>
+> Nos dois casos o teste provava que a view **desenha** certo o que recebeu, e
+> nunca que alguém conseguia entregar aquilo a ela. É a mesma família que a
+> `auditar-testes` chama de *"os fakes divergiram do adaptador real"* — e o
+> achado é que ela não para nos adaptadores: **um viewmodel escrito à mão é um
+> fake, e diverge igual.**

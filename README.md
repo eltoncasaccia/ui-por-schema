@@ -396,6 +396,43 @@ componente dos dois lados, e as duas auditorias.
 
 ---
 
+## Como este projeto foi construído
+
+Todo o código, os 22 ADRs e as 39 tarefas foram escritos em par com um agente de
+IA ([Claude Code](https://claude.com/claude-code)) — não em modo livre, mas
+seguindo um processo que existe justamente para conter o que dá errado quando
+um agente escreve sem esse tipo de contenção:
+
+- **A tarefa vem antes do código.** Cada [`docs/tasks/T-0NN-*.md`](./docs/tasks/)
+  é autocontida — se não dá para executá-la só com aquela leitura, o defeito é
+  na tarefa, não uma licença para o agente ler o repositório inteiro. Toda
+  tarefa declara os arquivos que **só ela** escreve.
+- **Decisão registrada, não lembrada.** Cada [ADR](./docs/adr/) traz as
+  alternativas descartadas e as consequências negativas — inclusive quando a
+  escolha foi do agente. É o que permite auditar uma decisão meses depois sem
+  reconstruir a conversa que a gerou.
+- **Teste negativo é a regra da casa.** Para todo mecanismo de proteção, o par
+  de testes que prova que ele funciona **e** o que prova que ele falha quando
+  deveria — testar que alguém autorizado consegue faz pouco; testar que quem
+  não é autorizado não consegue, nem por requisição forjada, é o que sustenta
+  a arquitetura.
+- **O board mente até ser auditado.** Duas skills —
+  [`auditar-execucao`](./.claude/skills/auditar-execucao/) e
+  [`auditar-testes`](./.claude/skills/auditar-testes/) — existem porque já
+  aconteceu de o board dizer que nada tinha sido feito enquanto 19 tarefas
+  estavam prontas, e de um CSRF prometido em três documentos e implementado em
+  nenhum ([A-002](./docs/relatorios/A-002-auditoria-de-execucao.md)). Rodar
+  essas auditorias, e corrigir o que elas encontram, faz parte do processo —
+  não é um passo opcional de qualidade.
+
+O `CLAUDE.md` na raiz é o manual operacional que o agente lê antes de tocar no
+repositório — não documentação escrita para humano, mas para a sessão que vem
+depois. É esse arquivo, mais o de cada subprojeto, que faz o processo acima
+acontecer de novo em cada tarefa, com sessões diferentes, sem depender de
+memória de conversa.
+
+---
+
 ## Origem
 
 Segunda iteração. A primeira ([achados](./docs/00-achados-v1.md)) provou a

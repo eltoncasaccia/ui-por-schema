@@ -1,4 +1,4 @@
-# Estoque Bertoni — interface composta por IA, sem gerar código
+# ui-por-schema — interface composta por IA, sem gerar código
 
 Sistema de controle de estoque farmacêutico onde **um modelo compõe a interface em
 tempo real** — escolhendo entre componentes registrados, nunca escrevendo código,
@@ -9,7 +9,7 @@ nunca tocando dados, nunca autorizando escrita.
 > separação de funções, rastreabilidade de lote — a um problema de arquitetura.
 
 ```bash
-git clone <repo> && cd estoque-bertoni
+git clone https://github.com/eltoncasaccia/ui-por-schema.git && cd ui-por-schema
 docker compose up
 ```
 

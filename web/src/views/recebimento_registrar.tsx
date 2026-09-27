@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { dispararComando } from '../render/comando'
+import { dispararRepedir } from '../render/repedir'
 import { Etiqueta } from '../ui/Etiqueta'
 import type { Tom } from '../ui/estados'
 import type { View } from './tipos'
@@ -179,12 +180,19 @@ export const view: View<'recebimento_registrar'> = ({ vm }) => {
                 // O leitor termina com Enter. Aqui ele confirma a LEITURA, e
                 // nunca envia o formulário — senão a primeira caixa lida
                 // gravaria um recebimento de um item só.
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  if (vm.lido && vm.lido.ean === scan) acrescentar(vm.lido)
+                if (e.key !== 'Enter') return
+                e.preventDefault()
+                // Já resolvido: o segundo Enter acrescenta. É o que fecha o
+                // laço do leitor USB sem tirar a mão do teclado.
+                if (vm.lido && vm.lido.ean === scan) {
+                  acrescentar(vm.lido)
+                  return
                 }
+                // Ainda não resolvido: pede ao servidor. Antes do A-53 isto
+                // era um atributo `data-ean` que ninguém lia, e o leitor não
+                // resolvia produto nenhum.
+                if (scan.trim()) dispararRepedir(e.currentTarget, { params: { ean: scan.trim() } })
               }}
-              data-ean={scan}
             />
           </label>
 

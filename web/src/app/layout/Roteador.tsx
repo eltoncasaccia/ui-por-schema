@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import type { Eu } from '../../api'
 import { TelaOperacao } from '../telas/TelaOperacao'
+import { TelaRecebimento } from '../telas/TelaRecebimento'
 import { TelaSaida } from '../telas/TelaSaida'
 import { TelaUsuarios } from '../telas/usuarios'
 import { ROTAS_OPERACAO } from './rotasOperacao'
@@ -29,7 +30,15 @@ export function Roteador({ eu, workspace }: { eu: Eu; workspace: ReactNode }) {
           <Route
             key={rota.path}
             path={rota.path}
-            element={rota.path === '/saida' ? <TelaSaida eu={eu} /> : <TelaOperacao rota={rota} eu={eu} />}
+            element={
+              rota.path === '/saida' ? (
+                <TelaSaida eu={eu} />
+              ) : rota.path === '/recebimento/novo' ? (
+                <TelaRecebimento rota={rota} eu={eu} />
+              ) : (
+                <TelaOperacao rota={rota} eu={eu} />
+              )
+            }
           />
         ))}
         {/* T-038 — fora do catálogo: não é componente, então não entra em ROTAS_OPERACAO. */}

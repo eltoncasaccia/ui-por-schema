@@ -65,6 +65,24 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
     initialPageParam: null as string | null,
     getNextPageParam: (ultima) => (paginado(ultima) && ultima.tem_mais ? ultima.cursor : null),
     retry: false,
+    // Param que muda NÃO desmonta a view — achado A-53.
+    //
+    // Sem isto, `params` novos dão uma `queryKey` nova, a query volta a
+    // `isPending`, o `Esqueleto` entra no lugar da view e o estado local dela
+    // morre. Na tela de recebimento isso apagava a lista de itens a cada caixa
+    // lida: o conferente bipava a segunda e perdia a primeira. Vale para todo
+    // componente com param interativo — o filtro da T-055 cairia no mesmo
+    // buraco, e ninguém teria ligado uma coisa à outra.
+    //
+    // O dado velho fica na tela enquanto o novo vem. É o mesmo princípio do
+    // AC-4 da T-049: a tela continua mostrando o que mostrava, e nada de
+    // estado otimista.
+    // **Só do MESMO componente.** Manter o dado anterior ao trocar de ROTA
+    // entregaria a carga de `recebimento_registrar` à view de `lote_lista`, que
+    // quebra ao ler um campo que não existe ali. Foi o que o teste de popstate
+    // (`rotas_operacao.test.tsx`, AC-6) acusou na primeira versão disto.
+    placeholderData: (anterior, queryAnterior) =>
+      queryAnterior?.queryKey[1] === bloco.tipo ? anterior : undefined,
   })
 
   const sentinela = useScrollInfinito(

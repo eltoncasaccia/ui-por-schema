@@ -477,7 +477,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
     border-radius: 2px; background: var(--fraco); opacity: .5;
   }
   .divisor:hover::after, .divisor:focus-visible::after { opacity: 1; background: var(--acento); }
-  .debug { max-height: none; }
+  /* Sem largura própria, `flex: none` deixa o navegador calcular uma base a
+     partir do conteúdo (JSON do schema, linhas de trace) — instável, e some
+     dos irmãos (`.lateral`, `.assistente-dock`, que têm `width` explícito via
+     hook de redimensionamento). O sintoma: o botão Exportar, que é
+     `position: relative`, pinta por cima do próprio painel quando a coluna do
+     workspace é espremida por essa base errada. */
+  .debug { max-height: none; width: 420px; min-width: 0; }
 }
 
 /* ─── diálogo ────────────────────────────────────────────────────── */

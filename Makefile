@@ -74,9 +74,6 @@ test-api:  ## pytest
 test-web:  ## vitest — reporter `dot`: uma linha por arquivo, a falha inteira
 	cd web && npx vitest run --reporter=dot
 
-capturas:  ## regenera os prints do README a partir do sistema no ar (exige make up)
-	cd web && npx tsx scripts/capturar-telas.ts
-
 e2e: db-teste  ## Playwright: navegacao e catalogo por ator, em servidores proprios (8001/5174)
 	cd web && npx playwright test
 

@@ -161,6 +161,12 @@ Não é sistema começando. É sistema com um furo estrutural.
 
 ## 5. Design system — o que vale trazer do Archi
 
+> **Emenda (auditoria de repositório, 2026-09-27).** `design/` foi removido —
+> os 2,4 MB do `estoque-bertoni-design-system.html` e os `.dc.html` de origem
+> não tinham dono nem referência fora desta linha. A recomendação abaixo (doc
+> legível, no formato do Archi) não foi feita; se o design system precisar
+> voltar a existir como documento, é trabalho a refazer, não a recuperar daqui.
+
 Este projeto **já tem** o seu: tokens em `web/src/estilo.css`, invariantes em
 `design.test.ts`, e a semântica de `--ambar` vs `--laranja` documentada em
 [`web/CLAUDE.md`](../../web/CLAUDE.md). A identidade do Archi (cianotipia, o

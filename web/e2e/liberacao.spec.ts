@@ -135,6 +135,19 @@ test.describe('liberação de quarentena', () => {
       temperatura_conferida: true,
     }
 
+    /** Quantas decisões de liberação a trilha já tem para ESTE lote. */
+    const registros = async (): Promise<number> => {
+      const trilha = await lerComponente<{ linhas: LinhaTrilha[] }>(page, 'auditoria_trilha', {
+        entidade: 'lote',
+        ator_id: 'u-helena',
+        periodo: 'tudo',
+      })
+      return trilha.linhas.filter(
+        (l) => l.entidade_id === alvo.lote_id && l.acao === 'lote_liberar_quarentena',
+      ).length
+    }
+    const antes = await registros()
+
     // A primeira submissão, com o etag certo, é aceita.
     const primeira = await dispararComandoForcado(page, '/api/comandos/lote_liberar_quarentena', corpo, {
       etag: etagVelho,
@@ -161,17 +174,15 @@ test.describe('liberação de quarentena', () => {
     // MESMA tentativa por outro motivo, e o teste não notaria a diferença).
     expect(await segunda.text()).toContain('O registro mudou desde a leitura')
 
-    // Nada da segunda foi aplicado: a trilha tem UM registro de decisão para
-    // este lote, não dois — reler confirma que o conflito não gravou por
-    // baixo.
-    const trilha = await lerComponente<{ linhas: LinhaTrilha[] }>(page, 'auditoria_trilha', {
-      entidade: 'lote',
-      ator_id: 'u-helena',
-      periodo: 'tudo',
-    })
-    const registros = trilha.linhas.filter(
-      (l) => l.entidade_id === alvo.lote_id && l.acao === 'lote_liberar_quarentena',
-    )
-    expect(registros.length).toBe(1)
+    // Nada da segunda foi aplicado: a trilha ganhou UM registro, o da primeira
+    // — reler confirma que o conflito não gravou por baixo.
+    //
+    // A DIFERENÇA, nunca o total. `toBe(1)` descrevia o banco que o autor
+    // tinha na frente, não a invariante: `make e2e` depende de `db-teste`, o
+    // seed devolve o lote à quarentena a cada execução, e `auditoria` é
+    // append-only e nunca zera. A cada rodada a contagem subia, e o teste
+    // quebrava na enésima — achado A-54, encontrado ao verificar sete commits
+    // em sequência.
+    expect(await registros()).toBe(antes + 1)
   })
 })

@@ -1,8 +1,9 @@
 # Material de divulgação — captura e medição
 
 Vídeo e prints para redes sociais e site, gravados **contra o sistema de
-verdade**, nunca desenhados. Irmão de `make capturas` (que serve ao README) com
-outro propósito: mostrar o produto a quem não conhece o sistema.
+verdade**, nunca desenhados. O README não embute print (screenshot desatualizado
+mente em silêncio); este material tem outro propósito: mostrar o produto a quem
+não conhece o sistema.
 
 **As imagens e os vídeos ficam em `docs/marketing/midia/`, que o `.gitignore`
 exclui** (`MARKETING_SAIDA` muda o destino). Ficam no projeto para quem edita

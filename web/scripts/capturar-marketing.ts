@@ -2,10 +2,9 @@
  * Captura material de MARKETING contra o sistema de verdade: vídeo de cada
  * cena e print de cada beat.
  *
- * Irmão do `capturar-telas.ts`, com outro propósito. Aquele existe para o
- * print do README não envelhecer; este existe para gravar o que se mostra a
- * quem não conhece o sistema — e por isso tem pausas deliberadas, digitação
- * em velocidade humana e uma cena por arquivo, já cortada.
+ * O README não embute print — este script existe só para gravar o que se
+ * mostra a quem não conhece o sistema, e por isso tem pausas deliberadas,
+ * digitação em velocidade humana e uma cena por arquivo, já cortada.
  *
  * A espera fixa aqui NÃO viola o ADR-0033 §9: aquilo é regra de teste, onde
  * espera por tempo esconde corrida. Isto é gravação — a pausa é o tempo que o

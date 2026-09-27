@@ -46,7 +46,7 @@ código nem SQL: escolhe um id de componente registrado e os parâmetros dele.
 
 O mesmo bloco, promovido à tela inteira. É o **mesmo componente** que a rota
 `/vencimento` abre, pelo **mesmo motor de render** — a composição do modelo e a
-navegação tradicional desembocam no mesmo lugar ([ADR-0005](docs/adr/0005-uma-so-forma-de-montar-tela.md)).
+navegação tradicional desembocam no mesmo lugar ([ADR-0009](docs/adr/0009-identidade-de-view.md)).
 
 ![A mesma fila de vencimento ocupando o workspace inteiro](docs/imagens/05-workspace.png)
 

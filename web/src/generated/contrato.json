@@ -1,6 +1,22 @@
 {
   "componentes": [
     {
+      "filtros": {
+        "entidade": [
+          "lote",
+          "movimento",
+          "comando",
+          "recebimento",
+          "usuario"
+        ],
+        "periodo": [
+          "7",
+          "30",
+          "90",
+          "365",
+          "tudo"
+        ]
+      },
       "id": "auditoria_trilha",
       "label": "Trilha de auditoria",
       "tamanho": "inteira",
@@ -317,6 +333,18 @@
       }
     },
     {
+      "filtros": {
+        "janela": [
+          "30",
+          "60",
+          "90"
+        ],
+        "unidade_id": [
+          "cd-matriz",
+          "cd-refrigerado",
+          "filial-uberlandia"
+        ]
+      },
       "id": "fila_vencimento",
       "label": "Fila de vencimento",
       "tamanho": "inteira",
@@ -539,6 +567,26 @@
       }
     },
     {
+      "filtros": {
+        "janela": [
+          "30",
+          "60",
+          "90"
+        ],
+        "status": [
+          "quarentena",
+          "liberado",
+          "bloqueado",
+          "descartado",
+          "vencido",
+          "esgotado"
+        ],
+        "unidade_id": [
+          "cd-matriz",
+          "cd-refrigerado",
+          "filial-uberlandia"
+        ]
+      },
       "id": "lote_lista",
       "label": "Lotes",
       "tamanho": "inteira",
@@ -1276,6 +1324,31 @@
       }
     },
     {
+      "filtros": {
+        "periodo": [
+          "7",
+          "30",
+          "90",
+          "365",
+          "tudo"
+        ],
+        "status": [
+          "efetivado",
+          "aguardando_autorizacao",
+          "recusado"
+        ],
+        "tipo": [
+          "entrada",
+          "saida",
+          "descarte",
+          "estorno"
+        ],
+        "unidade_id": [
+          "cd-matriz",
+          "cd-refrigerado",
+          "filial-uberlandia"
+        ]
+      },
       "id": "movimento_lista",
       "label": "Movimentos",
       "tamanho": "inteira",
@@ -1777,6 +1850,13 @@
       }
     },
     {
+      "filtros": {
+        "unidade_id": [
+          "cd-matriz",
+          "cd-refrigerado",
+          "filial-uberlandia"
+        ]
+      },
       "id": "quarentena_fila",
       "label": "Quarentena",
       "tamanho": "inteira",
@@ -2276,6 +2356,25 @@
       }
     },
     {
+      "filtros": {
+        "periodo": [
+          "7",
+          "30",
+          "90",
+          "365",
+          "tudo"
+        ],
+        "status": [
+          "rascunho",
+          "conferido",
+          "liberado"
+        ],
+        "unidade_id": [
+          "cd-matriz",
+          "cd-refrigerado",
+          "filial-uberlandia"
+        ]
+      },
       "id": "recebimento_lista",
       "label": "Recebimentos",
       "tamanho": "inteira",
@@ -2487,6 +2586,31 @@
       }
     },
     {
+      "filtros": {
+        "metrica": [
+          "quantidade",
+          "movimentos",
+          "valor"
+        ],
+        "periodo": [
+          "30",
+          "90",
+          "180",
+          "365"
+        ],
+        "tipo": [
+          "entrada",
+          "saida",
+          "descarte",
+          "estorno",
+          "todos"
+        ],
+        "unidade_id": [
+          "cd-matriz",
+          "cd-refrigerado",
+          "filial-uberlandia"
+        ]
+      },
       "id": "relatorio_movimentacao",
       "label": "Relatório de movimentação",
       "tamanho": "inteira",
@@ -2848,6 +2972,18 @@
       }
     },
     {
+      "filtros": {
+        "horizonte": [
+          "90",
+          "180",
+          "365"
+        ],
+        "unidade_id": [
+          "cd-matriz",
+          "cd-refrigerado",
+          "filial-uberlandia"
+        ]
+      },
       "id": "vencimento_grafico",
       "label": "Curva de vencimento",
       "tamanho": "inteira",

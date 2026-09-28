@@ -45,17 +45,30 @@ Código. Nenhuma linha.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Todo item do checklist do PRD §11 tem evidência linkada.
-- [ ] **AC-2** Os quatro números estão publicados, com o modelo identificado e o
+- [x] **AC-1** Todo item do checklist do PRD §11 tem evidência linkada.
+      [R-004 §1](../relatorios/R-004-fechamento-ciclo-1.md#1-checklist-de-release-do-prd-11)
+      — 5 verdes, 2 parciais, 1 vermelho, cada um com link. Um item (RF-01 a
+      RF-20) tem evidência por família de regra, não RF a RF, e o relatório
+      diz isso explicitamente.
+- [x] **AC-2** Os quatro números estão publicados, com o modelo identificado e o
       trace comprovando que **não** foi o mock. *(o erro central da v1)*
-- [ ] **AC-3** A seção "o que não se sustentou" é não-vazia e específica.
-- [ ] **AC-4** Toda decisão tomada durante a execução que divergiu de um ADR virou
-      **ADR novo**, não comentário em código.
-- [ ] **AC-5** As cinco pendências do documento 02 estão listadas como critério de
-      entrada do ciclo 2.
-- [ ] **AC-6** Se CS-04 não passou, o achado está registrado com a decisão tomada.
-- [ ] **AC-7** A pergunta da seção 13 da arquitetura v2 — *com que frequência um
+      [R-002](../relatorios/R-002-avaliacao-ciclo-1.md) — `principal()` recusa
+      o mock por código (T-032 AC-7), e os dois modelos estão nomeados em
+      cada linha da tabela.
+- [x] **AC-3** A seção "o que não se sustentou" é não-vazia e específica.
+      [R-004 §4](../relatorios/R-004-fechamento-ciclo-1.md#4-o-que-não-se-sustentou)
+      — 8 itens, cada um com número ou causa, não afirmação vaga.
+- [x] **AC-4** Toda decisão tomada durante a execução que divergiu de um ADR virou
+      **ADR novo**, não comentário em código. Nenhuma decisão desta tarefa
+      divergiu de ADR — é medição e síntese, não implementação.
+- [x] **AC-5** As cinco pendências do documento 02 estão listadas como critério de
+      entrada do ciclo 2. [R-004 §7](../relatorios/R-004-fechamento-ciclo-1.md#7-pendências-para-o-ciclo-2).
+- [x] **AC-6** Se CS-04 não passou, o achado está registrado com a decisão tomada.
+      CS-04 **passou** (R-003) — condição não se aplica. O efeito colateral
+      relacionado (A-42, `titulo` sem teto) já está registrado, à parte.
+- [x] **AC-7** A pergunta da seção 13 da arquitetura v2 — *com que frequência um
       modelo real emite schema válido?* — está **respondida com número**.
+      83,7%–95,3% conforme o modelo, 43 casos reais — [R-002](../relatorios/R-002-avaliacao-ciclo-1.md).
 
 ## Armadilhas
 

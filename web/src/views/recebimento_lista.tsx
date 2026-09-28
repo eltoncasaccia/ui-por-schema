@@ -11,7 +11,7 @@ type Linha = VM['linhas'][number]
  * O estado da conferência, não um nível: `rascunho` é neutro (ainda não olharam),
  * `conferido` é ciano (conferência feita, aguardando o RT), `liberado` é bom.
  */
-const STATUS: Record<Linha['status'], { rotulo: string; tom: Tom }> = {
+export const STATUS_RECEBIMENTO: Record<Linha['status'], { rotulo: string; tom: Tom }> = {
   rascunho: { rotulo: 'Rascunho', tom: 'neutro' },
   conferido: { rotulo: 'Conferido', tom: 'ciano' },
   liberado: { rotulo: 'Liberado', tom: 'bom' },
@@ -39,7 +39,7 @@ const COLUNAS: Coluna<Linha>[] = [
     rotulo: 'Situação',
     render: (l) => (
       <span>
-        <Etiqueta tom={STATUS[l.status].tom}>{STATUS[l.status].rotulo}</Etiqueta>
+        <Etiqueta tom={STATUS_RECEBIMENTO[l.status].tom}>{STATUS_RECEBIMENTO[l.status].rotulo}</Etiqueta>
         {/* RN-R04: a divergência é sinal, não bloqueio. Âmbar (resolver), não
             vermelho (terminal): o recebimento conclui com a pendência aberta. */}
         {l.divergencia && (
@@ -93,7 +93,10 @@ export const view: View<'recebimento_lista'> = ({ vm }) => (
           linhas={vm.linhas}
           chave={(l) => l.recebimento_id}
           titulo={(l) => <span>{l.fornecedor}</span>}
-          etiqueta={(l) => ({ texto: STATUS[l.status].rotulo, tom: STATUS[l.status].tom })}
+          etiqueta={(l) => ({
+            texto: STATUS_RECEBIMENTO[l.status].rotulo,
+            tom: STATUS_RECEBIMENTO[l.status].tom,
+          })}
         />
       )}
     </div>

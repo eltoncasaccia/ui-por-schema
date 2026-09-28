@@ -20,6 +20,7 @@ interface Componente {
   label: string
   tamanho: string
   viewmodel: Record<string, unknown>
+  filtros?: Record<string, string[]>
 }
 
 function nomeDoTipo(id: string): string {
@@ -67,6 +68,15 @@ partes.push(
   '/** O layout obedece ao componente, nunca ao modelo. */',
   'export const TAMANHOS: Record<ComponentId, string> = {',
   ...contrato.componentes.map((c) => `  ${c.id}: '${c.tamanho}',`),
+  '}',
+  '',
+  '/** T-055 — campo de `params` com enum, só nos componentes do escopo dela.',
+  ' * Identificador nunca aparece aqui: não tem enum, por construção do lado',
+  ' * da API (`campos_filtraveis`). */',
+  'export const FILTROS: Partial<Record<ComponentId, Record<string, readonly string[]>>> = {',
+  ...contrato.componentes
+    .filter((c) => c.filtros)
+    .map((c) => `  ${c.id}: ${JSON.stringify(c.filtros)},`),
   '}',
   '',
 )

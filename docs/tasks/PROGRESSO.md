@@ -7,8 +7,9 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**53 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
-**W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
+**57 concluídas · 0 não iniciadas** · 24 de 24 componentes previstos.
+**W0 a W5 fechadas. O ciclo 1 fechou** — ver
+[R-004](../relatorios/R-004-fechamento-ciclo-1.md).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
 > delas duas vezes — dizia "2 parciais" com três linhas 🟡, e depois "39
@@ -70,7 +71,7 @@ está pronto.
 
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
-| T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. **Em dúvida desde 2026-09-25** ([A-47](./ACHADOS.md)): as 30 perguntas estavam commitadas antes da execução na branch `tarefa/T-017`, que nunca entrou na `main`. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
+| T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não vale para a rodada publicada** (17 casos, sem pré-commitação) — corrigido do texto anterior ("não recuperável") pelo erratum da [T-056](./T-056-erratum-r-001.md), 2026-09-28: existiu uma rodada com pré-commitação (30 perguntas, commit `e753200`), mas é outra rodada, não a publicada. Ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md). Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
 
 ## W3 — Leitura · 15 de 15 componentes
 
@@ -119,11 +120,11 @@ está pronto.
 
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
-| T-032 | Suíte de avaliação | 🟡 | 17 casos dos ~40; roda os dois modos; sem série histórica |
+| T-032 | Suíte de avaliação | ✅ | **7 ACs.** 43 casos (AC-1), 15 negativos (AC-2), executados de verdade nos dois modelos e dois modos — [R-002](../relatorios/R-002-avaliacao-ciclo-1.md) publica as quatro métricas do PRD §9 por combinação (AC-3). AC-4 (regressão vs. linha de base) e AC-6 (schema inválido ≠ composição errada) testados sem custo (`test_metricas_e_linha_de_base.py`). AC-5 (auditoria de enum): `campos_sem_enum` não acha recorte sem valor nomeado nos 24 componentes reais (`test_r5_auditoria_enums.py`). AC-7 (recusa mock) já existia, agora testado. Zero falha de segurança nos negativos; taxas abaixo do alvo do PRD por catálogo maior e por [A-50](./ACHADOS.md) (≥5 casos com `esperado` questionável) — sem série histórica no LangFuse (mesma lacuna do R-001, A-10/T-043) |
 | T-033 | Segurança CS-01 a CS-06 | ✅ | **6 ACs verificados** (AC-6 vacuamente — o CS-04 passou). CS-04: prompt e JSON Schema idênticos byte a byte com e sem dado hostil no banco — inclusive o nome do próprio ator —, canário provando que o dado estava na tela dele, e igualdade confirmada com `qwen2.5:7b` real. Acrescentados: schema gigante (CS-01), catálogo exato das 7 personas (CS-02), composição auditada e custo plantado na trilha real (CS-05). 4 sabotagens, 4 vermelhos. Achados [A-42](./ACHADOS.md) (`titulo` sem teto, `xfail` strict) e [A-43](./ACHADOS.md) (escrita composta aceita). [R-003](../relatorios/R-003-seguranca-ciclo-1.md) |
 | T-031 | Telas com rota | ✅ | **6 ACs verificados, AC-3 em branco (medição é da T-034).** `react-router-dom` adotado — `app/layout/Roteador.tsx` autocontido (próprio `BrowserRouter`), 8 rotas em `app/layout/rotasOperacao.tsx` (tabela única: alimenta o roteador e a navegação lateral). AC-1 provado por igualdade de HTML entre a rota e `Composicao` direta. AC-4 verificado com catálogo mockado e contra o servidor real (Cleide sem `quarentena_liberar`, Helena com). AC-5 idem, incl. `curl` autenticado contra o container. `/saida` sem `:id` na URL mas `movimento_saida.produto_id` é obrigatório — sem componente de busca de produto no catálogo; resolvido com identificador digitado/colado + `?produto_id=`, ver nota no arquivo da tarefa. Tocou `App.tsx` e `PainelNavegacao.tsx` fora da lista original (justificado no arquivo da tarefa) |
 | T-038 | Gestão de usuários | ✅ | 6 ACs por HTTP contra o banco real. `POST /api/usuarios/{id}` (CA-08 proíbe `PATCH`), ninguém altera o próprio acesso, desativar derruba a sessão na hora. Sem entrada na navegação lateral |
-| T-034 | Relatório de fechamento | ⬜ | — |
+| T-034 | Relatório de fechamento | ✅ | **7 ACs.** [R-004](../relatorios/R-004-fechamento-ciclo-1.md) fecha o checklist do PRD §11 (5 verdes, 2 parciais, 1 vermelho — suíte de avaliação fora do CI, sem tarefa própria) e mede RNF-01/RNF-04 de verdade contra o Postgres do ambiente, os dois números que só tinham prova de forma. As 5 pendências do documento 02 e os achados esperando cliente viram critério de entrada do ciclo 2. Narrativa completa em [`docs/05-achados-ciclo-1.md`](../05-achados-ciclo-1.md) |
 
 ## Tarefas abertas pela auditoria
 
@@ -156,8 +157,8 @@ está pronto.
 | | Tarefa | Estado | Origem |
 |---|---|---|---|
 | T-054 | Exportação em CSV, XLSX e PDF | ✅ | Pedido do cliente · ADR-0035. `POST /api/componentes/{id}/exportar` usa a mesma leitura autorizada de `dados` (`deps.ler_componente`); 7 componentes exportáveis; `exportavel` no catálogo; botão acima do bloco. 12 ACs; custo, escopo, teto, injeção de fórmula e import-linter sabotados e vistos vermelhos. Conferido no app real (API + Vite + navegador). O `csv` saiu do viewmodel da temperatura. Não aberto num Excel de verdade |
-| T-055 | Filtro interativo | ⬜ | Achado [A-46](./ACHADOS.md), relatado pelo usuário em 2026-09-16: não há controle de filtro em nenhuma superfície. Os `params` de enum já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`); falta o controle na tela, na rota tradicional e na composição do assistente. O controle mora ao redor do bloco, como o botão da T-054 — CONTRATOS §6 não muda |
-| T-056 | Erratum do R-001 e destino do A-08b | ⬜ | Achado [A-47](./ACHADOS.md). A evidência já está no repositório (commit `7fcb9de`); falta corrigir o §8 por erratum, decidir se o A-08b fecha, e transcrever hash e data para o relatório — hoje a prova de data mora só na branch `tarefa/T-017`. Recomendação escrita na tarefa: **não** fechar o A-08b, porque a rodada publicada continua sem a proteção |
+| T-055 | Filtro interativo | ✅ | **8 ACs.** AC-1/AC-2/AC-3/AC-4 verificados por teste (`barraFiltro.test.tsx`, 6 casos) — `<select>` com o padrão pré-selecionado, URL namespaced por `tipo` sobrevive a reload, mesma `BlocoRender` para rota e assistente (HTML idêntico, `rotas_operacao.test.tsx`), identificador nunca aparece (nem no cliente, nem no contrato — `test_exportar_params.py`, 5 casos). AC-5/AC-6 satisfeitos por construção: mesmo endpoint `/api/dados` autorizado de sempre, mesma validação Pydantic — nenhum caminho novo. AC-7: 7 contratos de import-linter continuam KEPT. AC-8: `BarraFiltro` fora de `web/src/views/`, nenhuma `view` ganhou prop nova (inspeção + `arch-check`). `exportar.py` ganha `campos_filtraveis`/`filtros`, só nos 8 do escopo. A-46 fechado para [achados-resolvidos.md](../relatorios/achados-resolvidos.md) |
+| T-056 | Erratum do R-001 e destino do A-08b | ✅ | **7 ACs verificados.** Erratum datado no [R-001 §8](../relatorios/R-001-medicao-modelo-real.md), sem reescrever o texto original (AC-1/AC-2). A-08b **não fecha** — a rodada com pré-commitação (30 perguntas) não é a publicada (17 casos), e é a publicada que sustenta a recomendação do §7 (AC-3). Prova de data transcrita (`e753200`, 2026-09-08 12:15:48 -03, conferida rodando `git show -s --format='%ci %ci' e753200`) — `tarefa/T-017` deixa de ser a única evidência (AC-4/AC-5). A-47 fechado para [achados-resolvidos.md](../relatorios/achados-resolvidos.md) (AC-7) |
 | T-057 | E2E: as 6 rotas, escrita por clique, view compartilhada e sair | ✅ | **10 ACs verificados** (AC-1 a AC-10, fora de ordem no arquivo da tarefa — AC-9/AC-10 vêm antes de AC-7/AC-8). Achado [A-48](../relatorios/achados-resolvidos.md) resolvido: AC-1 parametriza o teste da T-053 para Marco, Helena e Cleide, com a união cobrindo as 6 rotas; AC-9 separa os três comportamentos de URL sem permissão (negado no carregamento, lido sem poder agir, portão de formulário) que a corrida da skill `e2e-nav-test` de 2026-09-25 tinha tratado como um só. **Achou e fechou o [A-49](../relatorios/achados-resolvidos.md)**: a escrita de um componente aberto por ROTA (`/quarentena/:loteId`, `/saida`) nunca chegava ao servidor — `TelaOperacao.tsx`/`TelaSaida.tsx` (T-031) montam o `Bloco` sem `comandos`, campo que só existe vindo de `/api/assistente/compor` ou `/api/views/{id}` (T-049). Corrigido anexando `comandos` ao `/api/catalogo` (borda, como `exportavel` da T-054) e lendo-o nas duas telas. Sabotagem do AC-7 revelou uma segunda falha, no próprio teste: a asserção do AC-4 checava só o código `conflito`, que a máquina de estados também produz por outro motivo — corrigida para checar a mensagem do `If-Match`. AC-8 verificado com `make up` real (contagens de `usuario`/`sessao`/`auditoria`/`movimento` idênticas antes e depois). `make check` e a suíte e2e (26 testes) verdes. Não faz: exportação, paginação e `/usuarios`, registrados como candidatos |
 
 ---
@@ -170,7 +171,7 @@ movem estoque, com auditoria e recusa negativa testadas.
 
 | | Depende de | Estado |
 |---|---|---|
-| CA-01 recall < 60 s | T-021 | 🟡 `rastreabilidade` entregue, duas direções, consulta auditada, escopo não atravessa. Prova de forma (`load` linear); o número real de `RNF-01` contra Postgres é do T-034 |
+| CA-01 recall < 60 s | T-021 | ✅ **completo**: `rastreabilidade` entregue, duas direções, consulta auditada, escopo não atravessa. Prova de forma (`load` linear, `test_rastreabilidade.py`) **e** número real — [T-034](./T-034-fechamento.md), lote com 60 saídas/449 unidades/60 clientes contra o Postgres do ambiente: 10–20 ms, muito abaixo dos 60 s |
 | CA-02 saldo auditável | T-025, T-028, T-029 | ✅ **completo**: razão imutável, saída, liberação e agora estorno — o saldo depois da correção é a soma dos dois movimentos, sem edição de campo (AC-4), e a trilha registra saldo anterior e posterior |
 | CA-03 fila de vencimento | T-020 | ✅ **único completo** |
 | CA-04 dupla identificação | T-030 | ✅ **completo**: submissão não muda saldo, autorização grava as duas identidades distintas, e a mesma pessoa é recusada em três camadas — permissão, domínio e CHECK do banco |

@@ -26,3 +26,8 @@ playwright-report/
 # junto com skills-lock.json, para o time reproduzir a mesma versão.
 # `npx skills add` recria .agents/ — mova para .claude/ e apague.
 .agents/
+
+# Material de divulgação: fica no projeto para quem edita achar, fora do git
+# porque vídeo entra no histórico e não sai mais — e se regenera com
+# `npx tsx web/scripts/capturar-marketing.ts` (docs/marketing/README.md).
+docs/marketing/midia/

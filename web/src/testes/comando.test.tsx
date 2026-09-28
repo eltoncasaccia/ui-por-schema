@@ -20,6 +20,7 @@
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Bloco } from '../api'
 import type { ViewModel } from '../generated/componentes'
@@ -80,9 +81,14 @@ function bloco(): Bloco {
   }
 }
 
+// `MemoryRouter`: `BlocoRender` usa `useSearchParams` desde a T-055.
 function envolver(ui: React.ReactNode) {
   const cliente = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })
-  return render(<QueryClientProvider client={cliente}>{ui}</QueryClientProvider>)
+  return render(
+    <QueryClientProvider client={cliente}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
+  )
 }
 
 beforeEach(() => {

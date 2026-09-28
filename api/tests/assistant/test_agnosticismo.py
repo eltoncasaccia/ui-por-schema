@@ -52,6 +52,34 @@ def test_compativel_exige_url(monkeypatch: pytest.MonkeyPatch) -> None:
     assert criar_adaptador("compativel") is not None
 
 
+def test_llm_base_url_nao_vaza_para_outro_provedor(monkeypatch: pytest.MonkeyPatch) -> None:
+    """O teste negativo da troca de provedor.
+
+    `LLM_BASE_URL` pertence a `compativel`. Enquanto ela valia para todos, um
+    resto de configuracao de Ollama mandava a chave e o modelo da Anthropic
+    para `localhost:11434` — sem aviso, e com um erro que nao dizia a causa.
+    Trocar de provedor precisa bastar uma linha no `.env`.
+    """
+    from estoque.assistant.adapter import AdaptadorOpenRouter
+
+    ollama = "http://host.docker.internal:11434/v1/chat/completions"
+    monkeypatch.setenv("LLM_BASE_URL", ollama)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "x")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.setenv("LLM_API_KEY", "x")
+
+    for provedor in ("openrouter", "anthropic"):
+        a = criar_adaptador(provedor)
+        assert isinstance(a, AdaptadorOpenRouter)
+        assert a._base == PADRAO_POR_PROVEDOR[provedor][0], provedor
+        assert "11434" not in a._base, f"{provedor} foi parar no modelo local"
+
+    # E o positivo: `compativel` continua sendo quem honra a variavel.
+    c = criar_adaptador("compativel")
+    assert isinstance(c, AdaptadorOpenRouter)
+    assert c._base == ollama
+
+
 def test_cada_provedor_tem_chave_e_modelo_padrao() -> None:
     for nome, (_, chave, modelo) in PADRAO_POR_PROVEDOR.items():
         assert chave.endswith("_KEY"), nome

@@ -38,11 +38,19 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
   const trocou = escolhido !== null && escolhido !== vm.proposta?.lote_id
   const opcao = vm.motivos.find((m) => m.valor === motivo)
   const qtd = Number(quantidade)
+  // Campo que o motivo exige entra na condição do botão, do mesmo jeito que a
+  // justificativa do FEFO. Sem isso o botão liberava com cliente e nota
+  // vazios, o servidor recusava, e o operador recebia "Entrada invalida." —
+  // genérico, sem dizer o que faltava, depois de já ter confirmado.
+  const faltaDestinatario =
+    (opcao?.exige_destinatario ?? false) &&
+    (clienteId.trim() === '' || notaFiscal.trim() === '')
   const podeEnviar =
     escolhido !== null &&
     motivo !== '' &&
     Number.isInteger(qtd) &&
     qtd > 0 &&
+    !faltaDestinatario &&
     (!trocou || justificativa.trim().length >= 10)
 
   function Linha({ c, destaque }: { c: NonNullable<Candidato>; destaque?: boolean }) {
@@ -217,8 +225,8 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
                       quantidade: qtd,
                       motivo,
                       justificativa_fefo: trocou ? justificativa : null,
-                      cliente_id: opcao?.exige_destinatario ? clienteId : null,
-                      nota_fiscal: opcao?.exige_destinatario ? notaFiscal : null,
+                      cliente_id: opcao?.exige_destinatario ? clienteId.trim() || null : null,
+                      nota_fiscal: opcao?.exige_destinatario ? notaFiscal.trim() || null : null,
                     },
                     ...(candidato?.etag ? { etag: candidato.etag } : {}),
                   })
@@ -226,6 +234,12 @@ export const view: View<'movimento_saida'> = ({ vm }) => {
                 {vm.exige_autorizacao ? 'Enviar para autorização' : 'Registrar saída'}
               </button>
             </div>
+
+            {faltaDestinatario && (
+              <p className="fraco" style={{ marginTop: 8, fontSize: 12 }}>
+                Saída com destinatário exige cliente e nota fiscal.
+              </p>
+            )}
 
             {trocou && justificativa.trim().length < 10 && (
               <p className="fraco" style={{ marginTop: 8, fontSize: 12 }}>

@@ -62,7 +62,15 @@ def criar_adaptador(provedor: str | None = None, modelo: str | None = None) -> A
         raise ErroDeModelo(msg)
 
     base_padrao, nome_da_chave, modelo_padrao = PADRAO_POR_PROVEDOR[nome]
-    base = os.environ.get("LLM_BASE_URL") or base_padrao
+
+    # `LLM_BASE_URL` e' variavel do provedor `compativel`, e SO' dele. Honra-la
+    # nos outros deixava um resto de configuracao mudar o destino em silencio:
+    # quem tinha Ollama configurado e trocava para `openrouter` mandava a chave
+    # e o modelo da Anthropic para `localhost:11434`, e o erro que voltava nao
+    # dizia nada sobre a causa. Trocar de provedor tem que bastar uma linha.
+    base = base_padrao
+    if nome == "compativel":
+        base = os.environ.get("LLM_BASE_URL") or base_padrao
     if not base:
         msg = (
             "LLM_BASE_URL ausente. O provedor `compativel` serve para qualquer API "

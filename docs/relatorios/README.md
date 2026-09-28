@@ -7,6 +7,8 @@ aconteceu**, não o que se decidiu.
 |---|---|---|---|
 | [A-001](./A-001-auditoria-pre-migracao.md) | Auditoria pré-migração — 11 achados | auditoria | ✅ concluída |
 | [A-002](./A-002-auditoria-de-execucao.md) | Auditoria de execução — 8 achados, estado real das 41 tarefas | auditoria | ✅ concluída |
+| [A-003](./A-003-prontidao-para-producao.md) | Prontidão para produção — 5 bloqueadores para vender a várias empresas na AWS | auditoria, fora do board | ✅ concluída |
+| [A-004](./A-004-e2e-vale-a-pena.md) | A regra do e2e está certa? Dois alvos, dois defeitos — a regra precisa de emenda | experimento, fora do board | ✅ concluída |
 | [R-001](./R-001-medicao-modelo-real.md) | Medição com modelo real (spike) | [T-017](../tasks/T-017-spike-medicao.md) | ✅ concluída |
 | R-002 | Suíte de avaliação do ciclo 1 | [T-032](../tasks/T-032-suite-de-avaliacao.md) | pendente |
 | R-003 | Segurança — CS-01 a CS-06 | [T-033](../tasks/T-033-testes-de-seguranca.md) | pendente |

@@ -49,18 +49,33 @@ Corrigir o prompt — se a taxa for baixa, o achado vai ao BOARD e vira tarefa.
 
 ## Critérios de aceite
 
-- [ ] **AC-1** 40 casos cobrindo as 7 personas e os 8 critérios de aceite.
-- [ ] **AC-2** Pelo menos 8 casos negativos, com "não compor" como resultado
-      esperado. *(negativo)*
-- [ ] **AC-3** Relatório publica as quatro métricas do PRD §9, por modelo.
-- [ ] **AC-4** CI falha se a taxa de schema válido cair mais de 5 pontos
+- [x] **AC-1** 40 casos cobrindo as 7 personas e os 8 critérios de aceite.
+      **43 casos** — `test_casos_consistentes.py` confere a contagem, as 7
+      personas e que o `esperado` de cada caso existe no catálogo real da
+      persona (não só na intenção de quem escreveu).
+- [x] **AC-2** Pelo menos 8 casos negativos, com "não compor" como resultado
+      esperado. *(negativo)* **15 casos**, quase o dobro do mínimo.
+- [x] **AC-3** Relatório publica as quatro métricas do PRD §9, por modelo.
+      [R-002](../relatorios/R-002-avaliacao-ciclo-1.md) — `sonnet-5` e
+      `haiku-4.5`, dois modos cada.
+- [x] **AC-4** CI falha se a taxa de schema válido cair mais de 5 pontos
       percentuais em relação à execução registrada anterior. *(ADR-0013)*
-- [ ] **AC-5** A auditoria de enums roda sobre o catálogo real e lista todo recorte
-      sem valor nomeado. *(risco R-5)*
-- [ ] **AC-6** A suíte distingue **schema inválido** de **schema válido com
+      `regrediu()` + `linha_de_base.json`, testado com casos sintéticos sem
+      gastar token (`test_metricas_e_linha_de_base.py`). Esta execução grava
+      a primeira linha de base real (ADR-0013, "riscos aceitos").
+- [x] **AC-5** A auditoria de enums roda sobre o catálogo real e lista todo recorte
+      sem valor nomeado. *(risco R-5)* `campos_sem_enum` em `registry.py`,
+      testado positivo (catálogo real, vazio) e negativo (componente falso
+      com campo de texto livre, é pego) — `test_r5_auditoria_enums.py`.
+- [x] **AC-6** A suíte distingue **schema inválido** de **schema válido com
       composição errada** — são falhas diferentes com causas diferentes.
-- [ ] **AC-7** Nenhum caso usa o adapter mock. Execução com mock é rejeitada pelo
-      relatório. *(negativo — o erro da v1)*
+      Já era assim na estrutura (`Resultado.schema_valido` e
+      `.composicao_correta` são campos independentes); agora com teste
+      provando que as duas taxas discordam num lote misto.
+- [x] **AC-7** Nenhum caso usa o adapter mock. Execução com mock é rejeitada pelo
+      relatório. *(negativo — o erro da v1)* Já existia (`principal()` recusa
+      `AdaptadorMock` com código 2); agora testado
+      (`TestMockNuncaProduzNumero`).
 
 ## Armadilhas
 

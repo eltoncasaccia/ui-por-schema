@@ -205,9 +205,28 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
-| [T-055](./T-055-filtro-interativo.md) | **Filtro interativo**: os `params` de enum que já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`, etc.) ganham controle na tela, tanto na rota tradicional quanto numa composição do assistente — mesmo bloco, mesmo recarregamento client-driven que já existe para paginação (`render/motor.tsx`). CONTRATOS §6 (`View<Id>`) não muda: o controle mora ao redor do bloco, como o botão de exportar da T-054, não dentro da `view` ([A-46](./ACHADOS.md)) | C/D | G | T-039, T-054 | ⬜ |
-| [T-056](./T-056-erratum-r-001.md) | **Erratum do R-001, e o destino do A-08b**: o §8 do relatório afirma que as perguntas não foram pré-commitadas e que o `spike/` nunca existiu — as duas coisas existiam, fora da `main`, e foram recuperadas em 2026-09-25. A tarefa corrige por **erratum datado** (relatório é registro, não se reescreve), decide se o A-08b fecha, e transcreve a prova de data para o relatório, de modo que a branch `tarefa/T-017` deixe de ser a única evidência ([A-47](./ACHADOS.md)) | E | P | — | ⬜ |
+| [T-055](./T-055-filtro-interativo.md) | **Filtro interativo**: os `params` de enum que já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`, etc.) ganham controle na tela, tanto na rota tradicional quanto numa composição do assistente — mesmo bloco, mesmo recarregamento client-driven que já existe para paginação (`render/motor.tsx`). CONTRATOS §6 (`View<Id>`) não muda: o controle mora ao redor do bloco, como o botão de exportar da T-054, não dentro da `view` ([A-46](./ACHADOS.md)) | C/D | G | T-039, T-054 | ✅ |
+| [T-056](./T-056-erratum-r-001.md) | **Erratum do R-001, e o destino do A-08b**: o §8 do relatório afirma que as perguntas não foram pré-commitadas e que o `spike/` nunca existiu — as duas coisas existiam, fora da `main`, e foram recuperadas em 2026-09-25. A tarefa corrige por **erratum datado** (relatório é registro, não se reescreve), decide se o A-08b fecha, e transcreve a prova de data para o relatório, de modo que a branch `tarefa/T-017` deixe de ser a única evidência ([A-47](./ACHADOS.md)) | E | P | — | ✅ |
 | [T-057](./T-057-e2e-escrita-e-rotas.md) | **O que a T-053 não alcançou**: o AC-6 dela roda só com o diretor e cobre 2 das 6 rotas ([A-48](./ACHADOS.md), resolvido); mais os três fluxos que nenhuma outra camada prova — escrita por clique real (CSRF + cookie + etag + `If-Match`), `/v/:viewId` entre dois atores com catálogos diferentes, e o sair destruindo sessão de verdade. **Achou e corrigiu o [A-49](../relatorios/achados-resolvidos.md)**: escrita de componente aberto por rota nunca chegava ao servidor (`Bloco` sem `comandos`) | D/E | M | T-053, T-051 | ✅ |
+
+> **T-056 fechou.** A-08b **não fecha**: a rodada com pré-commitação (30
+> perguntas, `tarefa/T-017`) não é a rodada publicada (17 casos), e é a
+> publicada que sustenta a recomendação de seguir. Erratum datado no
+> [R-001 §8](../relatorios/R-001-medicao-modelo-real.md), com a prova de data
+> verificável por `git show -s --format='%ci %ci' e753200` — `tarefa/T-017`
+> deixou de ser a única evidência. A-47 fechado para
+> [achados-resolvidos.md](../relatorios/achados-resolvidos.md).
+
+> **T-055 fechou.** `BarraFiltro.tsx` ao redor do bloco — mesmo lugar do botão
+> de exportar da T-054, mesma `BlocoRender` para as duas superfícies (rota e
+> assistente produzem HTML idêntico, testado byte a byte). `exportar.py`
+> passa a expor `filtros` no contrato, restrito aos oito componentes do
+> escopo e a campos com `enum` (`campos_filtraveis`); identificador nunca
+> aparece, por construção. O filtro fica na URL (`useSearchParams`,
+> namespace por `tipo` — evita colisão entre componentes com campo de mesmo
+> nome). CONTRATOS §9 avisado. 7 contratos de import-linter continuam KEPT.
+> A-46 fechado para
+> [achados-resolvidos.md](../relatorios/achados-resolvidos.md).
 
 ### W5 — Garantias e fechamento · até 4 sessões
 
@@ -226,9 +245,9 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 > o id digitado (mesmo padrão de `lote_detalhe`/`quarentena_liberar`), com
 > `?produto_id=` para link direto. Detalhe em
 > [T-031](./T-031-telas-com-rota.md).
-| [T-032](./T-032-suite-de-avaliacao.md) | Suíte de avaliação, 40 perguntas | E | G | T-017, W3 | 🟡 |
+| [T-032](./T-032-suite-de-avaliacao.md) | Suíte de avaliação, 40 perguntas | E | G | T-017, W3 | ✅ |
 | [T-033](./T-033-testes-de-seguranca.md) | Segurança CS-01 a CS-06 | E | G | W3, W4 | ✅ |
-| [T-034](./T-034-fechamento.md) | Relatório de fechamento | E | M | T-031, T-032, T-033 | ⬜ |
+| [T-034](./T-034-fechamento.md) | Relatório de fechamento | E | M | T-031, T-032, T-033 | ✅ |
 
 > **T-033 fechou, e o CS-04 passou.** Nenhum dado do banco chega ao modelo:
 > prompt e JSON Schema idênticos **byte a byte** com e sem dado hostil — inclusive
@@ -241,6 +260,26 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 > [A-43](./ACHADOS.md) — escrita composta com leitura é aceita porque a checagem
 > do ADR-0005 em `validar.py:113` nunca dispara (vira emenda de ADR). Relatório:
 > [R-003](../relatorios/R-003-seguranca-ciclo-1.md). **T-034 espera só a T-032.**
+
+> **T-034 fechou — o ciclo 1 fecha.** 7 ACs. RNF-01 e RNF-04 ganharam número
+> real contra o Postgres do ambiente (recall: 10–20 ms para um alvo de 60 s;
+> telas de rota: 10–50 ms para um alvo de 2 s) — os dois únicos números que
+> ainda dependiam de "prova de forma". Checklist do PRD §11: 5 verdes, 2
+> parciais (CA-01/CA-06), 1 vermelho (suíte de avaliação fora do CI, nunca
+> teve tarefa própria). Relatório: [R-004](../relatorios/R-004-fechamento-ciclo-1.md);
+> narrativa: [`docs/05-achados-ciclo-1.md`](../05-achados-ciclo-1.md).
+
+> **T-032 fechou.** 43 casos (18 do R-001 + 25 novos), 15 negativos, cobrindo
+> as 7 personas e os 8 CAs. Executado de verdade — dois modelos
+> (`sonnet-5`, `haiku-4.5`), dois modos — não o mock (AC-7). Schema válido
+> 83,7%–95,3%, composição correta 76,7%–83,7%: abaixo dos alvos do PRD §9,
+> mas **zero falha de segurança** nos 15 negativos — a queda é catálogo 3,4×
+> maior que o do R-001, e pelo menos 5 casos com `esperado` questionável
+> ([A-50](./ACHADOS.md)). AC-4 (regressão contra linha de base) e AC-5
+> (auditoria de enum, `campos_sem_enum`) implementados e testados sem gastar
+> token — só a execução final custou (~US$ 2,50 ao todo, os dois modelos).
+> AC-6 (schema inválido ≠ composição errada) provado com `Resultado`
+> sintético. Relatório: [R-002](../relatorios/R-002-avaliacao-ciclo-1.md).
 
 > **As quatro tarefas abertas foram revisadas em 2026-09-10** — arquivos, listas
 > fechadas, qual exemplar imitar e o que já está provado em outro lugar. O que a

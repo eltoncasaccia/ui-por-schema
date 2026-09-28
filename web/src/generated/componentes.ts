@@ -786,3 +786,17 @@ export const TAMANHOS: Record<ComponentId, string> = {
   temperatura_historico: 'alta',
   vencimento_grafico: 'inteira',
 }
+
+/** T-055 — campo de `params` com enum, só nos componentes do escopo dela.
+ * Identificador nunca aparece aqui: não tem enum, por construção do lado
+ * da API (`campos_filtraveis`). */
+export const FILTROS: Partial<Record<ComponentId, Record<string, readonly string[]>>> = {
+  auditoria_trilha: {"entidade":["lote","movimento","comando","recebimento","usuario"],"periodo":["7","30","90","365","tudo"]},
+  fila_vencimento: {"janela":["30","60","90"],"unidade_id":["cd-matriz","cd-refrigerado","filial-uberlandia"]},
+  lote_lista: {"janela":["30","60","90"],"status":["quarentena","liberado","bloqueado","descartado","vencido","esgotado"],"unidade_id":["cd-matriz","cd-refrigerado","filial-uberlandia"]},
+  movimento_lista: {"periodo":["7","30","90","365","tudo"],"status":["efetivado","aguardando_autorizacao","recusado"],"tipo":["entrada","saida","descarte","estorno"],"unidade_id":["cd-matriz","cd-refrigerado","filial-uberlandia"]},
+  quarentena_fila: {"unidade_id":["cd-matriz","cd-refrigerado","filial-uberlandia"]},
+  recebimento_lista: {"periodo":["7","30","90","365","tudo"],"status":["rascunho","conferido","liberado"],"unidade_id":["cd-matriz","cd-refrigerado","filial-uberlandia"]},
+  relatorio_movimentacao: {"metrica":["quantidade","movimentos","valor"],"periodo":["30","90","180","365"],"tipo":["entrada","saida","descarte","estorno","todos"],"unidade_id":["cd-matriz","cd-refrigerado","filial-uberlandia"]},
+  vencimento_grafico: {"horizonte":["90","180","365"],"unidade_id":["cd-matriz","cd-refrigerado","filial-uberlandia"]},
+}

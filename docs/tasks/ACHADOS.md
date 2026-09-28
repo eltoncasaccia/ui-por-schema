@@ -42,22 +42,10 @@ não se perder.
 | # | Achado | Tarefa |
 |---|---|---|
 | **A-46** | Filtro não tem controle interativo em nenhuma superfície — os `params` de enum que já existem no servidor não têm controle na tela, nem na rota tradicional nem numa composição do assistente | [T-055](./T-055-filtro-interativo.md) |
-| **A-47** | **O R-001 §8 afirma duas coisas que a evidência contradiz.** O relatório diz que *"as perguntas não foram escritas nem commitadas antes da primeira execução"* e que *"`api/src/estoque/spike/` nunca foi construído"*. As duas existiam, fora da `main`: o commit `e753200` (2026-09-08 12:15:48 -03, branch `tarefa/T-017`) congela **30 perguntas** antes de qualquer execução, e a pasta de trabalho tinha o `spike/` e **120 execuções** (30 perguntas x 2 modelos x 2 modos) cujo campo `perguntas_de` aponta para aquele arquivo. Recuperados nesta data para `docs/relatorios/`; o `spike/` foi para `.archive/` | [T-056](./T-056-erratum-r-001.md) |
 
 > A-44 fechou em 2026-09-14, com a [T-052](./T-052-banco-de-teste-isolado.md).
-
-> **O recorte do A-47 precisa de decisão, e ela é da [T-056](./T-056-erratum-r-001.md).** A rodada
-> recuperada **não é** a publicada: usou `sonnet-4.6`, com 30 perguntas e 120
-> execuções; o R-001 publicou `sonnet-5` e `haiku-4.5`, com 17 casos e 68
-> execuções. Os números do relatório continuam válidos — o que muda é o que se
-> pode **afirmar sobre o AC-1**: havia pré-commitação das perguntas, numa
-> medição anterior que foi abandonada sem publicação. Fechar isto é: decidir se
-> o **A-08b** (§4 deste arquivo) cai, corrigir o R-001 §8 e a
-> linha da T-017 no [PROGRESSO](./PROGRESSO.md), e escolher se a rodada de 30
-> perguntas entra no relatório como anexo. **A branch `tarefa/T-017` não pode
-> ser apagada enquanto a T-056 não fechar**: é ela que carrega a data do commit,
-> que é a prova — e o AC-4 da T-056 existe justamente para transcrever essa
-> prova para o relatório e libertar a branch.
+> A-47 fechou em 2026-09-28, com a [T-056](./T-056-erratum-r-001.md) — o
+> erratum está no [R-001 §8](../relatorios/R-001-medicao-modelo-real.md).
 
 ---
 
@@ -76,7 +64,7 @@ não serem redescobertas como se fossem novidade.
 | A-22 | **O AC-6 da T-030 pedia recusa num fluxo que o ADR-0010 cortou.** `RN-C02` é sobre ajuste de saldo, e ajuste está fora do ciclo 1. A própria seção "Não faz" da tarefa excluía `RN-C04` pelo mesmo motivo e esqueceu este | execução da T-030 | AC-6 fica em branco, com a razão registrada. Volta quando inventário entrar |
 | A-38 | **Estorno de ENTRADA não tem representação no esquema.** `RN-M03` diz que correção se faz por estorno, sem distinguir o tipo do original — mas o sinal de `estorno` é fixo e positivo na view `saldo_lote` (migração 0001, congelada): gravado como está, o estorno de uma entrada **somaria de novo** a quantidade que se queria desfazer. No ciclo 1 só saída se estorna, e o comando recusa o resto dizendo isso | execução da T-029 | Entrada errada não tem correção no ciclo 1. Descrito nas duas telas e nos dois testes negativos. Sair disso exige um tipo novo (`ajuste_negativo`, que o ADR-0010 cortou) ou sinal por movimento — **decisão técnica, vira ADR** quando o inventário entrar |
 | A-28 | `react-hooks/rules-of-hooks` desligada em `src/views/**`: a regra identifica componente pelo NOME em maiúscula, e CONTRATOS §6 (congelado) exporta `view` minúsculo. Hook dentro de `if` numa view deixa de ser pego por qualquer verificador | execução da T-005 | anotado em `web/eslint.config.js`; volta se o contrato mudar, ou vira 7ª regra do `arch-check` |
-| A-08b | Spike sem relatório R-001, e perguntas não commitadas antes da execução | A-002 | **R-001 entregue** (2026-09-09), T-017 fechada. A parte "perguntas antes do resultado" é **não recuperável** para o spike (usou os 17 casos da T-032); a disciplina passa a valer para os casos novos da [T-032](./T-032-suite-de-avaliacao.md) — ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md) |
+| A-08b | Spike sem relatório R-001, e perguntas não commitadas antes da execução | A-002 | **R-001 entregue** (2026-09-09), T-017 fechada. **Não fecha** ([T-056](./T-056-erratum-r-001.md), 2026-09-28): existiu uma rodada com pré-commitação (30 perguntas, `tarefa/T-017`), mas é a rodada **publicada** — 17 casos, sem essa proteção — que sustenta a recomendação do §7 e o número que o PRD §9 cita. O texto correto não é "não recuperável", é "recuperável, mas não vale para a rodada publicada". A disciplina passa a valer para os casos novos da [T-032](./T-032-suite-de-avaliacao.md) — ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md) |
 | A-42 | **`titulo` do schema é texto livre sem teto — e é onde a injeção pega.** Blocos e params têm teto de 12; o título, nenhum: `POST /api/views` aceita 1 MB, grava e devolve. Com `qwen2.5:7b` real, o texto hostil colado na pergunta chegou ao título em 5 de 6 perguntas, literalmente em 2. Não autoriza nada, mas é o único texto da composição escolhido de fora, exibido com cara de tela oficial | execução da T-033 ([R-003 §3](../relatorios/R-003-seguranca-ciclo-1.md)) | **Sem dono — decisão da equipe.** Recomendação: corrigir no ciclo, com teto (~120 caracteres) em `ViewSchema.titulo` e `NovaView.titulo`. Restrição nova em contrato congelado (§7) → tarefa de contrato. `test_cs01_titulo_de_um_megabyte_e_recusado` está `xfail(strict=True)` e reprova sozinho quando o teto entrar |
 | A-43 | **Escrita composta junto de leitura é aceita, e a checagem que deveria decidir nunca dispara.** `validar.py:113` exige `len(bloco.params) >= 0` (sempre verdadeiro) e `tamanho != "inteira"` (todo componente com `commands` é `inteira`, invariante 4). O RT compõe `[lote_lista, quarentena_liberar]` e os dois passam. O ADR-0005 diz "não é composto junto de outros **no mesmo bloco**", e isso tem duas leituras | execução da T-033 ([R-003 §3](../relatorios/R-003-seguranca-ciclo-1.md)) | Não é furo de autorização: gravar exige `POST /api/comandos`, com `requires`, CSRF e `If-Match`. **Decisão técnica, vira emenda ao ADR-0005**; qualquer que seja a leitura, a condição morta sai (`validar.py` é da T-013) |
 

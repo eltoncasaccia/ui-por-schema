@@ -206,8 +206,16 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 | Id | Tarefa | Trilha | Tam. | Depende | Status |
 |---|---|---|---|---|---|
 | [T-055](./T-055-filtro-interativo.md) | **Filtro interativo**: os `params` de enum que já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`, etc.) ganham controle na tela, tanto na rota tradicional quanto numa composição do assistente — mesmo bloco, mesmo recarregamento client-driven que já existe para paginação (`render/motor.tsx`). CONTRATOS §6 (`View<Id>`) não muda: o controle mora ao redor do bloco, como o botão de exportar da T-054, não dentro da `view` ([A-46](./ACHADOS.md)) | C/D | G | T-039, T-054 | ⬜ |
-| [T-056](./T-056-erratum-r-001.md) | **Erratum do R-001, e o destino do A-08b**: o §8 do relatório afirma que as perguntas não foram pré-commitadas e que o `spike/` nunca existiu — as duas coisas existiam, fora da `main`, e foram recuperadas em 2026-09-25. A tarefa corrige por **erratum datado** (relatório é registro, não se reescreve), decide se o A-08b fecha, e transcreve a prova de data para o relatório, de modo que a branch `tarefa/T-017` deixe de ser a única evidência ([A-47](./ACHADOS.md)) | E | P | — | ⬜ |
+| [T-056](./T-056-erratum-r-001.md) | **Erratum do R-001, e o destino do A-08b**: o §8 do relatório afirma que as perguntas não foram pré-commitadas e que o `spike/` nunca existiu — as duas coisas existiam, fora da `main`, e foram recuperadas em 2026-09-25. A tarefa corrige por **erratum datado** (relatório é registro, não se reescreve), decide se o A-08b fecha, e transcreve a prova de data para o relatório, de modo que a branch `tarefa/T-017` deixe de ser a única evidência ([A-47](./ACHADOS.md)) | E | P | — | ✅ |
 | [T-057](./T-057-e2e-escrita-e-rotas.md) | **O que a T-053 não alcançou**: o AC-6 dela roda só com o diretor e cobre 2 das 6 rotas ([A-48](./ACHADOS.md), resolvido); mais os três fluxos que nenhuma outra camada prova — escrita por clique real (CSRF + cookie + etag + `If-Match`), `/v/:viewId` entre dois atores com catálogos diferentes, e o sair destruindo sessão de verdade. **Achou e corrigiu o [A-49](../relatorios/achados-resolvidos.md)**: escrita de componente aberto por rota nunca chegava ao servidor (`Bloco` sem `comandos`) | D/E | M | T-053, T-051 | ✅ |
+
+> **T-056 fechou.** A-08b **não fecha**: a rodada com pré-commitação (30
+> perguntas, `tarefa/T-017`) não é a rodada publicada (17 casos), e é a
+> publicada que sustenta a recomendação de seguir. Erratum datado no
+> [R-001 §8](../relatorios/R-001-medicao-modelo-real.md), com a prova de data
+> verificável por `git show -s --format='%ci %ci' e753200` — `tarefa/T-017`
+> deixou de ser a única evidência. A-47 fechado para
+> [achados-resolvidos.md](../relatorios/achados-resolvidos.md).
 
 ### W5 — Garantias e fechamento · até 4 sessões
 

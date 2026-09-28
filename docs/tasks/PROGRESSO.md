@@ -7,8 +7,8 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**53 concluídas · 1 parcial · 3 não iniciadas** · 24 de 24 componentes previstos.
-**W0, W1, W2, W3 e W4 fechadas.** A parcial que resta é de W5 (T-032).
+**54 concluídas · 1 parcial · 2 não iniciadas** · 24 de 24 componentes previstos.
+**W0, W1, W2, W3 e W4 fechadas.** O que resta de W5 é T-032 (parcial), T-034 e T-055.
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
 > delas duas vezes — dizia "2 parciais" com três linhas 🟡, e depois "39
@@ -70,7 +70,7 @@ está pronto.
 
 | | Tarefa | Estado | O que falta |
 |---|---|---|---|
-| T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não recuperável** — as perguntas não foram pré-commitadas (17 casos da T-032); registrado em R-001 §8 e A-08b. **Em dúvida desde 2026-09-25** ([A-47](./ACHADOS.md)): as 30 perguntas estavam commitadas antes da execução na branch `tarefa/T-017`, que nunca entrou na `main`. Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
+| T-017 | SPIKE: medição com modelo real | ✅ | R-001 entregue (2026-09-09): Sonnet 5 e Haiku 4.5, dois modos, 100% de schema válido; recomendação **seguir**. **AC-1 não vale para a rodada publicada** (17 casos, sem pré-commitação) — corrigido do texto anterior ("não recuperável") pelo erratum da [T-056](./T-056-erratum-r-001.md), 2026-09-28: existiu uma rodada com pré-commitação (30 perguntas, commit `e753200`), mas é outra rodada, não a publicada. Ver [R-001 §8](../relatorios/R-001-medicao-modelo-real.md). Medição via OpenRouter, não Anthropic nativo (ADR-0025) |
 
 ## W3 — Leitura · 15 de 15 componentes
 
@@ -157,7 +157,7 @@ está pronto.
 |---|---|---|---|
 | T-054 | Exportação em CSV, XLSX e PDF | ✅ | Pedido do cliente · ADR-0035. `POST /api/componentes/{id}/exportar` usa a mesma leitura autorizada de `dados` (`deps.ler_componente`); 7 componentes exportáveis; `exportavel` no catálogo; botão acima do bloco. 12 ACs; custo, escopo, teto, injeção de fórmula e import-linter sabotados e vistos vermelhos. Conferido no app real (API + Vite + navegador). O `csv` saiu do viewmodel da temperatura. Não aberto num Excel de verdade |
 | T-055 | Filtro interativo | ⬜ | Achado [A-46](./ACHADOS.md), relatado pelo usuário em 2026-09-16: não há controle de filtro em nenhuma superfície. Os `params` de enum já existem no servidor (`lote_lista.status`, `movimento_lista.tipo`); falta o controle na tela, na rota tradicional e na composição do assistente. O controle mora ao redor do bloco, como o botão da T-054 — CONTRATOS §6 não muda |
-| T-056 | Erratum do R-001 e destino do A-08b | ⬜ | Achado [A-47](./ACHADOS.md). A evidência já está no repositório (commit `7fcb9de`); falta corrigir o §8 por erratum, decidir se o A-08b fecha, e transcrever hash e data para o relatório — hoje a prova de data mora só na branch `tarefa/T-017`. Recomendação escrita na tarefa: **não** fechar o A-08b, porque a rodada publicada continua sem a proteção |
+| T-056 | Erratum do R-001 e destino do A-08b | ✅ | **7 ACs verificados.** Erratum datado no [R-001 §8](../relatorios/R-001-medicao-modelo-real.md), sem reescrever o texto original (AC-1/AC-2). A-08b **não fecha** — a rodada com pré-commitação (30 perguntas) não é a publicada (17 casos), e é a publicada que sustenta a recomendação do §7 (AC-3). Prova de data transcrita (`e753200`, 2026-09-08 12:15:48 -03, conferida rodando `git show -s --format='%ci %ci' e753200`) — `tarefa/T-017` deixa de ser a única evidência (AC-4/AC-5). A-47 fechado para [achados-resolvidos.md](../relatorios/achados-resolvidos.md) (AC-7) |
 | T-057 | E2E: as 6 rotas, escrita por clique, view compartilhada e sair | ✅ | **10 ACs verificados** (AC-1 a AC-10, fora de ordem no arquivo da tarefa — AC-9/AC-10 vêm antes de AC-7/AC-8). Achado [A-48](../relatorios/achados-resolvidos.md) resolvido: AC-1 parametriza o teste da T-053 para Marco, Helena e Cleide, com a união cobrindo as 6 rotas; AC-9 separa os três comportamentos de URL sem permissão (negado no carregamento, lido sem poder agir, portão de formulário) que a corrida da skill `e2e-nav-test` de 2026-09-25 tinha tratado como um só. **Achou e fechou o [A-49](../relatorios/achados-resolvidos.md)**: a escrita de um componente aberto por ROTA (`/quarentena/:loteId`, `/saida`) nunca chegava ao servidor — `TelaOperacao.tsx`/`TelaSaida.tsx` (T-031) montam o `Bloco` sem `comandos`, campo que só existe vindo de `/api/assistente/compor` ou `/api/views/{id}` (T-049). Corrigido anexando `comandos` ao `/api/catalogo` (borda, como `exportavel` da T-054) e lendo-o nas duas telas. Sabotagem do AC-7 revelou uma segunda falha, no próprio teste: a asserção do AC-4 checava só o código `conflito`, que a máquina de estados também produz por outro motivo — corrigida para checar a mensagem do `If-Match`. AC-8 verificado com `make up` real (contagens de `usuario`/`sessao`/`auditoria`/`movimento` idênticas antes e depois). `make check` e a suíte e2e (26 testes) verdes. Não faz: exportação, paginação e `/usuarios`, registrados como candidatos |
 
 ---

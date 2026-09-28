@@ -219,3 +219,32 @@ leva os casos a ~40 e liga a série histórica; a T-043 (no [BOARD](../tasks/BOA
 conserta a telemetria. A disciplina do AC-1 (perguntas antes do resultado) só
 pode ser recuperada para os casos **novos** que a T-032 acrescentar — commit
 separado e anterior.
+
+---
+
+### Erratum (2026-09-28, [T-056](../tasks/T-056-erratum-r-001.md))
+
+As duas frases acima — *"as perguntas não foram escritas nem commitadas antes
+da primeira execução"* e *"`spike/` nunca foi construído"* — **descrevem a
+rodada publicada, não a única rodada que existiu.** Ficam como estão, porque
+relatório é registro: o erratum corrige o que se pode **afirmar**, não apaga o
+que foi dito.
+
+Existiu uma segunda rodada, anterior e abandonada sem publicação, fora da
+`main`: commit `e753200` (branch `tarefa/T-017`, autor e committer em
+**2026-09-08 12:15:48 -03**, sem sinal de reescrita — confira com
+`git show -s --format='%ci %ci' e753200`). Recuperada em 2026-09-25
+([A-47](../tasks/ACHADOS.md)) para `docs/relatorios/R-001-perguntas.json` (30
+perguntas) e `R-001-dados-brutos.json` (120 execuções). **Não é a rodada dos
+números do §4**: usou `sonnet-4.6` + `haiku-4.5`, dois modos, 30 perguntas e
+120 execuções — 100% de schema válido, 96,7% de composição correta. A
+publicada usou `sonnet-5` + `haiku-4.5`, 17 casos e 68 execuções.
+
+**O [A-08b](../tasks/ACHADOS.md) não fecha.** A rodada recuperada cumpriu a
+disciplina do AC-1; a rodada **publicada** — a que sustenta o "seguir" do §7 e
+o número que o PRD §9 cita — não. Fechar o achado transferiria para os
+resultados publicados uma garantia que eles não têm. O texto correto não é
+"não recuperável": é "recuperável, mas não vale para a rodada publicada".
+
+Com a data verificável pelo comando acima, `tarefa/T-017` deixou de ser a
+única prova e pode ser apagada sem perder evidência.

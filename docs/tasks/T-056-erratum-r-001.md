@@ -81,24 +81,24 @@ docs/relatorios/achados-resolvidos.md   destino do A-47 (e do A-08b, se fechar)
 
 ## Critérios de aceite
 
-- [ ] **AC-1** O R-001 ganha um **erratum datado** no fim do §8, que corrige as
+- [x] **AC-1** O R-001 ganha um **erratum datado** no fim do §8, que corrige as
       duas frases sem reescrever o texto original. Relatório é registro: apagar
       o que ele dizia esconderia que houve divergência.
-- [ ] **AC-2** O erratum descreve a rodada recuperada com os números conferidos —
+- [x] **AC-2** O erratum descreve a rodada recuperada com os números conferidos —
       30 perguntas, 120 execuções, `sonnet-4.6` + `haiku-4.5`, dois modos, 100%
       de schema válido, 96,7% de composição correta — e diz explicitamente que
       **não é** a rodada dos números do §4.
-- [ ] **AC-3** A decisão sobre o A-08b está registrada com o critério que a
+- [x] **AC-3** A decisão sobre o A-08b está registrada com o critério que a
       sustenta, não só com o veredito.
-- [ ] **AC-4** A prova de data deixa de depender da branch: o erratum traz o
+- [x] **AC-4** A prova de data deixa de depender da branch: o erratum traz o
       hash `e753200`, a data, e o comando que qualquer pessoa roda para
       conferir. **Verificado rodando o comando** e comparando com o texto.
-- [ ] **AC-5** Depois do AC-4, `tarefa/T-017` pode ser apagada sem perder
+- [x] **AC-5** Depois do AC-4, `tarefa/T-017` pode ser apagada sem perder
       evidência — e a tarefa diz isso em uma linha, porque hoje o
       [A-47](./ACHADOS.md) manda o contrário.
-- [ ] **AC-6** A linha da T-017 no PROGRESSO deixa de dizer "AC-1 não
+- [x] **AC-6** A linha da T-017 no PROGRESSO deixa de dizer "AC-1 não
       recuperável" e passa a dizer o que ficou decidido, com o ponteiro.
-- [ ] **AC-7** O A-47 sai do ACHADOS para `achados-resolvidos.md`, deixando só
+- [x] **AC-7** O A-47 sai do ACHADOS para `achados-resolvidos.md`, deixando só
       o id citável — a regra da casa para achado fechado.
 
 ## Não faz

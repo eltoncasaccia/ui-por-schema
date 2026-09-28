@@ -16,6 +16,8 @@ import sys
 import time
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
+from typing import cast
 
 import estoque.application.registry.indice  # noqa: F401
 from estoque.application.registry.registry import catalogo_de
@@ -27,6 +29,18 @@ from estoque.assistant.observador import Observador, ObservadorNulo
 from estoque.assistant.trace import Modo
 from estoque.domain.identidade import PERMISSOES_POR_PAPEL, Ator, PapelId
 from estoque.eval.casos import CASOS, Caso
+
+# ADR-0013: "CI falha se a taxa de schema válido cair mais de 5 pontos
+# percentuais em relação à execução anterior registrada." A linha de base é
+# um arquivo versionado, não recalculada a cada rodada — senão uma queda
+# lenta, rodada a rodada, nunca cruzaria limiar nenhum.
+#
+# Mora DENTRO de `api/`, não em `docs/`: `make eval` roda em container cujo
+# contexto de build é só `./api` (`docker-compose.yml`) — um caminho fora
+# disso não existe no container, e a primeira execução real quebrou
+# exatamente assim, tentando criar `/docs/relatorios` na raiz do container.
+LINHA_DE_BASE = Path(__file__).resolve().parent / "linha_de_base.json"
+TOLERANCIA_PP = 0.05
 
 TODAS = frozenset({"cd-matriz", "cd-refrigerado", "filial-uberlandia"})
 PERSONAS: dict[str, tuple[PapelId, frozenset[str]]] = {
@@ -121,7 +135,28 @@ def resumo(rs: list[Resultado], modo: str) -> dict[str, object]:
     }
 
 
-async def principal(modos: Sequence[Modo], somente: str | None) -> int:
+def regrediu(atual: float, base: float, tolerancia: float = TOLERANCIA_PP) -> bool:
+    """Regressão é queda de mais de `tolerancia` (fração 0–1) — nunca melhora,
+    e nunca é sobre outra métrica: o ADR-0013 fala só de schema válido."""
+    return (base - atual) > tolerancia
+
+
+def carregar_linha_de_base() -> dict[str, float]:
+    if not LINHA_DE_BASE.exists():
+        return {}
+    dados: dict[str, float] = json.loads(LINHA_DE_BASE.read_text(encoding="utf-8"))
+    return dados
+
+
+def gravar_linha_de_base(valores: dict[str, float]) -> None:
+    LINHA_DE_BASE.parent.mkdir(parents=True, exist_ok=True)
+    texto = json.dumps(valores, indent=2, sort_keys=True) + "\n"
+    LINHA_DE_BASE.write_text(texto, encoding="utf-8")
+
+
+async def principal(
+    modos: Sequence[Modo], somente: str | None, *, atualizar_linha_de_base: bool = False
+) -> int:
     adaptador = criar_adaptador()
     if type(adaptador).__name__ == "AdaptadorMock":
         print("recuso rodar com o mock: o número não valeria nada.", file=sys.stderr)
@@ -158,16 +193,48 @@ async def principal(modos: Sequence[Modo], somente: str | None) -> int:
         with open(destino, "w", encoding="utf-8") as f:
             json.dump(relatorio, f, indent=2, ensure_ascii=False)
         print(f"\nrelatório em {destino}")
-    return 0
+
+    base = carregar_linha_de_base()
+    novos_valores: dict[str, float] = {
+        str(m): cast(float, resumo(rs, m)["schema_valido"]) for m in modos if resumo(rs, m)
+    }
+    if not base:
+        gravar_linha_de_base(novos_valores)
+        print(f"\nlinha de base gravada em {LINHA_DE_BASE} (primeira execução, ADR-0013).")
+        return 0
+
+    saida = 0
+    for nome_modo, atual in novos_valores.items():
+        anterior = base.get(nome_modo)
+        if anterior is None:
+            continue
+        if regrediu(atual, anterior):
+            print(
+                f"\nREGRESSÃO em {nome_modo}: schema_valido caiu de {anterior:.1%} para "
+                f"{atual:.1%} (tolerância: {TOLERANCIA_PP:.0%})",
+                file=sys.stderr,
+            )
+            saida = 1
+    if saida == 0 and atualizar_linha_de_base:
+        gravar_linha_de_base({**base, **novos_valores})
+        print(f"\nlinha de base atualizada em {LINHA_DE_BASE}.")
+    return saida
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description="Suíte de avaliação do assistente")
     p.add_argument("--modo", action="append", choices=["restrito", "ferramenta", "livre"])
     p.add_argument("--caso", help="roda só os casos cujo id contém este texto")
+    p.add_argument(
+        "--atualizar-linha-de-base",
+        action="store_true",
+        help="grava esta execução como nova linha de base (ADR-0013) — só se não regrediu",
+    )
     a = p.parse_args()
     modos: list[Modo] = a.modo or ["restrito", "livre"]
-    return asyncio.run(principal(modos, a.caso))
+    return asyncio.run(
+        principal(modos, a.caso, atualizar_linha_de_base=a.atualizar_linha_de_base)
+    )
 
 
 if __name__ == "__main__":

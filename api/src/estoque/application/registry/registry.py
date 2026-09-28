@@ -148,3 +148,48 @@ def valores_proibidos(comp: ComponentDef, ator: Ator) -> dict[str, set[str]]:
 
 def iter_componentes() -> Iterator[ComponentDef]:
     yield from _REGISTRO.values()
+
+
+# Risco R-5 (PRD §9): um campo de params sem enum deixa o modelo INVENTAR o
+# recorte — "clientes grandes" em vez de um valor nomeado — e a resposta
+# alarga em silencio, sem erro em lugar nenhum. Estes dois padroes sao FORA
+# do risco por natureza, nao por lista de excecao caso a caso:
+# - identificador (`lote_id`, `produto_id`, `ean`, ...): busca exata, nunca
+#   recorte de faixa;
+# - `de`/`ate`: fronteira de um intervalo continuo (data), onde "valor
+#   nomeado" nao faz sentido — o enum aqui e' o PRESET (`periodo`, `janela`),
+#   que ja existe ao lado.
+def _e_identificador_ou_intervalo(campo: str) -> bool:
+    return campo.endswith("_id") or campo in {"ean", "de", "ate"}
+
+
+def campos_filtraveis(params: type[Any]) -> dict[str, tuple[str, ...]]:
+    """Campo de `params` com enum -> os valores. É o mesmo campo que o T-055
+    expõe como filtro: identificador nunca tem enum, então nunca aparece aqui
+    por construção — não precisa de uma segunda lista de exclusão."""
+    return {
+        campo: valores
+        for campo in params.model_fields
+        if (valores := _valores_de_enum(params, campo))
+    }
+
+
+def campos_sem_enum(componentes: Mapping[str, ComponentDef]) -> dict[str, tuple[str, ...]]:
+    """Todo campo de `params` que NAO e' enum e NAO e' identificador/intervalo.
+
+    Vazio e' o estado correto. Um campo aqui e' um recorte que o modelo pode
+    preencher com texto livre — a auditoria do AC-5 da T-032 falha para
+    qualquer entrada, forcando decisao explicita (virar enum, ou entrar na
+    lista de exececao acima com o motivo) em vez de silencio.
+    """
+    achados: dict[str, tuple[str, ...]] = {}
+    for comp_id, comp in componentes.items():
+        filtraveis = campos_filtraveis(comp.params)
+        suspeitos = tuple(
+            campo
+            for campo in comp.params.model_fields
+            if campo not in filtraveis and not _e_identificador_ou_intervalo(campo)
+        )
+        if suspeitos:
+            achados[comp_id] = suspeitos
+    return achados

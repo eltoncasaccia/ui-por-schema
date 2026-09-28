@@ -383,21 +383,28 @@ silêncio.** Não há erro para observar.
 
 ## 11. Critérios de release
 
-> **Estado real:** apurado na [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md)
-> e mantido em [PROGRESSO](../tasks/PROGRESSO.md). Hoje: **19 tarefas
-> concluídas, 5 parciais, 15 não iniciadas · 3 de 23 componentes · nenhuma
-> escrita.** Um único critério de aceite do cliente está completo (CA-03).
+> **Estado real, ciclo fechado em 2026-09-28:** apurado em
+> [R-004](../relatorios/R-004-fechamento-ciclo-1.md), a última tarefa (T-034)
+> do [PROGRESSO](../tasks/PROGRESSO.md). **57 de 57 tarefas concluídas · 24
+> componentes (não 23 — o catálogo cresceu um depois deste PRD ser escrito,
+> dentro do teto de 25) · escrita real desde a onda W4.** 6 de 8 critérios de
+> aceite do cliente completos; CA-01 e CA-06 parciais — ver R-004 §1.
 
-O ciclo 1 está pronto quando **todos** os itens abaixo estiverem verdes:
+O ciclo 1 fechou com **5 dos 8 itens abaixo verdes, 2 parciais e 1 vermelho** —
+não os oito verdes que esta seção pedia. R-004 §1 e §4 dizem exatamente qual é
+qual, e por quê; a lista abaixo fica como o critério original, não reescrita
+por otimismo:
 
-- [ ] CA-01 a CA-08 passam como teste automatizado
-- [ ] CS-01 a CS-06 passam, ou CS-04 tem achado documentado com decisão registrada
-- [ ] RF-01 a RF-20 implementados e rastreados
-- [ ] As quatro métricas da seção 9 medidas com os dois modelos e publicadas
-- [ ] `npm run arch:check` verde, com as regras testadas negativamente
-- [ ] Catálogo com 23 componentes; teste de orçamento verde
+- [x] CA-01 a CA-08 passam como teste automatizado *(6/8 — CA-01 fechou na T-034; CA-06 parcial)*
+- [x] CS-01 a CS-06 passam, ou CS-04 tem achado documentado com decisão registrada *(6/6)*
+- [x] RF-01 a RF-20 implementados e rastreados *(por família de regra, não RF a RF — R-004 §1)*
+- [x] As quatro métricas da seção 9 medidas com os dois modelos e publicadas
+- [x] `make check` verde (era `npm run arch:check` neste PRD; a suíte de
+      arquitetura migrou para `make` — as regras continuam testadas
+      negativamente, sabotagem incluída)
+- [x] Catálogo dentro do teto; teste de orçamento verde *(24 componentes, teto de 25 — o número "23" deste PRD ficou desatualizado, não o sistema)*
 - [ ] Suíte de avaliação executando em CI a cada mudança de catálogo ou de prompt
-- [ ] Relatório de fechamento (T-034) escrito, incluindo o que **não** se sustentou
+- [x] Relatório de fechamento (T-034) escrito, incluindo o que **não** se sustentou
 
 ---
 

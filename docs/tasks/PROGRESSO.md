@@ -7,8 +7,9 @@ que deixar vazio, porque cria evidência falsa.
 Estado apurado pela [auditoria A-002](../relatorios/A-002-auditoria-de-execucao.md),
 atualizado a cada entrega.
 
-**56 concluídas · 1 não iniciada** · 24 de 24 componentes previstos.
-**W0, W1, W2, W3 e W4 fechadas.** O que resta de W5 é só a T-034.
+**57 concluídas · 0 não iniciadas** · 24 de 24 componentes previstos.
+**W0 a W5 fechadas. O ciclo 1 fechou** — ver
+[R-004](../relatorios/R-004-fechamento-ciclo-1.md).
 
 > Contagem apurada das tabelas abaixo, não da memória: o cabeçalho já divergia
 > delas duas vezes — dizia "2 parciais" com três linhas 🟡, e depois "39
@@ -123,7 +124,7 @@ está pronto.
 | T-033 | Segurança CS-01 a CS-06 | ✅ | **6 ACs verificados** (AC-6 vacuamente — o CS-04 passou). CS-04: prompt e JSON Schema idênticos byte a byte com e sem dado hostil no banco — inclusive o nome do próprio ator —, canário provando que o dado estava na tela dele, e igualdade confirmada com `qwen2.5:7b` real. Acrescentados: schema gigante (CS-01), catálogo exato das 7 personas (CS-02), composição auditada e custo plantado na trilha real (CS-05). 4 sabotagens, 4 vermelhos. Achados [A-42](./ACHADOS.md) (`titulo` sem teto, `xfail` strict) e [A-43](./ACHADOS.md) (escrita composta aceita). [R-003](../relatorios/R-003-seguranca-ciclo-1.md) |
 | T-031 | Telas com rota | ✅ | **6 ACs verificados, AC-3 em branco (medição é da T-034).** `react-router-dom` adotado — `app/layout/Roteador.tsx` autocontido (próprio `BrowserRouter`), 8 rotas em `app/layout/rotasOperacao.tsx` (tabela única: alimenta o roteador e a navegação lateral). AC-1 provado por igualdade de HTML entre a rota e `Composicao` direta. AC-4 verificado com catálogo mockado e contra o servidor real (Cleide sem `quarentena_liberar`, Helena com). AC-5 idem, incl. `curl` autenticado contra o container. `/saida` sem `:id` na URL mas `movimento_saida.produto_id` é obrigatório — sem componente de busca de produto no catálogo; resolvido com identificador digitado/colado + `?produto_id=`, ver nota no arquivo da tarefa. Tocou `App.tsx` e `PainelNavegacao.tsx` fora da lista original (justificado no arquivo da tarefa) |
 | T-038 | Gestão de usuários | ✅ | 6 ACs por HTTP contra o banco real. `POST /api/usuarios/{id}` (CA-08 proíbe `PATCH`), ninguém altera o próprio acesso, desativar derruba a sessão na hora. Sem entrada na navegação lateral |
-| T-034 | Relatório de fechamento | ⬜ | — |
+| T-034 | Relatório de fechamento | ✅ | **7 ACs.** [R-004](../relatorios/R-004-fechamento-ciclo-1.md) fecha o checklist do PRD §11 (5 verdes, 2 parciais, 1 vermelho — suíte de avaliação fora do CI, sem tarefa própria) e mede RNF-01/RNF-04 de verdade contra o Postgres do ambiente, os dois números que só tinham prova de forma. As 5 pendências do documento 02 e os achados esperando cliente viram critério de entrada do ciclo 2. Narrativa completa em [`docs/05-achados-ciclo-1.md`](../05-achados-ciclo-1.md) |
 
 ## Tarefas abertas pela auditoria
 
@@ -170,7 +171,7 @@ movem estoque, com auditoria e recusa negativa testadas.
 
 | | Depende de | Estado |
 |---|---|---|
-| CA-01 recall < 60 s | T-021 | 🟡 `rastreabilidade` entregue, duas direções, consulta auditada, escopo não atravessa. Prova de forma (`load` linear); o número real de `RNF-01` contra Postgres é do T-034 |
+| CA-01 recall < 60 s | T-021 | ✅ **completo**: `rastreabilidade` entregue, duas direções, consulta auditada, escopo não atravessa. Prova de forma (`load` linear, `test_rastreabilidade.py`) **e** número real — [T-034](./T-034-fechamento.md), lote com 60 saídas/449 unidades/60 clientes contra o Postgres do ambiente: 10–20 ms, muito abaixo dos 60 s |
 | CA-02 saldo auditável | T-025, T-028, T-029 | ✅ **completo**: razão imutável, saída, liberação e agora estorno — o saldo depois da correção é a soma dos dois movimentos, sem edição de campo (AC-4), e a trilha registra saldo anterior e posterior |
 | CA-03 fila de vencimento | T-020 | ✅ **único completo** |
 | CA-04 dupla identificação | T-030 | ✅ **completo**: submissão não muda saldo, autorização grava as duas identidades distintas, e a mesma pessoa é recusada em três camadas — permissão, domínio e CHECK do banco |

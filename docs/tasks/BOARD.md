@@ -247,7 +247,7 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 > [T-031](./T-031-telas-com-rota.md).
 | [T-032](./T-032-suite-de-avaliacao.md) | Suíte de avaliação, 40 perguntas | E | G | T-017, W3 | ✅ |
 | [T-033](./T-033-testes-de-seguranca.md) | Segurança CS-01 a CS-06 | E | G | W3, W4 | ✅ |
-| [T-034](./T-034-fechamento.md) | Relatório de fechamento | E | M | T-031, T-032, T-033 | ⬜ |
+| [T-034](./T-034-fechamento.md) | Relatório de fechamento | E | M | T-031, T-032, T-033 | ✅ |
 
 > **T-033 fechou, e o CS-04 passou.** Nenhum dado do banco chega ao modelo:
 > prompt e JSON Schema idênticos **byte a byte** com e sem dado hostil — inclusive
@@ -260,6 +260,14 @@ mesmo que não registrado. Ficam aqui até serem respondidas.
 > [A-43](./ACHADOS.md) — escrita composta com leitura é aceita porque a checagem
 > do ADR-0005 em `validar.py:113` nunca dispara (vira emenda de ADR). Relatório:
 > [R-003](../relatorios/R-003-seguranca-ciclo-1.md). **T-034 espera só a T-032.**
+
+> **T-034 fechou — o ciclo 1 fecha.** 7 ACs. RNF-01 e RNF-04 ganharam número
+> real contra o Postgres do ambiente (recall: 10–20 ms para um alvo de 60 s;
+> telas de rota: 10–50 ms para um alvo de 2 s) — os dois únicos números que
+> ainda dependiam de "prova de forma". Checklist do PRD §11: 5 verdes, 2
+> parciais (CA-01/CA-06), 1 vermelho (suíte de avaliação fora do CI, nunca
+> teve tarefa própria). Relatório: [R-004](../relatorios/R-004-fechamento-ciclo-1.md);
+> narrativa: [`docs/05-achados-ciclo-1.md`](../05-achados-ciclo-1.md).
 
 > **T-032 fechou.** 43 casos (18 do R-001 + 25 novos), 15 negativos, cobrindo
 > as 7 personas e os 8 CAs. Executado de verdade — dois modelos

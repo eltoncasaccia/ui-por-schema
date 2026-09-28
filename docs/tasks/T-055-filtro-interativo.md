@@ -123,34 +123,60 @@ docs/tasks/ACHADOS.md                                A-46 fecha, aponta para est
 
 ## Critérios de aceite
 
-- [ ] **AC-1** Nas 8 telas de rota tradicional listadas em "Escopo", cada campo
+- [x] **AC-1** Nas 8 telas de rota tradicional listadas em "Escopo", cada campo
       com `enum` do `Params` do componente aparece como controle (ex.: um
       `<select>` de `status`), com o padrão do componente pré-selecionado.
       Escolher outro valor atualiza a tabela sem recarregar a página.
-- [ ] **AC-2** O filtro escolhido fica na URL (query string) e sobrevive a
+      **Verificado:** `barraFiltro.test.tsx` (AC-1, 2 casos).
+- [x] **AC-2** O filtro escolhido fica na URL (query string) e sobrevive a
       recarregar a página e a compartilhar o link.
-- [ ] **AC-3** Uma composição do assistente que inclua um dos 8 componentes
+      **Verificado:** `barraFiltro.test.tsx` (AC-2, 2 casos) — sonda própria
+      lendo `useSearchParams`, porque `MemoryRouter` não escreve em
+      `window.location` de propósito.
+- [x] **AC-3** Uma composição do assistente que inclua um dos 8 componentes
       ganha a mesma barra, com os mesmos controles — a barra é uma função do
       componente, não da origem da tela (rota ou assistente).
-- [ ] **AC-4** Identificador nunca vira controle de filtro. `produto_id`,
+      **Verificado:** mesma `BlocoRender`/`Composicao` para as duas
+      superfícies (nenhum código exclusivo de rota); `rotas_operacao.test.tsx`
+      AC-1 confirma que rota e assistente produzem **o mesmo HTML**, byte a
+      byte, incluindo a barra.
+- [x] **AC-4** Identificador nunca vira controle de filtro. `produto_id`,
       `lote_id`, `recebimento_id`, `movimento_id`, `ean` não aparecem na
       barra de nenhum componente, em nenhuma das duas superfícies.
-      *(negativo)*
-- [ ] **AC-5** Mudar o filtro passa pela mesma autorização de sempre — não é
+      *(negativo)* **Verificado:** `barraFiltro.test.tsx` (cliente, lendo
+      `FILTROS` gerado) e `test_exportar_params.py` (servidor, 5 casos,
+      inclui os 24 componentes — não só os 8).
+- [x] **AC-5** Mudar o filtro passa pela mesma autorização de sempre — não é
       atalho. Um ator sem escopo para a `unidade_id` escolhida no filtro
       recebe a mesma recusa que receberia pedindo direto por `/api/dados`, e a
       tabela não troca de conteúdo antes da resposta confirmar.
       *(negativo — mesma tabela de casos de `RequiresPorValor` já coberta em
-      `dados`, agora disparada pela barra)*
-- [ ] **AC-6** Um valor de filtro fora do enum (forjado, fora da lista que a
+      `dados`, agora disparada pela barra)* **Satisfeito por construção, sem
+      teste novo:** `BarraFiltro` só muda a URL; `BlocoRender` funde a URL em
+      `params` e chama **o mesmo `api.dados(tipo, params)`** que a carga
+      inicial e a paginação já chamam — nenhum código novo entre o clique e o
+      `/api/dados` de sempre. A autorização por escopo já tem teste (achado
+      de `unidade_id` fora do escopo em `test_lote_lista.py`,
+      `test_movimento_lista.py` e outros) e continua valendo porque o caminho
+      não mudou.
+- [x] **AC-6** Um valor de filtro fora do enum (forjado, fora da lista que a
       barra oferece) é recusado pela validação do `Params` de sempre — a
       barra não é uma segunda porta sem a checagem do Pydantic. *(negativo)*
-- [ ] **AC-7** `import-linter`: nada disto abre caminho novo do `assistant`
+      **Satisfeito por construção, pelo mesmo motivo do AC-5** — `Params` de
+      cada um dos 8 já rejeita valor fora do `Literal` (`test_lote_lista.py`,
+      `test_movimento_lista.py`), e nenhum endpoint novo foi criado.
+- [x] **AC-7** `import-linter`: nada disto abre caminho novo do `assistant`
       para escrita, nem do cliente para fora de `dados`/`views`. Os 7
-      contratos continuam verdes.
-- [ ] **AC-8** CONTRATOS §6 (`View<Id>`) não muda — conferido lendo o tipo:
+      contratos continuam verdes. **Verificado:** `make arch-api` — 7 kept,
+      0 broken.
+- [x] **AC-8** CONTRATOS §6 (`View<Id>`) não muda — conferido lendo o tipo:
       `BarraFiltro` não é `view`, não está em `web/src/views/`, e nenhuma
-      `view` existente ganhou prop nova.
+      `view` existente ganhou prop nova. **Verificado por inspeção** —
+      `BarraFiltro.tsx` mora em `web/src/render/`. Dois arquivos de
+      `web/src/views/` foram tocados (`movimento_lista.tsx`,
+      `recebimento_lista.tsx`), só para **exportar** uma constante de rótulo
+      que já existia local ao arquivo (`TIPO_MOVIMENTO`, `STATUS_RECEBIMENTO`)
+      — nenhuma assinatura de `view` mudou, nenhuma prop nova.
 
 ## Não faz
 

@@ -13,6 +13,7 @@
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Bloco } from '../api'
 
@@ -45,12 +46,17 @@ function bloco(params: Record<string, unknown>): Bloco {
 }
 
 /** Cliente novo por teste: cache compartilhado faria o segundo teste passar
- *  pelo resultado do primeiro. */
+ *  pelo resultado do primeiro. `MemoryRouter` porque `BlocoRender` usa
+ *  `useSearchParams` desde a T-055 (filtro na URL). */
 function envolver(ui: React.ReactNode) {
   const cliente = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: 0 } },
   })
-  return render(<QueryClientProvider client={cliente}>{ui}</QueryClientProvider>)
+  return render(
+    <QueryClientProvider client={cliente}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
+  )
 }
 
 beforeEach(() => {
@@ -98,7 +104,9 @@ describe('AC-3 · quatro blocos da mesma entidade disparam uma requisição', ()
     // Mesmo cliente de cache, ator diferente: tem de buscar de novo.
     rerender(
       <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-        <Composicao blocos={[bloco({})]} atorId="u-b" />
+        <MemoryRouter>
+          <Composicao blocos={[bloco({})]} atorId="u-b" />
+        </MemoryRouter>
       </QueryClientProvider>,
     )
     await waitFor(() => expect(dados).toHaveBeenCalledTimes(2))
@@ -125,7 +133,9 @@ describe('AC-2 · a resposta atrasada de A não sobrescreve B', () => {
     // Troca para B antes de A responder — é o caso que a v1 tratava à mão.
     rerender(
       <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-        <Composicao blocos={[bloco({ unidade_id: 'B' })]} atorId={ATOR} />
+        <MemoryRouter>
+          <Composicao blocos={[bloco({ unidade_id: 'B' })]} atorId={ATOR} />
+        </MemoryRouter>
       </QueryClientProvider>,
     )
     await waitFor(() => expect(screen.getByText('222')).toBeInTheDocument())

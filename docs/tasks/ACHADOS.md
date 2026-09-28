@@ -3,8 +3,9 @@
 Registro do que a execução descobriu e o documento não previa: conflito entre
 regras `RN-*`, decisão de negócio sem documento, promessa sem código.
 
-> **Próximo número: `A-50`.** Está aqui para ninguém precisar abrir o arquivo
-> só para descobrir o número seguinte.
+> **Próximo número: `A-55`.** Está aqui para ninguém precisar abrir o arquivo
+> só para descobrir o número seguinte. *(Estava desatualizado em "A-50" antes
+> desta edição — A-51 a A-54 já existiam na §3. Corrigido ao gravar o A-50.)*
 
 **Este arquivo só tem o que ainda exige ação.** Os 33 achados já fechados foram
 para [`docs/relatorios/achados-resolvidos.md`](../relatorios/achados-resolvidos.md)
@@ -41,11 +42,14 @@ não se perder.
 
 | # | Achado | Tarefa |
 |---|---|---|
-| **A-46** | Filtro não tem controle interativo em nenhuma superfície — os `params` de enum que já existem no servidor não têm controle na tela, nem na rota tradicional nem numa composição do assistente | [T-055](./T-055-filtro-interativo.md) |
+| **A-50** | **Pelo menos 5 casos da suíte de avaliação (T-032) têm `esperado` questionável.** `neg-liberar-helena`, `status-helena`, `neg-controlado-ivo` e `neg-status-cleide` falharam nas 4 combinações de modelo/modo com uma composição alternativa DEFENSÁVEL (o ator tem permissão para o que foi composto, só não é o componente mais específico); `sandra-rastreio` é ambíguo entre `rastreabilidade` e `lote_movimentos`. Detalhe em [R-002 §5](../relatorios/R-002-avaliacao-ciclo-1.md#5-achado-pelo-menos-5-casos-com-esperado-questionável). Um sexto caso, `temperatura-marco`, não tem essa saída — o modelo nunca compõe, e vale investigar a `description` de `temperatura_historico` | *sem tarefa própria — ajuste em `api/src/estoque/eval/casos.py` na próxima medição real, não urgente* |
+
+*(A-46 fechou com a T-055.)*
 
 > A-44 fechou em 2026-09-14, com a [T-052](./T-052-banco-de-teste-isolado.md).
 > A-47 fechou em 2026-09-28, com a [T-056](./T-056-erratum-r-001.md) — o
 > erratum está no [R-001 §8](../relatorios/R-001-medicao-modelo-real.md).
+> A-46 fechou em 2026-09-28, com a [T-055](./T-055-filtro-interativo.md).
 
 ---
 

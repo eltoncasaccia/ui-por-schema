@@ -8,12 +8,13 @@ type VM = ViewModel<'movimento_lista'>
 type Linha = VM['linhas'][number]
 
 /** Entrada e estorno somam; saída e descarte subtraem. A cor diz a direção. */
-const TIPO: Record<Linha['tipo'], { rotulo: string; tom: Tom; sinal: string }> = {
+export const TIPO_MOVIMENTO: Record<Linha['tipo'], { rotulo: string; tom: Tom; sinal: string }> = {
   entrada: { rotulo: 'Entrada', tom: 'bom', sinal: '+' },
   estorno: { rotulo: 'Estorno', tom: 'ciano', sinal: '+' },
   saida: { rotulo: 'Saída', tom: 'neutro', sinal: '−' },
   descarte: { rotulo: 'Descarte', tom: 'ruim', sinal: '−' },
 }
+const TIPO = TIPO_MOVIMENTO
 
 const STATUS: Record<Linha['status'], Tom> = {
   efetivado: 'neutro',

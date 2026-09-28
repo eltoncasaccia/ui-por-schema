@@ -10,17 +10,42 @@ O que sai daqui:
     viewmodel      o JSON Schema do que `select` devolve — é o que atravessa a
                    rede, e é o que a view consome
     tamanho        o layout obedece ao componente, não ao modelo
+    filtros        T-055 — só nos oito componentes do escopo, só o campo de
+                   `params` com enum (nunca identificador, por construção) e
+                   os valores nomeados. É recorte, não permissão: a barra
+                   oferece o valor, `RequiresPorValor` continua decidindo se o
+                   ator pode pedi-lo (ADR-0004) — o filtro nunca é uma segunda
+                   porta.
 
-O que NÃO sai: `load`, `requires`, `params`. São do servidor, e o cliente não
-tem o que fazer com eles — mandar seria vazar a superfície de permissão para
-dentro do bundle.
+O que NÃO sai: `load`, `requires`, o resto de `params`. São do servidor, e o
+cliente não tem o que fazer com eles — mandar seria vazar a superfície de
+permissão para dentro do bundle.
 """
 
 import json
 from typing import Any
 
 import estoque.application.registry.indice  # noqa: F401  — registra os componentes
-from estoque.application.registry.registry import todos
+from estoque.application.registry.registry import campos_filtraveis, todos
+
+# T-055 §"Escopo". Só estes oito ganham `filtros` no contrato — os outros
+# componentes podem até ter campo com enum em `Params`, mas a barra de filtro
+# desta tarefa não cobre eles (corte de escopo, não limite técnico).
+_COM_FILTRO = frozenset(
+    {
+        "lote_lista",
+        "movimento_lista",
+        "recebimento_lista",
+        "fila_vencimento",
+        "vencimento_grafico",
+        "quarentena_fila",
+        "auditoria_trilha",
+        "relatorio_movimentacao",
+    }
+)
+# `agrupar_por` é o eixo que a composição já fixou — refiltrar um relatório
+# não é reagrupá-lo, é uma pergunta nova. Só este campo, deste componente.
+_FIXADO_PELA_COMPOSICAO = {"relatorio_movimentacao": {"agrupar_por"}}
 
 
 def _sem_titulo_de_propriedade(no: Any) -> Any:
@@ -65,6 +90,19 @@ def _pascal(id_componente: str) -> str:
     return "".join(p.capitalize() for p in id_componente.split("_"))
 
 
+def _filtros(comp_id: str, params: type[Any]) -> dict[str, list[str]]:
+    """T-055. Só enum, só os oito do escopo, nunca identificador — identificador
+    não tem enum, então já sai de `campos_filtraveis` por construção."""
+    if comp_id not in _COM_FILTRO:
+        return {}
+    excluidos = _FIXADO_PELA_COMPOSICAO.get(comp_id, set())
+    return {
+        campo: list(valores)
+        for campo, valores in campos_filtraveis(params).items()
+        if campo not in excluidos
+    }
+
+
 def contrato() -> dict[str, Any]:
     saida: list[dict[str, Any]] = []
     for comp in sorted(todos().values(), key=lambda c: c.id):
@@ -72,14 +110,15 @@ def contrato() -> dict[str, Any]:
         anot = comp.select.__annotations__.get("return")
         bruto = anot.model_json_schema() if anot is not None else {}
         esquema = _prefixar(_sem_titulo_de_propriedade(bruto), _pascal(comp.id))
-        saida.append(
-            {
-                "id": comp.id,
-                "label": comp.label,
-                "tamanho": comp.tamanho,
-                "viewmodel": esquema,
-            }
-        )
+        entrada: dict[str, Any] = {
+            "id": comp.id,
+            "label": comp.label,
+            "tamanho": comp.tamanho,
+            "viewmodel": esquema,
+        }
+        if filtros := _filtros(comp.id, comp.params):
+            entrada["filtros"] = filtros
+        saida.append(entrada)
     return {"versao": 1, "componentes": saida}
 
 

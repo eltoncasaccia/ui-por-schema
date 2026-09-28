@@ -459,7 +459,15 @@ modelo escolhe — mesmo tratamento que `sem_acesso` já tinha.
 
 Teto de 25 ([ADR-0011](../adr/0011-teto-de-catalogo.md)): **22, folga de 3.**
 
----
+**T-055 acrescenta `filtros` ao contrato exportado** (`registry/exportar.py`
+→ `web/src/generated/contrato.json` → `componentes.ts`, via `make types`):
+campo opcional por componente, presente só nos oito do escopo da tarefa —
+`lote_lista`, `movimento_lista`, `recebimento_lista`, `fila_vencimento`,
+`vencimento_grafico`, `quarentena_fila`, `auditoria_trilha`,
+`relatorio_movimentacao`. Mapa `campo -> valores do enum`, derivado de
+`Params` do lado servidor (`campos_filtraveis`): identificador nunca aparece,
+porque nunca tem `enum`. Não é mudança de `ComponentDef` — é campo opcional
+novo num tipo derivado, então tarefa normal por §11, avisado aqui e no BOARD.
 
 ## 10. Convenções
 

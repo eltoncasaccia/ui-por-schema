@@ -9,6 +9,7 @@
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Eu, EntradaCatalogo } from '../api'
 import { IDS_DA_API } from '../generated/componentes'
@@ -26,6 +27,10 @@ const { PainelNavegacao } = await import('../shell/PainelNavegacao')
 
 const IVO: Eu = { id: 'u-ivo', nome: 'Ivo Gerente', papel: 'gerente', unidades: ['cd-matriz'], permissoes: [] }
 
+// SEM `MemoryRouter` aqui: a maioria dos usos é `<Roteador>`, que já tem o
+// próprio `BrowserRouter` por dentro — um segundo Router por fora quebraria
+// com "cannot render a Router inside another Router". Quem renderiza
+// `Composicao` sozinha (sem `Roteador`) traz o `MemoryRouter` no próprio `ui`.
 function envolver(ui: React.ReactNode) {
   const cliente = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })
   return render(<QueryClientProvider client={cliente}>{ui}</QueryClientProvider>)
@@ -97,7 +102,9 @@ describe('AC-1 · rota e assistente renderizam o mesmo componente', () => {
 
     const bloco = { tipo: 'fila_vencimento' as const, params: { janela: '90' }, tamanho: 'inteira' }
     const viaAssistente = envolver(
-      <div className="workspace-corpo"><Composicao blocos={[bloco]} atorId={IVO.id} /></div>,
+      <MemoryRouter>
+        <div className="workspace-corpo"><Composicao blocos={[bloco]} atorId={IVO.id} /></div>
+      </MemoryRouter>,
     )
     await waitFor(() => expect(screen.getByText('Amoxicilina 500mg')).toBeInTheDocument())
     const corpoAssistente = viaAssistente.container.querySelector('.workspace-corpo')!.innerHTML

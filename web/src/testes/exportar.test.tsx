@@ -8,6 +8,7 @@
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Bloco, EntradaCatalogo, FormatoExportacao } from '../api'
 import type { ViewModel } from '../generated/componentes'
@@ -43,11 +44,14 @@ function entrada(id: string, exportavel: boolean): EntradaCatalogo {
   return { id, label: id, description: '', examples: [], params: {}, exportavel }
 }
 
+// `MemoryRouter`: `BlocoRender` usa `useSearchParams` desde a T-055.
 function montar() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
     <QueryClientProvider client={qc}>
-      <Composicao blocos={[BLOCO]} atorId="u-marco" />
+      <MemoryRouter>
+        <Composicao blocos={[BLOCO]} atorId="u-marco" />
+      </MemoryRouter>
     </QueryClientProvider>,
   )
 }

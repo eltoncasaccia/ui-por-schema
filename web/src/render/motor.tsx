@@ -13,8 +13,10 @@
  */
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ErroApi, api, type Bloco } from '../api'
-import type { ComponentId } from '../generated/componentes'
+import { FILTROS, type ComponentId } from '../generated/componentes'
+import { BarraFiltro } from './BarraFiltro'
 import { BotaoExportar } from './BotaoExportar'
 import { EVENTO_COMANDO, chaveIdempotencia, type DetalheComando } from './comando'
 import { classeTexto } from '../ui/estados'
@@ -57,11 +59,40 @@ interface Tentativa {
 }
 
 function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
+  // T-055. A URL é o dono do valor — não estado local — porque AC-2 exige
+  // sobreviver a recarregar e a compartilhar o link. Namespace por `tipo`
+  // (`fila_vencimento.janela`, não `janela`): duas composições do MESMO
+  // componente ao mesmo tempo são o caso não coberto por esta tarefa, mas
+  // dois componentes DIFERENTES com campo de mesmo nome (`unidade_id` está
+  // nos oito) não podem colidir na mesma URL.
+  const [busca, setBusca] = useSearchParams()
+  const filtraveis = FILTROS[bloco.tipo as ComponentId]
+  const paramsEfetivos = { ...bloco.params }
+  if (filtraveis) {
+    for (const campo of Object.keys(filtraveis)) {
+      const v = busca.get(`${bloco.tipo}.${campo}`)
+      if (v) paramsEfetivos[campo] = v
+    }
+  }
+  const aoMudarFiltro = useCallback(
+    (campo: string, valor: string) => {
+      setBusca(
+        (prev) => {
+          const novo = new URLSearchParams(prev)
+          novo.set(`${bloco.tipo}.${campo}`, valor)
+          return novo
+        },
+        { replace: true },
+      )
+    },
+    [bloco.tipo, setBusca],
+  )
+
   const q = useInfiniteQuery({
     // A identidade do ator entra na chave, obrigatoriamente: sem isso o cache
     // serviria dado de uma pessoa para outra (ADR-0008).
-    queryKey: [atorId, bloco.tipo, bloco.params],
-    queryFn: ({ pageParam }) => api.dados<unknown>(bloco.tipo, bloco.params, pageParam),
+    queryKey: [atorId, bloco.tipo, paramsEfetivos],
+    queryFn: ({ pageParam }) => api.dados<unknown>(bloco.tipo, paramsEfetivos, pageParam),
     initialPageParam: null as string | null,
     getNextPageParam: (ultima) => (paginado(ultima) && ultima.tem_mais ? ultima.cursor : null),
     retry: false,
@@ -104,7 +135,7 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
           setTentativa(null)
           // O que a tela mostra (saldo, status) mudou — a MESMA leitura que a
           // rota tradicional e o assistente usam precisa refletir isso.
-          void qc.invalidateQueries({ queryKey: [atorId, bloco.tipo, bloco.params] })
+          void qc.invalidateQueries({ queryKey: [atorId, bloco.tipo, paramsAtual.current] })
         })
         .catch((e: unknown) => {
           const msg = e instanceof ErroApi ? e.message : 'Não foi possível concluir.'
@@ -113,7 +144,7 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
           setTentativa((cur) => (cur && cur.chave === t.chave ? { ...cur, enviando: false, erro: msg } : cur))
         })
     },
-    [qc, atorId, bloco.tipo, bloco.params],
+    [qc, atorId, bloco.tipo],
   )
 
   // `enviar` e `bloco.comandos` mudam de identidade a cada render; o listener
@@ -128,6 +159,11 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
   comandosAtual.current = bloco.comandos
   const blocoAtual = useRef(bloco)
   blocoAtual.current = bloco
+  // T-055: o etag e a invalidação de cache têm que casar com o que a query
+  // ATIVA está lendo — que é `paramsEfetivos`, não o `bloco.params` que a
+  // composição declarou, depois que um filtro mudou o recorte.
+  const paramsAtual = useRef(paramsEfetivos)
+  paramsAtual.current = paramsEfetivos
   const ligado = useRef<{ el: Element; fn: (ev: Event) => void } | null>(null)
 
   const contRef = useCallback((el: HTMLDivElement | null) => {
@@ -146,7 +182,7 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
       // isso, cai no etag do bloco inteiro — o caso de `quarentena_liberar`,
       // `lote_status_acao` e `controlado_autorizar`. `undefined` nos dois
       // quando a leitura ainda não tem etag (achado A-41 residual).
-      const etag = etagDaLinha ?? api.etagAtual(blocoAtual.current.tipo, blocoAtual.current.params)
+      const etag = etagDaLinha ?? api.etagAtual(blocoAtual.current.tipo, paramsAtual.current)
       const t: Tentativa = {
         acao,
         endpoint: cmd.endpoint,
@@ -196,8 +232,9 @@ function BlocoRender({ bloco, atorId }: { bloco: Bloco; atorId: string }) {
   return (
     <div ref={contRef}>
       {/* Acima do bloco, não abaixo: numa lista com rolagem infinita, o fim
-          nunca chega, e o botão lá embaixo não existe para quem usa. */}
-      <BotaoExportar tipo={bloco.tipo} params={bloco.params} atorId={atorId} />
+          nunca chega, e o controle lá embaixo não existe para quem usa. */}
+      <BarraFiltro tipo={bloco.tipo} valores={paramsEfetivos} aoMudar={aoMudarFiltro} />
+      <BotaoExportar tipo={bloco.tipo} params={paramsEfetivos} atorId={atorId} />
       <View vm={vm} />
       {tentativa && (
         <div className="cartao cartao-corpo" role="status" style={{ marginTop: 8 }}>
